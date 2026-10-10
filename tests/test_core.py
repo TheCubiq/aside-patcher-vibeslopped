@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import tempfile
 import unittest
 from unittest.mock import patch as mock_patch
@@ -37,14 +36,24 @@ def fixture_build(original: bytes, first: Patch, second: Patch) -> Build:
         sha256(bytes(second_result)): (second.target,),
         sha256(bytes(combined)): (first.target, second.target),
     }
-    return Build("test", Path("test.dll"), sha256(original), states, {first.target: first, second.target: second})
+    return Build(
+        "test",
+        Path("test.dll"),
+        sha256(original),
+        states,
+        {first.target: first, second.target: second},
+    )
 
 
 class PatcherCoreTests(unittest.TestCase):
     def setUp(self) -> None:
         self.original = b"prefix-CHAT0-middle-ASK0-suffix"
-        self.chats = Patch("chats", "hide chat section", (PatchSite(7, b"CHAT0", b"CHAT1"),))
-        self.ask = Patch("ask-aside", "hide toolbar action", (PatchSite(20, b"ASK0", b"ASK1"),))
+        self.chats = Patch(
+            "chats", "hide chat section", (PatchSite(7, b"CHAT0", b"CHAT1"),)
+        )
+        self.ask = Patch(
+            "ask-aside", "hide toolbar action", (PatchSite(20, b"ASK0", b"ASK1"),)
+        )
         self.build = fixture_build(self.original, self.chats, self.ask)
 
     def test_targets_apply_independently_and_together(self) -> None:
@@ -67,8 +76,11 @@ class PatcherCoreTests(unittest.TestCase):
             root = Path(temp)
             binary = root / "Aside.dll"
             binary.write_bytes(self.original)
-            with mock_patch("aside_patcher.cli.require_app_stopped"), mock_patch(
-                "aside_patcher.cli.backup_directory", return_value=root / "backups"
+            with (
+                mock_patch("aside_patcher.cli.require_app_stopped"),
+                mock_patch(
+                    "aside_patcher.cli.backup_directory", return_value=root / "backups"
+                ),
             ):
                 run_apply(self.build, binary, ["chats"])
                 run_apply(self.build, binary, ["ask-aside"])
@@ -80,7 +92,9 @@ class PatcherCoreTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             binary = Path(temp) / "Aside.dll"
             binary.write_bytes(self.original)
-            with mock_patch("aside_patcher.core.os.replace", side_effect=PermissionError("denied")):
+            with mock_patch(
+                "aside_patcher.core.os.replace", side_effect=PermissionError("denied")
+            ):
                 with self.assertRaisesRegex(Refusal, "Could not replace"):
                     atomic_replace(binary, b"replacement")
             self.assertEqual(binary.read_bytes(), self.original)
@@ -95,7 +109,9 @@ class PatcherCoreTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             binary = Path(temp) / "Aside.dll"
             binary.write_bytes(self.original)
-            with mock_patch.object(Path, "open", side_effect=PermissionError("denied")) as opened:
+            with mock_patch.object(
+                Path, "open", side_effect=PermissionError("denied")
+            ) as opened:
                 with self.assertRaisesRegex(Refusal, "Could not replace"):
                     atomic_replace(binary, b"replacement")
                 self.assertEqual(opened.call_count, 1)
@@ -106,20 +122,35 @@ class PatcherCoreTests(unittest.TestCase):
             apply_to_bytes(b"unknown", self.build, ["chats"])
 
     def test_multiple_sites_apply_as_one_target(self) -> None:
-        chats = Patch("chats", "two visibility paths", self.chats.sites + self.ask.sites)
+        chats = Patch(
+            "chats", "two visibility paths", self.chats.sites + self.ask.sites
+        )
         both = bytearray(self.original)
         both[7:12] = b"CHAT1"
         both[20:24] = b"ASK1"
-        build = Build("test", Path("test.dll"), sha256(self.original),
-                      {sha256(self.original): (), sha256(both): ("chats",)}, {"chats": chats})
+        build = Build(
+            "test",
+            Path("test.dll"),
+            sha256(self.original),
+            {sha256(self.original): (), sha256(both): ("chats",)},
+            {"chats": chats},
+        )
         self.assertEqual(apply_to_bytes(self.original, build, ["chats"]), bytes(both))
         self.assertEqual(apply_to_bytes(bytes(both), build, ["chats"]), bytes(both))
 
     def test_invalid_second_site_refuses_complete_target(self) -> None:
-        chats = Patch("chats", "invalid second path", self.chats.sites +
-                      (PatchSite(20, b"MISSING", b"CHANGED"),))
-        build = Build("test", Path("test.dll"), sha256(self.original),
-                      self.build.states, {"chats": chats})
+        chats = Patch(
+            "chats",
+            "invalid second path",
+            self.chats.sites + (PatchSite(20, b"MISSING", b"CHANGED"),),
+        )
+        build = Build(
+            "test",
+            Path("test.dll"),
+            sha256(self.original),
+            self.build.states,
+            {"chats": chats},
+        )
         with self.assertRaisesRegex(Refusal, "expected one exact byte match"):
             apply_to_bytes(self.original, build, ["chats"])
         self.assertEqual(self.original[7:12], b"CHAT0")
@@ -148,7 +179,9 @@ class PatcherCoreTests(unittest.TestCase):
 
     def test_restore_is_byte_for_byte_and_requires_known_patched_state(self) -> None:
         patched = apply_to_bytes(self.original, self.build, ["chats", "ask-aside"])
-        self.assertEqual(restore_bytes(patched, self.original, self.build), self.original)
+        self.assertEqual(
+            restore_bytes(patched, self.original, self.build), self.original
+        )
         with self.assertRaisesRegex(Refusal, "unknown installed hash"):
             restore_bytes(b"unknown", self.original, self.build)
         with self.assertRaisesRegex(Refusal, "does not match"):

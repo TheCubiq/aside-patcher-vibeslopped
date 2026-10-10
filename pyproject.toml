@@ -1,0 +1,37 @@
+[project]
+name = "aside-ui-patcher"
+version = "0.1.0"
+description = "Verified UI patches for Aside"
+requires-python = ">=3.10"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "black>=26.1",
+    "flake8>=7.3",
+    "flake8-docstrings>=1.7.0",
+    "mollify>=0.2.2",
+    "numpydoc>=1.11.0",
+    "pylint>=4.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+
+[tool.pylint.main]
+py-version = "3.10"
+
+[tool.pylint.format]
+max-line-length = 88
+
+[tool.pylint.messages_control]
+disable = ["missing-module-docstring", "missing-class-docstring", "missing-function-docstring", "too-few-public-methods", "import-outside-toplevel", "cyclic-import"]
+
+# Keep validation and rollback flows together instead of splitting for metrics.
+[tool.pylint.design]
+max-locals = 20
+max-branches = 15

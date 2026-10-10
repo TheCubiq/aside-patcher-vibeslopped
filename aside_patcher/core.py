@@ -46,8 +46,14 @@ class Build:
             patches[target] = Patch(
                 target=target,
                 description=value["description"],
-                sites=tuple(PatchSite(int(site["offset"]), bytes.fromhex(site["before"]),
-                                      bytes.fromhex(site["after"])) for site in value["sites"]),
+                sites=tuple(
+                    PatchSite(
+                        int(site["offset"]),
+                        bytes.fromhex(site["before"]),
+                        bytes.fromhex(site["after"]),
+                    )
+                    for site in value["sites"]
+                ),
             )
 
         states = {
@@ -68,13 +74,14 @@ def load_build(manifest_path: Path) -> Build:
         raw = json.loads(manifest_path.read_text(encoding="utf-8"))
         builds = raw["builds"]
         if len(builds) != 1:
-            raise Refusal("Manifest must contain exactly one explicitly supported build.")
-        if 'files' in builds[0]:
+            raise Refusal(
+                "Manifest must contain exactly one explicitly supported build."
+            )
+        if "files" in builds[0]:
             from .installation import Installation
+
             return Installation.from_mapping(builds[0])
         build = Build.from_mapping(builds[0])
-    except Refusal:
-        raise
     except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
         raise Refusal(f"Could not read patch manifest: {exc}") from exc
 
@@ -138,34 +145,49 @@ def apply_to_bytes(data: bytes, build: Build, targets: list[str]) -> bytes:
         if not patch.sites:
             raise Refusal(f"Patch '{target}' has no sites.")
         for site in patch.sites:
-            if len(site.before) != len(site.after) or not site.before or site.before == site.after:
-                raise Refusal(f"Patch '{target}' has an invalid replacement length or unchanged bytes.")
+            if (
+                len(site.before) != len(site.after)
+                or not site.before
+                or site.before == site.after
+            ):
+                raise Refusal(
+                    f"Patch '{target}' has an invalid replacement length "
+                    "or unchanged bytes."
+                )
             before_offsets = _find_all(data, site.before)
             after_offsets = _find_all(data, site.after)
             if before_offsets != [site.offset] or after_offsets:
                 raise Refusal(
-                    f"Patch '{target}' expected one exact byte match at 0x{site.offset:X}; "
-                    f"found {len(before_offsets)} original and {len(after_offsets)} patched matches."
+                    f"Patch '{target}' expected one exact byte match "
+                    f"at 0x{site.offset:X}; "
+                    f"found {len(before_offsets)} original and "
+                    f"{len(after_offsets)} patched matches."
                 )
             end = site.offset + len(site.before)
-            if any(site.offset < other_end and other_start < end
-                   for other_start, other_end in modified_ranges):
+            if any(
+                site.offset < other_end and other_start < end
+                for other_start, other_end in modified_ranges
+            ):
                 raise Refusal(f"Patch '{target}' overlaps another patch site.")
             modified_ranges.append((site.offset, end))
-            candidate[site.offset:end] = site.after
+            candidate[site.offset : end] = site.after
         active.add(target)
 
     result = bytes(candidate)
     expected_state = build.states.get(sha256(result))
     if expected_state is None or set(expected_state) != active:
-        raise Refusal("Result hash is not listed as a verified state; no file was changed.")
+        raise Refusal(
+            "Result hash is not listed as a verified state; no file was changed."
+        )
     return result
 
 
 def backup_directory() -> Path:
     local_app_data = os.environ.get("LOCALAPPDATA")
     if not local_app_data:
-        raise Refusal("LOCALAPPDATA is unavailable; cannot choose a backup location safely.")
+        raise Refusal(
+            "LOCALAPPDATA is unavailable; cannot choose a backup location safely."
+        )
     return Path(local_app_data) / "AsidePatcher" / "backups"
 
 
@@ -178,7 +200,9 @@ def ensure_immutable_backup(original: bytes, build: Build, root: Path) -> Path:
         backup = root / f"{original_hash}.dll"
         if backup.exists():
             if file_sha256(backup) != original_hash:
-                raise Refusal(f"Existing backup is corrupt and will not be overwritten: {backup}")
+                raise Refusal(
+                    f"Existing backup is corrupt and will not be overwritten: {backup}"
+                )
             return backup
 
         flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
@@ -192,8 +216,6 @@ def ensure_immutable_backup(original: bytes, build: Build, root: Path) -> Path:
             backup.unlink(missing_ok=True)
             raise
         return backup
-    except Refusal:
-        raise
     except OSError as exc:
         raise Refusal(f"Could not preserve the original backup: {exc}") from exc
 
@@ -212,7 +234,9 @@ def aside_is_running() -> bool:
     except OSError as exc:
         raise Refusal(f"Could not determine whether Aside is running: {exc}") from exc
     if result.returncode != 0:
-        raise Refusal("Could not determine whether Aside is running; refusing to modify the DLL.")
+        raise Refusal(
+            "Could not determine whether Aside is running; refusing to modify the DLL."
+        )
     return "aside.exe" in result.stdout.casefold()
 
 
@@ -253,9 +277,13 @@ def read_binary(path: Path) -> bytes:
 def restore_bytes(current: bytes, backup: bytes, build: Build) -> bytes:
     current_state = build.states.get(sha256(current))
     if current_state is None:
-        raise Refusal(f"Refusing to restore an unknown installed hash: {sha256(current)}")
+        raise Refusal(
+            f"Refusing to restore an unknown installed hash: {sha256(current)}"
+        )
     if not current_state:
         return current
     if sha256(backup) != build.original_sha256:
-        raise Refusal("The original backup is missing or does not match its recorded SHA-256.")
+        raise Refusal(
+            "The original backup is missing or does not match its recorded SHA-256."
+        )
     return backup

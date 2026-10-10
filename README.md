@@ -34,12 +34,12 @@ and observer hooks, and chained unwind records. See `docs/RESEARCH.md` for evide
 From this directory:
 
 ```powershell
-python -m aside_patcher status
-python -m aside_patcher apply --target chats-toggle --target ask-aside
-python -m aside_patcher apply --target chats-toggle
-python -m aside_patcher apply --target chats
-python -m aside_patcher apply --target chats --target ask-aside
-python -m aside_patcher restore
+uv run python -m aside_patcher status
+uv run python -m aside_patcher apply --target chats-toggle --target ask-aside
+uv run python -m aside_patcher apply --target chats-toggle
+uv run python -m aside_patcher apply --target chats
+uv run python -m aside_patcher apply --target chats --target ask-aside
+uv run python -m aside_patcher restore
 ```
 
 Close Aside before applying or restoring. Run these commands from an elevated
@@ -71,7 +71,25 @@ original backups, validate all output hashes, and test copies before installatio
 ## Tests
 
 ```powershell
-python -m unittest discover -s tests -v
+uv run python -m unittest discover -s tests -v
 ```
 
 Python 3.10 or newer is required. The patcher uses only the standard library.
+
+## Development
+
+Install [uv](https://docs.astral.sh/uv/) and run `uv sync` from this directory.
+The committed `uv.lock` pins development tools; the patcher has no runtime
+dependencies. Python 3.10 or newer remains supported.
+
+```powershell
+uv run black aside_patcher tests
+uv run black --check aside_patcher tests
+uv run flake8 aside_patcher tests
+uv run pylint aside_patcher tests
+```
+
+Black handles formatting at 88 columns. Flake8 catches style and unused code;
+Pylint adds code-quality checks. Keep code readable, with narrow exceptions for
+native patch recipes and test fixtures rather than splitting safety checks just
+to satisfy complexity limits.
