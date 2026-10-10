@@ -1,10 +1,10 @@
 """Render verified artifact recipes without modifying installed files."""
 
+from pathlib import Path
+
 from .common.exceptions import Refusal
-from .common.models import ORIGINAL_DLL_SHA256, Artifact, Payload
-from .common.utils import find_all, sha256
-from .native_toggle import emit_observer, emit_preference_bridge, emit_registration, emit_visibility
-from .pe import append_schema, append_section, append_unwind_table, install_hooks, parse_layout, resolve_blocks
+from .common.models import Artifact, Installation
+from .common.utils import backup_directory, find_all, preserve_original, read_binary, sha256
 
 
 def render(original: bytes, artifact: Artifact, targets: tuple[str, ...]) -> bytes:
@@ -33,9 +33,9 @@ def render(original: bytes, artifact: Artifact, targets: tuple[str, ...]) -> byt
         if not recipe:
             continue
         if recipe.get("builder"):
-            if recipe["builder"] != "chats-toggle-v1":
-                raise Refusal("Unknown native patch builder.")
-            result = build_native_toggle(result)
+            if not callable(recipe["builder"]):
+                raise Refusal("Patch builder must be an explicitly registered callable.")
+            result = recipe["builder"](result)
         sites.extend(recipe.get("sites", []))
     validate_replacement_sites(result, artifact, sites)
     for site in sorted(sites, key=lambda s: s["offset"], reverse=True):
@@ -68,32 +68,35 @@ def validate_replacement_sites(result: bytes, artifact: Artifact, sites: list[di
         ranges.append((offset, end))
 
 
-def build_native_toggle(original: bytes) -> bytes:
-    """Add the verified native Chats preference and visibility hooks.
+def prepare_changes(build: Installation, hashes: dict[str, str], desired: tuple[str, ...]) -> dict[Path, tuple[bytes, bytes]]:
+    """Preserve originals and render every replacement before installation.
 
     Parameters
     ----------
-    original : bytes
-        Verified vendor-original DLL contents.
+    build : Installation
+        Supported installation definition and complete hash allowlist.
+    hashes : dict[str, str]
+        Observed hashes for every installed artifact.
+    desired : tuple[str, ...]
+        Verified target combination to render.
 
     Returns
     -------
-    bytes
-        DLL containing the native toggle hooks.
+    dict[Path, tuple[bytes, bytes]]
+        Verified pre-operation and replacement contents for changed files only.
     """
-    if sha256(original) != ORIGINAL_DLL_SHA256:
-        raise Refusal("Native toggle recipe requires the exact original DLL.")
-    layout = parse_layout(original)
-    new_rva = (max(section.rva + section.virtual_size for section in layout.sections) + 4095) & ~4095
-    assert layout.section_table + (len(layout.sections) + 1) * 40 <= min(section.file_offset for section in layout.sections)
-    payload = Payload(new_rva)
-    emit_registration(payload)
-    emit_observer(payload)
-    emit_preference_bridge(payload)
-    emit_visibility(payload)
-    schema_start, schema_size = append_schema(original, payload)
-    data = bytearray(original)
-    append_unwind_table(original, data, layout, payload)
-    resolve_blocks(payload)
-    install_hooks(data, layout, payload, schema_start, schema_size)
-    return append_section(data, layout, payload)
+    root = backup_directory()
+    changes = {}
+    for name, artifact in build.files.items():
+        before = read_binary(artifact.path)
+        if sha256(before) != hashes[name]:
+            raise Refusal(f"File changed during validation: {artifact.path}")
+        backup = root / f"{artifact.original_sha256}{artifact.path.suffix}"
+        original = before if hashes[name] == artifact.original_sha256 else read_binary(backup)
+        preserve_original(original, artifact, root)
+        after = render(original, artifact, desired)
+        if sha256(after) != build.states[desired][name]:
+            raise Refusal(f"Result hash is not verified for {artifact.path.name}.")
+        if before != after:
+            changes[artifact.path] = (before, after)
+    return changes

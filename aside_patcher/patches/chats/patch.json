@@ -1,0 +1,28 @@
+{
+  "id": "chats",
+  "description": "Permanently hide the Chats sidebar section.",
+  "versions": [
+    "1.0.928.2"
+  ],
+  "conflicts": [
+    "chats-toggle"
+  ],
+  "files": {
+    "dll": {
+      "sites": [
+        {
+          "offset": 57368901,
+          "before": "4084ff0f84df000000",
+          "after": "4084ffe9e000000090"
+        },
+        {
+          "offset": 57482735,
+          "before": "488b01488b809000000089daff159fc2240e488b8ef0050000",
+          "after": "488b01488b809000000031d2ff159fc2240e488b8ef0050000"
+        }
+      ],
+      "original_sha256": "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510",
+      "patched_sha256": "3e3c0630078ec32d19e378f943988fbeebcb35317fefc305c8902a5026f6ebc8"
+    }
+  }
+}

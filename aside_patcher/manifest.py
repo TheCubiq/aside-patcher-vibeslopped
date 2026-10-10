@@ -8,6 +8,8 @@ from typing import Any
 
 from .common.exceptions import Refusal
 from .common.models import Artifact, Installation
+from .patch_loader import attach_recipes, patches_for_version
+from .patches import PATCHES
 
 
 def installation_from_mapping(raw: dict[str, Any]) -> Installation:
@@ -23,23 +25,34 @@ def installation_from_mapping(raw: dict[str, Any]) -> Installation:
     Installation
         Parsed multi-file installation definition.
     """
-    files = {name: Artifact(Path(f["path"]), f["original_sha256"], f.get("patches", {})) for name, f in raw["files"].items()}
+    files = {name: Artifact(Path(f["path"]), f["original_sha256"], {}) for name, f in raw["files"].items()}
     states = {tuple(sorted(s["targets"])): s["sha256"] for s in raw["states"]}
-    if len(states) != len(raw["states"]) or () not in states:
+    validate_states(files, states, len(raw["states"]))
+    patches = patches_for_version(raw["version"], PATCHES)
+    files = attach_recipes(files, patches, states)
+    conflicts = tuple((patch.patch_id, other) for patch in patches.values() for other in patch.conflicts)
+    return Installation(raw["version"], files, states, conflicts, tuple(patches), raw.get("component"), patches)
+
+
+def validate_states(files: dict[str, Artifact], states: dict, declared_count: int) -> None:
+    """Validate complete and unambiguous installation hash states.
+
+    Parameters
+    ----------
+    files : dict[str, Artifact]
+        Declared installed files and their original hashes.
+    states : dict
+        Parsed target combinations and file hashes.
+    declared_count : int
+        State count before combinations were normalized.
+    """
+    if len(states) != declared_count or () not in states:
         raise Refusal("Manifest has duplicate states or no original state.")
     if states[()] != {name: f.original_sha256 for name, f in files.items()}:
         raise Refusal("Original file hashes disagree with the original state.")
     for hashes in states.values():
         if set(hashes) != set(files):
             raise Refusal("Every installation state must identify every file.")
-    return Installation(
-        raw["version"],
-        files,
-        states,
-        tuple(tuple(c) for c in raw.get("conflicts", [])),
-        tuple(raw["targets"]),
-        raw.get("component"),
-    )
 
 
 def load_build(manifest_path: Path) -> Installation:

@@ -34,11 +34,14 @@ and observer hooks, and chained unwind records. See `docs/RESEARCH.md` for evide
 From this directory:
 
 ```powershell
+uv run python -m aside_patcher list
 uv run python -m aside_patcher status
-uv run python -m aside_patcher apply --target chats-toggle --target ask-aside
-uv run python -m aside_patcher apply --target chats-toggle
-uv run python -m aside_patcher apply --target chats
-uv run python -m aside_patcher apply --target chats --target ask-aside
+uv run python -m aside_patcher enable chats-toggle ask-aside
+uv run python -m aside_patcher enable chats-toggle
+uv run python -m aside_patcher enable chats
+uv run python -m aside_patcher enable chats ask-aside
+uv run python -m aside_patcher disable ask-aside
+uv run python -m aside_patcher disable chats-toggle
 uv run python -m aside_patcher restore
 ```
 
@@ -59,13 +62,52 @@ hashes remain mandatory. Commands operate on the complete file set in the manife
 
 ## Patch definition requirements
 
-For each independently selectable target, add a patch only after static and
-runtime validation. Each file has its original hash and target recipes in
-`aside_patcher/builds.json`; every supported target combination lists the exact
-hash of every file. Simple edits use unique byte sites; native code additions
-use a named, version-specific standard-library builder. New builders must be
-registered explicitly in `recipes.py`. Rebuild desired states from verified
-original backups, validate all output hashes, and test copies before installation.
+Each patch owns a directory under `aside_patcher/patches/`:
+
+```text
+patches/
+  chats/
+    __init__.py
+    patch.json
+    README.md
+  ask_aside/
+    __init__.py
+    patch.json
+    README.md
+  chats_toggle/
+    __init__.py
+    patch.json
+    README.md
+    native.py
+    instructions.py
+    bridge.py
+    constants.py
+    appearance.before.js
+    appearance.after.js
+```
+
+To add a patch:
+
+1. Create a package directory; underscores in its name become hyphens in the CLI ID.
+2. Declare its ID, description, exact supported versions, conflicts, and file recipes
+   in `patch.json`. Each affected file declares its original and standalone patched
+   SHA-256. Byte sites contain an offset and hexadecimal `before`/`after` bytes;
+   `before_file`/`after_file` can reference exact local assets instead.
+3. Export `PATCH = load_definition(Path(__file__).parent)` from `__init__.py`.
+   For native generation, pass an explicit file-ID-to-callable renderer mapping.
+   Keep version-specific helpers inside that patch directory.
+4. Import the definition and add it to the explicit `PATCHES` tuple in
+   `patches/__init__.py`. Registration is reviewed source code.
+5. After static analysis, copied-file trials, and runtime validation, add exact
+   output hashes for supported combinations to `builds.json`. That file owns
+   installed paths, vendor hashes, component guards, and whole-installation states.
+6. Add focused tests under `tests/patches/<package>/` and document verified behavior.
+
+`list` shows registered patches and conflicts. `enable` merges selections with
+active patches; a conflicting active patch is replaced. `disable` removes only
+selected patches. Both rebuild from verified originals, check the complete output
+against the allowlist, and use the same backup and rollback transaction. There is
+no automatic patch discovery, hash approval, or update re-patching.
 
 ## Tests
 
@@ -132,10 +174,11 @@ It does not run unit tests or modify the installed Aside files.
 - `common/exceptions.py` defines the refusal exception.
 - `manifest.py` accepts the verified multi-file manifest format.
 - `installation.py` handles state selection and prepares installation changes.
-- `recipes.py` renders byte sites and orchestrates the native toggle recipe.
+- `patch_loader.py` reads local metadata and checks it against the build allowlist.
+- `patches/` owns each selectable patch and its version-specific assets and helpers.
+- `recipes.py` renders selected recipes and prepares verified replacements.
 - `transaction.py` stages replacements and rolls back completed writes on failure.
-- `native_toggle.py` emits the version-specific native hook instructions.
-- `pe.py` maps PE sections and installs native payloads and bridge schema data.
+- `pe.py` provides shared PE mapping and section operations.
 
 The native instruction listings remain version-specific. Refactoring them must
 preserve the allowlisted output byte for byte. Unit tests use conventional

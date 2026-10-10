@@ -2,7 +2,8 @@
 
 import struct
 
-from .common.models import CHATS_PREFERENCE, Payload
+from ...common.models import Payload
+from .constants import CHATS_PREFERENCE
 
 
 def emit_registration(payload: Payload) -> None:

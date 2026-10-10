@@ -66,6 +66,9 @@ class TestInstallationFixture(unittest.TestCase):
             ("chats", "ask-aside", "chats-toggle"),
         )
         self.backups = self.root / "backups"
+        backup_path = patch("aside_patcher.recipes.backup_directory", return_value=self.backups)
+        backup_path.start()
+        self.addCleanup(backup_path.stop)
         stopped = patch("aside_patcher.common.utils.aside_is_running", return_value=False)
         stopped.start()
         self.addCleanup(stopped.stop)

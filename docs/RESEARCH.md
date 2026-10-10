@@ -123,7 +123,7 @@
 - Both native Chats visibility paths combine their original layout condition
   with the new preference. Each sidebar observes this preference independently,
   so existing and newly created windows respond immediately.
-- `native_toggle.py` builds a small `.chatmod` read/execute section using RIP
+- `patches/chats_toggle/instructions.py` builds a small `.chatmod` read/execute section using RIP
   relative addressing and direct detours. Existing guarded virtual calls still
   use existing CFG targets. The existing schema pointer's relocation rebases
   the expanded schema. New detour ranges have chained Windows unwind records;

@@ -3,7 +3,7 @@
 import unittest
 
 from aside_patcher.common.exceptions import Refusal
-from aside_patcher.recipes import build_native_toggle
+from aside_patcher.patches.chats_toggle.native import build_native_toggle
 
 
 class TestRecipes(unittest.TestCase):

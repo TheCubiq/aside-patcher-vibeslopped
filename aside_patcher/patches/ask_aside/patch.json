@@ -1,0 +1,26 @@
+{
+  "id": "ask-aside",
+  "description": "Hide the Ask Aside toolbar button.",
+  "versions": [
+    "1.0.928.2"
+  ],
+  "conflicts": [],
+  "files": {
+    "dll": {
+      "sites": [
+        {
+          "offset": 15320400,
+          "before": "89ea80f201488b06488b80900000004889f1ff15381ba810",
+          "after": "31d2909090488b06488b80900000004889f1ff15381ba810"
+        },
+        {
+          "offset": 15320468,
+          "before": "488b06488b809000000040b5014889f1b201ff15f41aa810",
+          "after": "488b06488b809000000040b5014889f131d2ff15f41aa810"
+        }
+      ],
+      "original_sha256": "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510",
+      "patched_sha256": "3325f6313bb5366fc90ae5f15ff0fc0565a7d0c937c466edaa8ddc11b32377fe"
+    }
+  }
+}

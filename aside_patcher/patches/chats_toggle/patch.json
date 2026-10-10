@@ -1,0 +1,27 @@
+{
+  "id": "chats-toggle",
+  "description": "Enable the persistent Chats visibility checkbox in Appearance settings.",
+  "versions": [
+    "1.0.928.2"
+  ],
+  "conflicts": [
+    "chats"
+  ],
+  "files": {
+    "dll": {
+      "original_sha256": "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510",
+      "patched_sha256": "90b3d36e0faaf6258dcdf2b5fcbbec138d27678809decc2371c6f6f6defe4728"
+    },
+    "appearance": {
+      "sites": [
+        {
+          "offset": 13356,
+          "before_file": "appearance.before.js",
+          "after_file": "appearance.after.js"
+        }
+      ],
+      "original_sha256": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b",
+      "patched_sha256": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
+    }
+  }
+}

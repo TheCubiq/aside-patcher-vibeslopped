@@ -5,14 +5,23 @@ from __future__ import annotations
 import struct
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Callable
 
 from .exceptions import Refusal
 
 MANIFEST_PATH = Path(__file__).resolve().parents[1] / "builds.json"
-TARGETS = ("chats", "ask-aside", "chats-toggle")
-CHATS_PREFERENCE = b"aside.vertical_tabs.chats_section_enabled"
-IMAGE_BASE = 0x180000000
-ORIGINAL_DLL_SHA256 = "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510"
+
+
+@dataclass(frozen=True)
+class PatchDefinition:
+    """Declare a patch ID, supported builds, file recipes, and local renderers."""
+
+    patch_id: str
+    description: str
+    versions: tuple[str, ...]
+    conflicts: tuple[str, ...]
+    files: dict[str, dict]
+    renderers: dict[str, Callable[[bytes], bytes]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -34,6 +43,7 @@ class Installation:
     conflicts: tuple[tuple[str, ...], ...]
     targets: tuple[str, ...]
     component: dict | None = None
+    patches: dict[str, PatchDefinition] = field(default_factory=dict)
 
     def identify(self, hashes: dict[str, str]) -> tuple[str, ...]:
         """Identify the unique installation state matching all file hashes.
@@ -55,31 +65,35 @@ class Installation:
             raise Refusal(f"Installed files have an {label}; no files were changed.")
         return matches[0]
 
-    def select(self, current: tuple[str, ...], selected: list[str]) -> tuple[str, ...]:
-        """Merge requested targets and replace mutually exclusive active targets.
+    def choose(self, current: tuple[str, ...], selected: list[str], *, enable: bool) -> tuple[str, ...]:
+        """Enable or disable patch IDs and require a verified resulting state.
 
         Parameters
         ----------
-        current : sequence of str
-            Currently installed target names.
-        selected : sequence of str
-            Requested target names; conflicting requests are refused.
+        current : tuple[str, ...]
+            Installed patches identified from file hashes.
+        selected : list[str]
+            Requested patch IDs.
+        enable : bool
+            True to enable selections, False to remove them.
 
         Returns
         -------
-        tuple of str
-            Sorted targets for a verified desired state.
+        tuple[str, ...]
+            Normalized patch combination with reviewed output hashes.
         """
         requested = set(selected)
         if not requested or not requested <= set(self.targets):
             raise Refusal("Select at least one configured target.")
-        active = set(current)
-        for group in self.conflicts:
-            if len(requested.intersection(group)) > 1:
-                raise Refusal(f'Mutually exclusive targets: {", ".join(group)}')
-            if requested.intersection(group):
-                active.difference_update(group)
-        state = tuple(sorted(active | requested))
+        active = set(current) - requested
+        if enable:
+            for group in self.conflicts:
+                if len(requested.intersection(group)) > 1:
+                    raise Refusal(f'Mutually exclusive targets: {", ".join(group)}')
+                if requested.intersection(group):
+                    active.difference_update(group)
+            active.update(requested)
+        state = tuple(sorted(active))
         if state not in self.states:
             raise Refusal("Requested combination has no verified hashes.")
         return state
