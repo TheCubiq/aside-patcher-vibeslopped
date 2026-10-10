@@ -4,11 +4,11 @@
       "version": "1.0.928.2",
       "files": {
         "dll": {
-          "path": "C:\\Program Files\\Aside\\Application\\1.0.928.2\\Aside.dll",
+          "path": "%ProgramFiles%\\Aside\\Application\\1.0.928.2\\Aside.dll",
           "original_sha256": "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510"
         },
         "appearance": {
-          "path": "C:\\Users\\Cubiq\\AppData\\Local\\Aside\\User Data\\AsideAgentManager\\1.26.1010.2149\\assets\\appearance-MpyMFkED.js",
+          "path": "%LOCALAPPDATA%\\Aside\\User Data\\AsideAgentManager\\1.26.1010.2149\\assets\\appearance-MpyMFkED.js",
           "original_sha256": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
         }
       },
@@ -69,7 +69,7 @@
         }
       ],
       "component": {
-        "directory": "C:\\Users\\Cubiq\\AppData\\Local\\Aside\\User Data\\AsideAgentManager",
+        "directory": "%LOCALAPPDATA%\\Aside\\User Data\\AsideAgentManager",
         "version": "1.26.1010.2149"
       }
     }

@@ -8,10 +8,10 @@ with rollback if an installation fails partway.
 ## Supported input
 
 - Aside `1.0.928.2`
-- `C:\Program Files\Aside\Application\1.0.928.2\Aside.dll`
+- `%ProgramFiles%\Aside\Application\1.0.928.2\Aside.dll` (typically `C:\Program Files\Aside\...`)
 - Original SHA-256: `9CDC4B08D095ABB48FDFEC2BABF7BE54ED35EB67EC20AF9341D4CF5302E5D510`
 - Settings component `1.26.1010.2149`, active user-data asset
-  `AsideAgentManager\1.26.1010.2149\assets\appearance-MpyMFkED.js`.
+  `%LOCALAPPDATA%\Aside\User Data\AsideAgentManager\1.26.1010.2149\assets\appearance-MpyMFkED.js`.
 
 Every unsupported file hash or component version is refused. Later Aside builds
 and independently updated settings bundles must be inspected and added explicitly.
@@ -57,7 +57,8 @@ Patching changes the vendor-signed DLL and its hash. Each installed patch
 must be checked in a fresh Aside launch, on an ordinary page and in Settings;
 restore the original if launch or UI verification fails.
 
-For copied trials, use an isolated manifest with copied file paths; the supported
+For copied trials, use an isolated manifest with copied file paths (environment variables
+like `%ProgramFiles%` and `%LOCALAPPDATA%` are expanded automatically); the supported
 hashes remain mandatory. Commands operate on the complete file set in the manifest.
 
 ## Patch definition requirements

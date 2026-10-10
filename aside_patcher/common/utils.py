@@ -4,11 +4,136 @@ from __future__ import annotations
 
 import hashlib
 import os
+import re
 import subprocess
 from pathlib import Path
 
 from .exceptions import Refusal
 from .models import Artifact, Installation
+
+
+def _user_home() -> Path | None:
+    """Safely obtain the user home directory if resolvable.
+
+    Returns
+    -------
+    Path or None
+        User home directory, or None if it cannot be determined.
+    """
+    try:
+        return Path.home()
+    except (RuntimeError, OSError):
+        return None
+
+
+def _expand_percent_token(match: re.Match) -> str:
+    """Expand one percent-delimited variable token to its resolved value.
+
+    Parameters
+    ----------
+    match : re.Match
+        Regular expression match object for a variable token.
+
+    Returns
+    -------
+    str
+        Resolved environment value or fallback path.
+    """
+    var = match.group(1)
+    val = os.environ.get(var)
+    if val is None:
+        val = os.environ.get(var.upper())
+    if val is None:
+        val = os.environ.get(var.lower())
+    if val is not None:
+        return val
+    if var.upper() == "LOCALAPPDATA":
+        home = _user_home()
+        return str(home / "AppData" / "Local") if home else match.group(0)
+    if var.upper() in ("PROGRAMFILES", "PROGRAMW6432"):
+        drive = os.environ.get("SystemDrive", "C:")
+        return f"{drive}\\Program Files"
+    if var.upper() == "USERPROFILE":
+        home = _user_home()
+        return str(home) if home else match.group(0)
+    return match.group(0)
+
+
+def resolve_manifest_path(path: str | Path) -> Path:
+    """Expand environment variables and user home directory in a path.
+
+    Parameters
+    ----------
+    path : str or Path
+        Filesystem path potentially containing environment variables or home references.
+
+    Returns
+    -------
+    Path
+        Resolved filesystem path.
+    """
+    raw = str(path)
+    expanded = re.sub(r"%([^%]+)%", _expand_percent_token, raw)
+    expanded = os.path.expandvars(expanded)
+    try:
+        return Path(expanded).expanduser()
+    except (RuntimeError, OSError):
+        return Path(expanded)
+
+
+def component_versions(root: Path) -> set[str]:
+    """Inspect a component directory for numeric version subdirectories.
+
+    Parameters
+    ----------
+    root : Path
+        Settings component directory.
+
+    Returns
+    -------
+    set of str
+        Discovered version directory names.
+    """
+    try:
+        return {p.name for p in root.iterdir() if p.is_dir() and p.name[:1].isdigit()}
+    except OSError as exc:
+        raise Refusal(f"Could not validate active settings component: {exc}") from exc
+
+
+def validate_component(component: dict | None) -> None:
+    """Refuse unknown or ambiguous active settings component versions.
+
+    Parameters
+    ----------
+    component : dict or None
+        Expected settings directory and version, or None to skip this guard.
+    """
+    if not component:
+        return
+    root = resolve_manifest_path(component["directory"])
+    if component_versions(root) != {component["version"]}:
+        raise Refusal("Settings component version changed or is ambiguous; review the new version explicitly.")
+
+
+def validate_states(files: dict[str, Artifact], states: dict, declared_count: int) -> None:
+    """Validate complete and unambiguous installation hash states.
+
+    Parameters
+    ----------
+    files : dict[str, Artifact]
+        Declared installed files and their original hashes.
+    states : dict
+        Parsed target combinations and file hashes.
+    declared_count : int
+        State count before combinations were normalized.
+    """
+    if len(states) != declared_count or () not in states:
+        raise Refusal("Manifest has duplicate states or no original state.")
+    if states[()] != {name: f.original_sha256 for name, f in files.items()}:
+        raise Refusal("Original file hashes disagree with the original state.")
+    expected_files = set(files)
+    if any(set(hashes) != expected_files for hashes in states.values()):
+        raise Refusal("Every installation state must identify every file.")
 
 
 def sha256(data: bytes) -> str:
@@ -60,7 +185,11 @@ def backup_directory() -> Path:
     """
     local_app_data = os.environ.get("LOCALAPPDATA")
     if not local_app_data:
-        raise Refusal("LOCALAPPDATA is unavailable; cannot choose a backup location safely.")
+        home_app_data = _user_home()
+        if home_app_data and (home_app_data / "AppData" / "Local").is_dir():
+            local_app_data = str(home_app_data / "AppData" / "Local")
+        else:
+            raise Refusal("LOCALAPPDATA is unavailable; cannot choose a backup location safely.")
     return Path(local_app_data) / "AsidePatcher" / "backups"
 
 

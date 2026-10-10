@@ -4,8 +4,7 @@ from __future__ import annotations
 
 from .common.exceptions import Refusal
 from .common.models import Installation
-from .common.utils import file_sha256, report_status, require_app_stopped
-from .manifest import validate_component
+from .common.utils import file_sha256, report_status, require_app_stopped, validate_component
 from .recipes import prepare_changes
 from .transaction import replace_transaction
 
