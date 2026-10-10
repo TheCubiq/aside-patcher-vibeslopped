@@ -104,3 +104,68 @@
 - Atomic replacement uses a single exclusive temporary-file creation attempt.
   A regression test confirms permission denial fails immediately and preserves
   the installed file.
+
+## Chats settings toggle — 2026-10-10
+
+### Native bridge and preference
+
+- Profile preference registration is `FUN_1824fc090`; Bookmarks registers its
+  false/true boolean value through `FUN_184caff90`.
+- Existing Bookmarks getter is `FUN_18a210c00`; setter is `FUN_1835fb6b0`,
+  writing through `FUN_18066cb50`. `FUN_1836b7250` registers observers through
+  `FUN_18068bed0`; callback `FUN_1836e4460` refreshes sidebar layout.
+- New key: `aside.vertical_tabs.chats_section_enabled`, registered as false
+  when absent. The existing native bridge's get/set methods gain an optional
+  boolean `chats` selector. Missing or false selects Bookmarks; true selects
+  Chats. Existing positional calls retain their behavior. The settings patch
+  uses `getVerticalTabsBookmarksSectionEnabled(true)` and
+  `setVerticalTabsBookmarksSectionEnabled(value, true)` for Chats only.
+- Both native Chats visibility paths combine their original layout condition
+  with the new preference. Each sidebar observes this preference independently,
+  so existing and newly created windows respond immediately.
+- `native_toggle.py` builds a small `.chatmod` read/execute section using RIP
+  relative addressing and direct detours. Existing guarded virtual calls still
+  use existing CFG targets. The existing schema pointer's relocation rebases
+  the expanded schema. New detour ranges have chained Windows unwind records;
+  the sorted exception table extends into verified zero padding.
+
+### Active settings asset
+
+- The browser actually serves component `1.26.1010.2149` from Local AppData,
+  rather than the older bundle in Program Files.
+- Original `appearance-MpyMFkED.js` SHA-256:
+  `aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b`.
+- Patched asset SHA-256:
+  `3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947`.
+- Chats now has separate query/mutation state, optimistic checkbox feedback,
+  error rollback, and a live selection summary. Its disabled tooltip is removed.
+- Component directory/version checks refuse a new or ambiguous package version;
+  hashes also refuse content changes within the supported package.
+
+### Copy and installed validation
+
+- Copied installation and isolated profile live outside Git under
+  `D:\Users\kubaj\programovani\re\tools\aside-analysis\toggle-trial` and
+  `toggle-profile`. CDP on port 9223 tested the copy without changing the
+  installed browser or Codex configuration.
+- Fresh isolated profile returned Chats false / Bookmarks true. Actual checkbox
+  clicks passed all four combinations, confirmed by native UI Automation.
+- Google and a second window updated together. Ask Aside stayed absent on
+  Google. Collapsing/reopening the sidebar retained visibility. A fresh browser
+  process retained Chats true / Bookmarks true after a graceful trial restart.
+- Original DLL and settings asset were backed up and verified before migrating
+  the installed state. Pre-operation copies are also outside Git in
+  `aside-analysis\pre-toggle-install`.
+- Installed DLL with `chats-toggle` and `ask-aside` SHA-256:
+  `ad226bd3ad42ec9fa6b18602beacaef42d49c2f0ecd587fb8695403f5813a19e`.
+- Fresh installed process PID 24500 loaded Settings successfully. Chrome
+  DevTools MCP checkbox clicks showed and hid the native Chats/New Chat controls;
+  Bookmarks stayed visible. An ordinary GitHub page had no Ask Aside button.
+- Installation stages both forward and rollback files before replacement,
+  rechecks running processes and input hashes, and restores pre-operation files
+  if a replacement fails. `restore` returns both artifacts to vendor originals.
+- All 30 unit tests passed, including partial-install rollback, retained recovery
+  copies if rollback itself fails, unsupported component refusal, and native
+  builder input refusal. Real DLL/settings copies also passed exact vendor
+  restoration and migration from the original hide patch to the toggle;
+  original backups remained unchanged. Both installed-original backups are read-only.

@@ -69,6 +69,9 @@ def load_build(manifest_path: Path) -> Build:
         builds = raw["builds"]
         if len(builds) != 1:
             raise Refusal("Manifest must contain exactly one explicitly supported build.")
+        if 'files' in builds[0]:
+            from .installation import Installation
+            return Installation.from_mapping(builds[0])
         build = Build.from_mapping(builds[0])
     except Refusal:
         raise

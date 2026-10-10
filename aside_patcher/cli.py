@@ -21,7 +21,7 @@ from .core import (
 
 ROOT = Path(__file__).resolve().parent
 MANIFEST = ROOT / "builds.json"
-TARGETS = ("chats", "ask-aside")
+TARGETS = ("chats", "ask-aside", "chats-toggle")
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -110,6 +110,11 @@ def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
         build = load_build(MANIFEST)
+        from .installation import Installation, run_installation
+        if isinstance(build, Installation):
+            if args.binary:
+                raise Refusal('--binary is only supported by legacy single-file manifests.')
+            return run_installation(build, args.command, getattr(args, 'target', None))
         path = _target_path(build, args.binary)
         if args.command == "status":
             return run_status(build, path)
