@@ -6,9 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .core import Refusal
-from .legacy import Build
-from .installation import Artifact, Installation
+from .common.exceptions import Refusal
+from .common.models import Artifact, Installation
 
 
 def installation_from_mapping(raw: dict[str, Any]) -> Installation:
@@ -43,7 +42,7 @@ def installation_from_mapping(raw: dict[str, Any]) -> Installation:
     )
 
 
-def load_build(manifest_path: Path) -> Build | Installation:
+def load_build(manifest_path: Path) -> Installation:
     """Load the single supported build from a JSON manifest.
 
     Parameters
@@ -53,7 +52,7 @@ def load_build(manifest_path: Path) -> Build | Installation:
 
     Returns
     -------
-    Build or Installation
+    Installation
         Validated supported build definition.
     """
     try:
@@ -61,14 +60,25 @@ def load_build(manifest_path: Path) -> Build | Installation:
         builds = raw["builds"]
         if len(builds) != 1:
             raise Refusal("Manifest must contain exactly one explicitly supported build.")
-        if "files" in builds[0]:
-            return installation_from_mapping(builds[0])
-        build = Build.from_mapping(builds[0])
+        return installation_from_mapping(builds[0])
     except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
         raise Refusal(f"Could not read patch manifest: {exc}") from exc
 
-    if build.original_sha256 not in build.states:
-        raise Refusal("Manifest is invalid: original hash is not a known state.")
-    if build.states[build.original_sha256]:
-        raise Refusal("Manifest is invalid: original state lists patched targets.")
-    return build
+
+def validate_component(component: dict | None) -> None:
+    """Refuse unknown or ambiguous active settings component versions.
+
+    Parameters
+    ----------
+    component : dict or None
+        Expected settings directory and version, or None to skip this guard.
+    """
+    if not component:
+        return
+    component_root = Path(component["directory"])
+    try:
+        versions = {p.name for p in component_root.iterdir() if p.is_dir() and p.name[:1].isdigit()}
+    except OSError as exc:
+        raise Refusal(f"Could not validate active settings component: {exc}") from exc
+    if versions != {component["version"]}:
+        raise Refusal("Settings component version changed or is ambiguous; review the new version explicitly.")

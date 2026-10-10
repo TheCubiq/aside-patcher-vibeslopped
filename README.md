@@ -54,9 +54,8 @@ Patching changes the vendor-signed DLL and its hash. Each installed patch
 must be checked in a fresh Aside launch, on an ordinary page and in Settings;
 restore the original if launch or UI verification fails.
 
-The hidden `--binary` override is supported only by legacy single-file manifests.
-For copied multi-file trials, use an isolated manifest with copied file paths;
-the supported hashes remain mandatory.
+For copied trials, use an isolated manifest with copied file paths; the supported
+hashes remain mandatory. Commands operate on the complete file set in the manifest.
 
 ## Patch definition requirements
 
@@ -65,7 +64,7 @@ runtime validation. Each file has its original hash and target recipes in
 `aside_patcher/builds.json`; every supported target combination lists the exact
 hash of every file. Simple edits use unique byte sites; native code additions
 use a named, version-specific standard-library builder. New builders must be
-registered explicitly in `installation.py`. Rebuild desired states from verified
+registered explicitly in `recipes.py`. Rebuild desired states from verified
 original backups, validate all output hashes, and test copies before installation.
 
 ## Tests
@@ -91,9 +90,8 @@ uv run pylint aside_patcher tests
 
 Black formats code with a maximum line length of 135 characters; Flake8 and
 Pylint use the same limit. Flake8 catches style and unused code;
-Pylint adds code-quality checks. Keep code readable, with narrow exceptions for
-native patch recipes and test fixtures rather than splitting safety checks just
-to satisfy complexity limits.
+Pylint adds code-quality checks. Keep each module focused on one responsibility
+and document the verified native instruction listings.
 
 ## Documentation and audit
 
@@ -127,16 +125,22 @@ It does not run unit tests or modify the installed Aside files.
 
 ## Code structure
 
-- `manifest.py` parses supported builds without making the patching modules
-  depend on each other.
-- `core.py` contains shared hashing and file safety utilities.
-- `legacy.py` contains the supported single-file patch path.
-- `processes.py` checks whether Aside is running before file modification.
-- `installation.py` separates state selection, rendering, staging, and rollback.
-- `native_toggle.py` assembles the verified recipe in named phases: preference
-  registration, refresh observer, bridge hooks, visibility, schema, unwind
-  records, and final PE section installation.
+- `common/models.py` holds file and installation definitions, native structures,
+  and shared constants.
+- `common/utils.py` holds shared hashing, file reading, backup paths, byte matching,
+  and process guards.
+- `common/exceptions.py` defines the refusal exception.
+- `manifest.py` accepts the verified multi-file manifest format.
+- `installation.py` handles state selection and prepares installation changes.
+- `recipes.py` renders byte sites and orchestrates the native toggle recipe.
+- `transaction.py` stages replacements and rolls back completed writes on failure.
+- `native_toggle.py` emits the version-specific native hook instructions.
+- `pe.py` maps PE sections and installs native payloads and bridge schema data.
 
 The native instruction listings remain version-specific. Refactoring them must
 preserve the allowlisted output byte for byte. Unit tests use conventional
 `Test*` class names for both unittest discovery and static audit reachability.
+
+The retired single-file implementation and its tests have been removed.
+The remaining suites cover installation, backups, transactions, recipes, and
+shared safety utilities using one temporary-installation fixture.

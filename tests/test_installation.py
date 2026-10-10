@@ -1,107 +1,24 @@
-# Test names describe their assertions; unittest discovers them dynamically.
-# pylint: disable=missing-module-docstring,missing-class-docstring
-# pylint: disable=missing-function-docstring
-# Test fixtures live until addCleanup runs after each test.
+# Test names describe assertions; fixtures live until unittest addCleanup.
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 # pylint: disable=too-many-instance-attributes,consider-using-with
-import os
-import tempfile
 import unittest
 from dataclasses import replace
-from pathlib import Path
 from unittest.mock import patch
 
-from aside_patcher.core import Refusal, sha256
-from aside_patcher.installation import (
-    Artifact,
-    stage_replacement,
-    Installation,
-    preserve_original,
-    render,
-    replace_transaction,
-    run_installation,
-)
-
-from aside_patcher.native_toggle import build_native_toggle
+from aside_patcher.common.exceptions import Refusal
+from aside_patcher.common.models import Artifact
+from aside_patcher.common.utils import sha256
+from aside_patcher.installation import run_installation
+from aside_patcher.recipes import render
+from tests.fixtures import TestInstallationFixture
 
 
-def fixture_recipe(offset: int, before: bytes, after: bytes) -> dict:
-    return {"sites": [{"offset": offset, "before": before.hex(), "after": after.hex()}]}
-
-
-class TestInstallation(unittest.TestCase):
+class TestInstallation(TestInstallationFixture):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
-        self.dll = self.root / "Aside.dll"
-        self.ui = self.root / "appearance.js"
-        self.dll.write_bytes(b"DLL chats off ask on")
-        self.ui.write_bytes(b"UI chats disabled")
-        self.original = {
-            "dll": self.dll.read_bytes(),
-            "appearance": self.ui.read_bytes(),
-        }
-        self.files = {
-            "dll": Artifact(
-                self.dll,
-                sha256(self.original["dll"]),
-                {
-                    "chats": fixture_recipe(4, b"chats off", b"chats hid"),
-                    "chats-toggle": fixture_recipe(4, b"chats off", b"chats toggle"),
-                    "ask-aside": fixture_recipe(14, b"ask on", b"ask no"),
-                },
-            ),
-            "appearance": Artifact(
-                self.ui,
-                sha256(self.original["appearance"]),
-                {
-                    "chats-toggle": fixture_recipe(9, b"disabled", b"enabled"),
-                },
-            ),
-        }
-        combinations = [
-            (),
-            ("chats",),
-            ("ask-aside",),
-            ("chats-toggle",),
-            ("ask-aside", "chats"),
-            ("ask-aside", "chats-toggle"),
-        ]
-        states = {
-            state: {name: sha256(render(self.original[name], file, state)) for name, file in self.files.items()}
-            for state in combinations
-        }
-        self.build = Installation(
-            "test",
-            self.files,
-            states,
-            (("chats", "chats-toggle"),),
-            ("chats", "ask-aside", "chats-toggle"),
-        )
-        self.backups = self.root / "backups"
-        self.stopped = patch("aside_patcher.installation.require_app_stopped")
-        self.stopped.start()
-        self.addCleanup(self.stopped.stop)
-        self.backup_mock = patch("aside_patcher.installation.backup_directory", return_value=self.backups)
-        self.backup_mock.start()
-        self.addCleanup(self.backup_mock.stop)
-        self.addCleanup(self.make_backups_writable)
-
-    def _transaction_changes(self) -> dict[Path, tuple[bytes, bytes]]:
-        return {
-            self.dll: (self.original["dll"], b"new DLL"),
-            self.ui: (self.original["appearance"], b"new UI"),
-        }
-
-    def _assert_transaction_unchanged(self) -> None:
-        for name, artifact in self.files.items():
-            self.assertEqual(artifact.path.read_bytes(), self.original[name])
-        self.assertFalse(list(self.root.glob(".*")))
-
-    def make_backups_writable(self):
-        if self.backups.exists():
-            for p in self.backups.iterdir():
-                p.chmod(0o644)
+        super().setUp()
+        backup_path = patch("aside_patcher.installation.backup_directory", return_value=self.backups)
+        backup_path.start()
+        self.addCleanup(backup_path.stop)
 
     def test_migrates_hide_to_toggle_preserving_ask(self):
         run_installation(self.build, "apply", ["chats", "ask-aside"])
@@ -145,47 +62,6 @@ class TestInstallation(unittest.TestCase):
         with self.assertRaises(Refusal):
             render(b"xx xx", artifact, ("chats-toggle",))
 
-    def test_original_backup_cannot_be_overwritten(self):
-        f = self.files["dll"]
-        backup = preserve_original(self.original["dll"], f, self.backups)
-        self.assertEqual(preserve_original(self.original["dll"], f, self.backups), backup)
-        backup.chmod(0o644)
-        backup.write_bytes(b"corrupt")
-        with self.assertRaises(Refusal):
-            preserve_original(self.original["dll"], f, self.backups)
-        self.assertEqual(backup.read_bytes(), b"corrupt")
-
-    def test_all_replacements_staged_before_permission_failure(self):
-        changes = self._transaction_changes()
-
-        def fail_ui(path: Path, data: bytes, label: str) -> Path:
-            if path == self.ui:
-                raise PermissionError("denied")
-            return stage_replacement(path, data, label)
-
-        with (
-            patch("aside_patcher.installation.stage_replacement", side_effect=fail_ui),
-            self.assertRaises(Refusal),
-        ):
-            replace_transaction(changes)
-        self._assert_transaction_unchanged()
-
-    def test_second_replacement_failure_rolls_back_first(self):
-        changes = self._transaction_changes()
-        real_replace = os.replace
-
-        def fail_ui(src: Path, dst: Path) -> None:
-            if dst == self.ui and str(src).endswith(".new"):
-                raise PermissionError("denied")
-            real_replace(src, dst)
-
-        with (
-            patch("aside_patcher.installation.os.replace", side_effect=fail_ui),
-            self.assertRaises(Refusal),
-        ):
-            replace_transaction(changes)
-        self._assert_transaction_unchanged()
-
     def test_running_aside_refuses_before_reading_files(self):
         with patch(
             "aside_patcher.installation.require_app_stopped",
@@ -201,15 +77,6 @@ class TestInstallation(unittest.TestCase):
     def test_unknown_target_refuses(self):
         with self.assertRaises(Refusal):
             run_installation(self.build, "apply", ["unknown"])
-
-    def test_changed_file_during_staging_refuses(self):
-        changes = {self.dll: (self.original["dll"], b"new DLL")}
-        with (
-            patch("aside_patcher.installation.file_sha256", return_value="different"),
-            self.assertRaises(Refusal),
-        ):
-            replace_transaction(changes)
-        self.assertEqual(self.dll.read_bytes(), self.original["dll"])
 
     def test_overlapping_signature_matches_refuse(self):
         artifact = Artifact(
@@ -236,39 +103,6 @@ class TestInstallation(unittest.TestCase):
         with self.assertRaisesRegex(Refusal, "component version"):
             run_installation(build, "apply", ["chats-toggle"])
         self.assertFalse(self.backups.exists())
-
-    def test_failed_backup_write_does_not_leave_corrupt_backup(self):
-        with (
-            patch(
-                "aside_patcher.installation.os.fsync",
-                side_effect=OSError("flush failed"),
-            ),
-            self.assertRaises(Refusal),
-        ):
-            preserve_original(self.original["dll"], self.files["dll"], self.backups)
-        self.assertEqual(list(self.backups.iterdir()), [])
-
-    def test_failed_rollback_keeps_recovery_copy(self):
-        changes = self._transaction_changes()
-        real_replace = os.replace
-
-        def fail_replace(src: Path, dst: Path) -> None:
-            if dst == self.ui or str(src).endswith(".rollback"):
-                raise PermissionError("denied")
-            real_replace(src, dst)
-
-        with (
-            patch("aside_patcher.installation.os.replace", side_effect=fail_replace),
-            self.assertRaisesRegex(Refusal, "recovery copy"),
-        ):
-            replace_transaction(changes)
-        recovery = list(self.root.glob(".Aside.dll.*.rollback"))
-        self.assertEqual(len(recovery), 1)
-        self.assertEqual(recovery[0].read_bytes(), self.original["dll"])
-
-    def test_native_builder_refuses_unknown_original(self):
-        with self.assertRaises(Refusal):
-            build_native_toggle(b"unknown DLL")
 
 
 if __name__ == "__main__":
