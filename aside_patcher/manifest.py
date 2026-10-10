@@ -8,7 +8,7 @@ from typing import Any
 
 from .common.exceptions import Refusal
 from .common.models import Artifact, Installation
-from .common.utils import resolve_manifest_path, validate_states
+from .common.utils import parse_previous_states, resolve_manifest_path, validate_states
 from .patch_loader import attach_recipes, patches_for_version
 from .patches import PATCHES
 
@@ -32,7 +32,8 @@ def installation_from_mapping(raw: dict[str, Any]) -> Installation:
     patches = patches_for_version(raw["version"], PATCHES)
     files = attach_recipes(files, patches, states)
     conflicts = tuple((patch.patch_id, other) for patch in patches.values() for other in patch.conflicts)
-    return Installation(raw["version"], files, states, conflicts, tuple(patches), raw.get("component"), patches)
+    previous = parse_previous_states(raw.get("previous_states", []), states)
+    return Installation(raw["version"], files, states, conflicts, raw.get("component"), patches, previous)
 
 
 def load_build(manifest_path: Path) -> Installation:

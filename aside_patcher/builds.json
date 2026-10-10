@@ -25,7 +25,7 @@
             "chats"
           ],
           "sha256": {
-            "dll": "3e3c0630078ec32d19e378f943988fbeebcb35317fefc305c8902a5026f6ebc8",
+            "dll": "9e7f3fc79ca8929d57ee25b4afd30c1afe83c8491d1dd297b654871f71b04b35",
             "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
           }
         },
@@ -35,6 +35,50 @@
           ],
           "sha256": {
             "dll": "3325f6313bb5366fc90ae5f15ff0fc0565a7d0c937c466edaa8ddc11b32377fe",
+            "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
+          }
+        },
+        {
+          "targets": [
+            "chats",
+            "ask-aside"
+          ],
+          "sha256": {
+            "dll": "6a8413bb5f66edefa482807fcbdf3712fb90089d6912aa557ebe72e9ba82b6ae",
+            "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
+          }
+        },
+        {
+          "targets": [
+            "chats-toggle"
+          ],
+          "sha256": {
+            "dll": "601914ed1154e9685c2c67116ec862eb7c8f7dd13d994e0ce920fff94d4231a8",
+            "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
+          }
+        },
+        {
+          "targets": [
+            "chats-toggle",
+            "ask-aside"
+          ],
+          "sha256": {
+            "dll": "c513d8eef500a587a899b34786351aa90c98ab8c0ef782da8d286204323e1e6e",
+            "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
+          }
+        }
+      ],
+      "component": {
+        "directory": "%LOCALAPPDATA%\\Aside\\User Data\\AsideAgentManager",
+        "version": "1.26.1010.2149"
+      },
+      "previous_states": [
+        {
+          "targets": [
+            "chats"
+          ],
+          "sha256": {
+            "dll": "3e3c0630078ec32d19e378f943988fbeebcb35317fefc305c8902a5026f6ebc8",
             "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
           }
         },
@@ -66,12 +110,18 @@
             "dll": "ad226bd3ad42ec9fa6b18602beacaef42d49c2f0ecd587fb8695403f5813a19e",
             "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
           }
+        },
+        {
+          "targets": [
+            "ask-aside",
+            "chats-toggle"
+          ],
+          "sha256": {
+            "dll": "945421f7f5a77756b4a0631d060e188ce4be152ff86ce3de7472f87b5c35ed0f",
+            "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
+          }
         }
-      ],
-      "component": {
-        "directory": "%LOCALAPPDATA%\\Aside\\User Data\\AsideAgentManager",
-        "version": "1.26.1010.2149"
-      }
+      ]
     }
   ]
 }

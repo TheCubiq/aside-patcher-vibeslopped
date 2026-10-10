@@ -63,7 +63,6 @@ class TestInstallationFixture(unittest.TestCase):
             self.files,
             states,
             (("chats", "chats-toggle"),),
-            ("chats", "ask-aside", "chats-toggle"),
         )
         self.backups = self.root / "backups"
         backup_path = patch("aside_patcher.recipes.backup_directory", return_value=self.backups)

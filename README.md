@@ -20,11 +20,12 @@ and independently updated settings bundles must be inspected and added explicitl
 
 - `chats-toggle`: enables the **Chats** checkbox in **Appearance → Customize
   sidebar**, backed by its own persistent profile preference. Starts hidden;
-  changes immediately in all windows. Bookmarks stays independent.
+  changes immediately in all windows. Its divider hides with the section. Bookmarks stays independent.
 - `chats`: permanently hides the complete section, as in the original patch.
 - `ask-aside`: keeps the toolbar button hidden.
 
-`chats-toggle` and `chats` are mutually exclusive. Selecting either replaces
+`chats-toggle` and `chats` are mutually exclusive. Previously verified revisions can be upgraded by enabling the same active targets.
+Selecting either replaces
 the other and preserves the Ask Aside patch. Supplying both in one command is
 refused. The native toggle adds a small read/execute PE section, native registry
 and observer hooks, and chained unwind records. See `docs/RESEARCH.md` for evidence.

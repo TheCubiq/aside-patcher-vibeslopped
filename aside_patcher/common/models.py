@@ -41,9 +41,20 @@ class Installation:
     files: dict[str, Artifact]
     states: dict[tuple[str, ...], dict[str, str]]
     conflicts: tuple[tuple[str, ...], ...]
-    targets: tuple[str, ...]
     component: dict | None = None
     patches: dict[str, PatchDefinition] = field(default_factory=dict)
+    previous_states: tuple[tuple[tuple[str, ...], dict[str, str]], ...] = ()
+
+    @property
+    def targets(self) -> tuple[str, ...]:
+        """Return patch IDs present in the reviewed output combinations.
+
+        Returns
+        -------
+        tuple[str, ...]
+            Available patch IDs in alphabetical order.
+        """
+        return tuple(sorted({target for state in self.states for target in state}))
 
     def identify(self, hashes: dict[str, str]) -> tuple[str, ...]:
         """Identify the unique installation state matching all file hashes.
@@ -58,9 +69,10 @@ class Installation:
         tuple of str
             Targets installed across the matching file state.
         """
-        matches = [state for state, expected in self.states.items() if expected == hashes]
+        accepted = tuple(self.states.items()) + self.previous_states
+        matches = [state for state, expected in accepted if expected == hashes]
         if len(matches) != 1:
-            known = all(any(s[name] == digest for s in self.states.values()) for name, digest in hashes.items())
+            known = all(any(expected[name] == digest for _, expected in accepted) for name, digest in hashes.items())
             label = "inconsistent file combination" if known else "unknown / unsupported file hash"
             raise Refusal(f"Installed files have an {label}; no files were changed.")
         return matches[0]

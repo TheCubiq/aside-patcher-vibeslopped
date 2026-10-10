@@ -136,6 +136,35 @@ def validate_states(files: dict[str, Artifact], states: dict, declared_count: in
         raise Refusal("Every installation state must identify every file.")
 
 
+def parse_previous_states(entries: list[dict], current: dict) -> tuple[tuple[tuple[str, ...], dict[str, str]], ...]:
+    """Accept explicitly verified prior revisions as migration inputs only.
+
+    Parameters
+    ----------
+    entries : list[dict]
+        Prior target combinations and complete file hashes.
+    current : dict
+        Current output states used to validate target and file identities.
+
+    Returns
+    -------
+    tuple
+        Prior input states; rendering always uses the current output allowlist.
+    """
+    previous = []
+    seen = list(current.values())
+    for entry in entries:
+        targets = tuple(sorted(entry["targets"]))
+        hashes = entry["sha256"]
+        if targets not in current or set(hashes) != set(current[targets]):
+            raise Refusal("Prior revision must identify a supported target combination and every file.")
+        if hashes in seen:
+            raise Refusal("Prior revision duplicates an accepted file state.")
+        seen.append(hashes)
+        previous.append((targets, hashes))
+    return tuple(previous)
+
+
 def sha256(data: bytes) -> str:
     """Return the lowercase SHA-256 digest of bytes.
 
@@ -330,5 +359,7 @@ def report_status(build: Installation, hashes: dict[str, str]) -> int:
         print(f"{name}: {artifact.path}\nSHA-256: {hashes[name]}")
     current = build.identify(hashes)
     print("State: " + (", ".join(current) if current else "original"))
+    if hashes != build.states[current]:
+        print("Prior patch revision; enable the active targets to upgrade.")
     print("Available: " + ", ".join(build.targets))
     return 0

@@ -169,3 +169,39 @@
   builder input refusal. Real DLL/settings copies also passed exact vendor
   restoration and migration from the original hide patch to the toggle;
   original backups remained unchanged. Both installed-original backups are read-only.
+
+
+## Chats divider correction — 2026-10-11
+
+- The Chats container is `sidebar + 0x5f0`; its separate sibling divider is
+  `sidebar + 0x600`. The update at RVA `0x36d27f9` passes EBX to the container;
+  RVA `0x36d289f` passes EBX to that divider. BL is not otherwise read in the
+  intervening callback setup and is reloaded from `[rsp + 0x37]` at `0x36d28af`.
+- The toggle's second visibility detour now emits `mov bl, dl` (`88d3`) after
+  restoring registers. DL already contains the original layout condition AND
+  the Chats preference. Both sibling views therefore receive the same flag.
+  The first visibility hook, Bookmarks preference, and Ask Aside hooks are unchanged.
+- The permanent-hide recipe also clears EDX at the divider's verified call site.
+- Trial DLL with Ask Aside hidden: SHA-256
+  `c513d8eef500a587a899b34786351aa90c98ab8c0ef782da8d286204323e1e6e`.
+  The trial used the existing isolated profile and executable outside Git.
+  Visible captures showed one separator with Bookmarks enabled / Chats hidden,
+  and none with both hidden. The user independently toggled both controls and
+  confirmed correct behavior. Captures live in `aside-analysis/separator-*.png`.
+- An installed prior revision with SHA-256
+  `945421f7f5a77756b4a0631d060e188ce4be152ff86ce3de7472f87b5c35ed0f`
+  contained an additional divider detour at RVA `0x36b70b4`. Its complete binary
+  was reconstructed byte for byte from the vendor original and its observed
+  instructions before admitting it as an exact migration input. Its pre-operation
+  copy is read-only in `aside-analysis/pre-separator-install/Aside.dll`.
+- Previous verified output hashes are input-only revision states. Rendering and
+  installation always require the latest output hashes, including when target IDs
+  have not changed. Original immutable backups continue to supply vendor bytes.
+
+- Installation completed through the shared transactional installer after Aside
+  closed normally. The installed DLL matches the tested `c513d8ee...` trial hash;
+  the settings asset remains `3c23f4f6...`. The installed prior revision was also
+  tested on copies: enabling the same target IDs upgraded it, and restore returned
+  both files byte for byte to vendor originals. All 36 unit tests passed, and
+  formatting, Pylint, Flake8, NumPy docstring checks, and Mollify passed with no findings.
+- After reopening the installed browser, the user confirmed that the separators look correct.

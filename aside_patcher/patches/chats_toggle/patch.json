@@ -10,7 +10,7 @@
   "files": {
     "dll": {
       "original_sha256": "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510",
-      "patched_sha256": "90b3d36e0faaf6258dcdf2b5fcbbec138d27678809decc2371c6f6f6defe4728"
+      "patched_sha256": "601914ed1154e9685c2c67116ec862eb7c8f7dd13d994e0ce920fff94d4231a8"
     },
     "appearance": {
       "sites": [

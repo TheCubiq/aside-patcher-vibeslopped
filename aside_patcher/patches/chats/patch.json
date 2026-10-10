@@ -19,10 +19,15 @@
           "offset": 57482735,
           "before": "488b01488b809000000089daff159fc2240e488b8ef0050000",
           "after": "488b01488b809000000031d2ff159fc2240e488b8ef0050000"
+        },
+        {
+          "offset": 57482901,
+          "before": "488b01488b809000000089daff15f9c1240e",
+          "after": "488b01488b809000000031d2ff15f9c1240e"
         }
       ],
       "original_sha256": "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510",
-      "patched_sha256": "3e3c0630078ec32d19e378f943988fbeebcb35317fefc305c8902a5026f6ebc8"
+      "patched_sha256": "9e7f3fc79ca8929d57ee25b4afd30c1afe83c8491d1dd297b654871f71b04b35"
     }
   }
 }

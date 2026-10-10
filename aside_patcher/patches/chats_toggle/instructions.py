@@ -127,6 +127,8 @@ def emit_visibility(payload: Payload) -> None:
         if name == "visible1":
             code.emit("488b8ef0050000")
         else:
-            code.emit("488b01 488b8090000000")
+            # The next sibling divider reads BL; keep it equal to the section's effective visibility.
+            # BL is reloaded from the original layout state immediately after that divider update.
+            code.emit("88d3 488b01 488b8090000000")
         code.rel("e9", return_rva)
         payload.append(code)

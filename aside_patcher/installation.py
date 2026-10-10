@@ -34,7 +34,7 @@ def run_installation(build: Installation, command: str, targets: list[str] | Non
         return report_status(build, hashes)
     current = build.identify(hashes)
     desired = requested_state(build, current, command, targets or [])
-    if desired == current:
+    if desired == current and hashes == build.states[desired]:
         print("Requested state is already installed.")
         return 0
     changes = prepare_changes(build, hashes, desired)
