@@ -1,3 +1,6 @@
+# Test names describe their assertions; unittest discovers them dynamically.
+# pylint: disable=missing-module-docstring,missing-class-docstring
+# pylint: disable=missing-function-docstring
 # Test fixtures live until addCleanup runs after each test.
 # pylint: disable=too-many-instance-attributes,consider-using-with
 import os
@@ -10,6 +13,7 @@ from unittest.mock import patch
 from aside_patcher.core import Refusal, sha256
 from aside_patcher.installation import (
     Artifact,
+    stage_replacement,
     Installation,
     preserve_original,
     render,
@@ -17,8 +21,14 @@ from aside_patcher.installation import (
     run_installation,
 )
 
+from aside_patcher.native_toggle import build_native_toggle
 
-class InstallationTests(unittest.TestCase):
+
+def fixture_recipe(offset: int, before: bytes, after: bytes) -> dict:
+    return {"sites": [{"offset": offset, "before": before.hex(), "after": after.hex()}]}
+
+
+class TestInstallation(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
@@ -36,48 +46,16 @@ class InstallationTests(unittest.TestCase):
                 self.dll,
                 sha256(self.original["dll"]),
                 {
-                    "chats": {
-                        "sites": [
-                            {
-                                "offset": 4,
-                                "before": b"chats off".hex(),
-                                "after": b"chats hid".hex(),
-                            }
-                        ]
-                    },
-                    "chats-toggle": {
-                        "sites": [
-                            {
-                                "offset": 4,
-                                "before": b"chats off".hex(),
-                                "after": b"chats toggle".hex(),
-                            }
-                        ]
-                    },
-                    "ask-aside": {
-                        "sites": [
-                            {
-                                "offset": 14,
-                                "before": b"ask on".hex(),
-                                "after": b"ask no".hex(),
-                            }
-                        ]
-                    },
+                    "chats": fixture_recipe(4, b"chats off", b"chats hid"),
+                    "chats-toggle": fixture_recipe(4, b"chats off", b"chats toggle"),
+                    "ask-aside": fixture_recipe(14, b"ask on", b"ask no"),
                 },
             ),
             "appearance": Artifact(
                 self.ui,
                 sha256(self.original["appearance"]),
                 {
-                    "chats-toggle": {
-                        "sites": [
-                            {
-                                "offset": 9,
-                                "before": b"disabled".hex(),
-                                "after": b"enabled".hex(),
-                            }
-                        ]
-                    }
+                    "chats-toggle": fixture_recipe(9, b"disabled", b"enabled"),
                 },
             ),
         }
@@ -90,10 +68,7 @@ class InstallationTests(unittest.TestCase):
             ("ask-aside", "chats-toggle"),
         ]
         states = {
-            state: {
-                name: sha256(render(self.original[name], file, state))
-                for name, file in self.files.items()
-            }
+            state: {name: sha256(render(self.original[name], file, state)) for name, file in self.files.items()}
             for state in combinations
         }
         self.build = Installation(
@@ -107,12 +82,21 @@ class InstallationTests(unittest.TestCase):
         self.stopped = patch("aside_patcher.installation.require_app_stopped")
         self.stopped.start()
         self.addCleanup(self.stopped.stop)
-        self.backup_mock = patch(
-            "aside_patcher.installation.backup_directory", return_value=self.backups
-        )
+        self.backup_mock = patch("aside_patcher.installation.backup_directory", return_value=self.backups)
         self.backup_mock.start()
         self.addCleanup(self.backup_mock.stop)
         self.addCleanup(self.make_backups_writable)
+
+    def _transaction_changes(self) -> dict[Path, tuple[bytes, bytes]]:
+        return {
+            self.dll: (self.original["dll"], b"new DLL"),
+            self.ui: (self.original["appearance"], b"new UI"),
+        }
+
+    def _assert_transaction_unchanged(self) -> None:
+        for name, artifact in self.files.items():
+            self.assertEqual(artifact.path.read_bytes(), self.original[name])
+        self.assertFalse(list(self.root.glob(".*")))
 
     def make_backups_writable(self):
         if self.backups.exists():
@@ -148,11 +132,7 @@ class InstallationTests(unittest.TestCase):
         self.assertFalse(self.backups.exists())
 
     def test_known_but_inconsistent_combination_refuses(self):
-        self.ui.write_bytes(
-            render(
-                self.original["appearance"], self.files["appearance"], ("chats-toggle",)
-            )
-        )
+        self.ui.write_bytes(render(self.original["appearance"], self.files["appearance"], ("chats-toggle",)))
         with self.assertRaisesRegex(Refusal, "inconsistent"):
             run_installation(self.build, "status")
 
@@ -160,11 +140,7 @@ class InstallationTests(unittest.TestCase):
         artifact = Artifact(
             self.ui,
             sha256(b"xx xx"),
-            {
-                "chats-toggle": {
-                    "sites": [{"offset": 0, "before": "7878", "after": "7979"}]
-                }
-            },
+            {"chats-toggle": {"sites": [{"offset": 0, "before": "7878", "after": "7979"}]}},
         )
         with self.assertRaises(Refusal):
             render(b"xx xx", artifact, ("chats-toggle",))
@@ -172,9 +148,7 @@ class InstallationTests(unittest.TestCase):
     def test_original_backup_cannot_be_overwritten(self):
         f = self.files["dll"]
         backup = preserve_original(self.original["dll"], f, self.backups)
-        self.assertEqual(
-            preserve_original(self.original["dll"], f, self.backups), backup
-        )
+        self.assertEqual(preserve_original(self.original["dll"], f, self.backups), backup)
         backup.chmod(0o644)
         backup.write_bytes(b"corrupt")
         with self.assertRaises(Refusal):
@@ -182,34 +156,25 @@ class InstallationTests(unittest.TestCase):
         self.assertEqual(backup.read_bytes(), b"corrupt")
 
     def test_all_replacements_staged_before_permission_failure(self):
-        changes = {
-            self.dll: (self.original["dll"], b"new DLL"),
-            self.ui: (self.original["appearance"], b"new UI"),
-        }
-        from aside_patcher.installation import _stage
+        changes = self._transaction_changes()
 
-        def fail_ui(path, data, label):
+        def fail_ui(path: Path, data: bytes, label: str) -> Path:
             if path == self.ui:
                 raise PermissionError("denied")
-            return _stage(path, data, label)
+            return stage_replacement(path, data, label)
 
         with (
-            patch("aside_patcher.installation._stage", side_effect=fail_ui),
+            patch("aside_patcher.installation.stage_replacement", side_effect=fail_ui),
             self.assertRaises(Refusal),
         ):
             replace_transaction(changes)
-        self.assertEqual(self.dll.read_bytes(), self.original["dll"])
-        self.assertEqual(self.ui.read_bytes(), self.original["appearance"])
-        self.assertFalse(list(self.root.glob(".*")))
+        self._assert_transaction_unchanged()
 
     def test_second_replacement_failure_rolls_back_first(self):
-        changes = {
-            self.dll: (self.original["dll"], b"new DLL"),
-            self.ui: (self.original["appearance"], b"new UI"),
-        }
+        changes = self._transaction_changes()
         real_replace = os.replace
 
-        def fail_ui(src, dst):
+        def fail_ui(src: Path, dst: Path) -> None:
             if dst == self.ui and str(src).endswith(".new"):
                 raise PermissionError("denied")
             real_replace(src, dst)
@@ -219,9 +184,7 @@ class InstallationTests(unittest.TestCase):
             self.assertRaises(Refusal),
         ):
             replace_transaction(changes)
-        self.assertEqual(self.dll.read_bytes(), self.original["dll"])
-        self.assertEqual(self.ui.read_bytes(), self.original["appearance"])
-        self.assertFalse(list(self.root.glob(".*")))
+        self._assert_transaction_unchanged()
 
     def test_running_aside_refuses_before_reading_files(self):
         with patch(
@@ -252,13 +215,7 @@ class InstallationTests(unittest.TestCase):
         artifact = Artifact(
             self.ui,
             sha256(b"aaaa"),
-            {
-                "chats-toggle": {
-                    "sites": [
-                        {"offset": 0, "before": b"aaa".hex(), "after": b"bbb".hex()}
-                    ]
-                }
-            },
+            {"chats-toggle": {"sites": [{"offset": 0, "before": b"aaa".hex(), "after": b"bbb".hex()}]}},
         )
         with self.assertRaises(Refusal):
             render(b"aaaa", artifact, ("chats-toggle",))
@@ -267,9 +224,7 @@ class InstallationTests(unittest.TestCase):
         states = dict(self.build.states)
         states[("chats-toggle",)] = {"dll": "incorrect", "appearance": "incorrect"}
         with self.assertRaises(Refusal):
-            run_installation(
-                replace(self.build, states=states), "apply", ["chats-toggle"]
-            )
+            run_installation(replace(self.build, states=states), "apply", ["chats-toggle"])
         self.assertEqual(self.dll.read_bytes(), self.original["dll"])
         self.assertEqual(self.ui.read_bytes(), self.original["appearance"])
 
@@ -277,9 +232,7 @@ class InstallationTests(unittest.TestCase):
         component = self.root / "components"
         (component / "1.0").mkdir(parents=True)
         (component / "2.0").mkdir()
-        build = replace(
-            self.build, component={"directory": str(component), "version": "1.0"}
-        )
+        build = replace(self.build, component={"directory": str(component), "version": "1.0"})
         with self.assertRaisesRegex(Refusal, "component version"):
             run_installation(build, "apply", ["chats-toggle"])
         self.assertFalse(self.backups.exists())
@@ -296,13 +249,10 @@ class InstallationTests(unittest.TestCase):
         self.assertEqual(list(self.backups.iterdir()), [])
 
     def test_failed_rollback_keeps_recovery_copy(self):
-        changes = {
-            self.dll: (self.original["dll"], b"new DLL"),
-            self.ui: (self.original["appearance"], b"new UI"),
-        }
+        changes = self._transaction_changes()
         real_replace = os.replace
 
-        def fail_replace(src, dst):
+        def fail_replace(src: Path, dst: Path) -> None:
             if dst == self.ui or str(src).endswith(".rollback"):
                 raise PermissionError("denied")
             real_replace(src, dst)
@@ -317,8 +267,6 @@ class InstallationTests(unittest.TestCase):
         self.assertEqual(recovery[0].read_bytes(), self.original["dll"])
 
     def test_native_builder_refuses_unknown_original(self):
-        from aside_patcher.native_toggle import build_native_toggle
-
         with self.assertRaises(Refusal):
             build_native_toggle(b"unknown DLL")
 

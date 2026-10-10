@@ -89,7 +89,54 @@ uv run flake8 aside_patcher tests
 uv run pylint aside_patcher tests
 ```
 
-Black handles formatting at 88 columns. Flake8 catches style and unused code;
+Black formats code with a maximum line length of 135 characters; Flake8 and
+Pylint use the same limit. Flake8 catches style and unused code;
 Pylint adds code-quality checks. Keep code readable, with narrow exceptions for
 native patch recipes and test fixtures rather than splitting safety checks just
 to satisfy complexity limits.
+
+## Documentation and audit
+
+Use NumPy-style docstrings for patcher functions and classes, including
+`Parameters` and `Returns` where relevant. Keep summaries concrete and document
+safety constraints. Type hints belong in Python signatures too.
+
+Flake8 enforces the NumPy convention through `flake8-docstrings`. Numpydoc checks
+parameter coverage, section structure, types, descriptions, and return sections
+without importing or executing the patcher. Test names describe assertions;
+test functions are exempt from docstring requirements.
+
+Run every quality check with:
+
+```powershell
+.\scripts\check.ps1
+```
+
+Or inspect the full codebase audit directly:
+
+```powershell
+uv run mollify audit
+```
+
+Mollify is a locked development dependency. Every audit category fails the
+quality gate on findings, including complexity and duplication. No audit rules
+are suppressed. Keep refactors readable and preserve the verified native output.
+
+The check script runs formatting, lint, and documentation checks, then Mollify.
+It does not run unit tests or modify the installed Aside files.
+
+## Code structure
+
+- `manifest.py` parses supported builds without making the patching modules
+  depend on each other.
+- `core.py` contains shared hashing and file safety utilities.
+- `legacy.py` contains the supported single-file patch path.
+- `processes.py` checks whether Aside is running before file modification.
+- `installation.py` separates state selection, rendering, staging, and rollback.
+- `native_toggle.py` assembles the verified recipe in named phases: preference
+  registration, refresh observer, bridge hooks, visibility, schema, unwind
+  records, and final PE section installation.
+
+The native instruction listings remain version-specific. Refactoring them must
+preserve the allowlisted output byte for byte. Unit tests use conventional
+`Test*` class names for both unittest discovery and static audit reachability.

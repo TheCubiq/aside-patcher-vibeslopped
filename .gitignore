@@ -13,3 +13,5 @@ __pycache__/
 ghidra-projects/
 backups/
 analysis/
+
+.mollify/

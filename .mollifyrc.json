@@ -1,0 +1,18 @@
+{
+  "_comment": "All audit findings fail the quality gate. No warning suppressions or raised analysis thresholds.",
+  "severity": {
+    "dead-code": "error",
+    "dependency-hygiene": "error",
+    "circular-dependency": "error",
+    "complexity": "error",
+    "architecture": "error",
+    "duplication": "error",
+    "type-health": "error",
+    "security": "error"
+  },
+  "exclude_dirs": [
+    "analysis",
+    "backups",
+    "ghidra-projects"
+  ]
+}

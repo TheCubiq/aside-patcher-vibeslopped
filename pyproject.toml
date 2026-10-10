@@ -19,19 +19,25 @@ dev = [
 package = false
 
 [tool.black]
-line-length = 88
+line-length = 135
 target-version = ["py310"]
 
 [tool.pylint.main]
 py-version = "3.10"
 
 [tool.pylint.format]
-max-line-length = 88
+max-line-length = 135
 
 [tool.pylint.messages_control]
-disable = ["missing-module-docstring", "missing-class-docstring", "missing-function-docstring", "too-few-public-methods", "import-outside-toplevel", "cyclic-import"]
+disable = ["too-few-public-methods"]
 
 # Keep validation and rollback flows together instead of splitting for metrics.
 [tool.pylint.design]
 max-locals = 20
 max-branches = 15
+
+# Require useful, correctly structured API documentation without mandatory
+# examples or duplicate prose for every small utility.
+[tool.numpydoc_validation]
+checks = ["GL01", "GL02", "GL03", "GL05", "GL06", "GL07", "GL08", "GL09", "GL10", "SS01", "SS02", "SS03", "SS04", "SS05", "SS06", "PR01", "PR02", "PR03", "PR04", "PR05", "PR06", "PR07", "RT01", "RT02", "RT03", "RT04", "RT05"]
+exclude = ['\.__init__$']
