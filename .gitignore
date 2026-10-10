@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# Reverse-engineering artifacts and Aside binaries must stay outside this repo.
+*.dll
+*.exe
+*.asar
+*.gpr
+*.rep/
+ghidra-projects/
+backups/
+analysis/
