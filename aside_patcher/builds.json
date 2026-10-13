@@ -124,7 +124,7 @@
             "chats-toggle"
           ],
           "sha256": {
-            "dll": "3fc199c6461e8adb2a7034988ca2455e5047dc1859dd9808a2ae1c965cab655c",
+            "dll": "5fd2bf83e26970fd11125d55c900da1a17bf2bd570fb8606ec1515763f6cbb11",
             "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
           }
         }
@@ -424,6 +424,17 @@
           ],
           "sha256": {
             "dll": "5a9161adc00becaab1602c2cbaac8bd795e13d7b04f5f83e5b2593fc9c157703",
+            "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
+          }
+        },
+        {
+          "targets": [
+            "ask-aside",
+            "bookmark-folder-appearance",
+            "chats-toggle"
+          ],
+          "sha256": {
+            "dll": "3fc199c6461e8adb2a7034988ca2455e5047dc1859dd9808a2ae1c965cab655c",
             "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
           }
         }

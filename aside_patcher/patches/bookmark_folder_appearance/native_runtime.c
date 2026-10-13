@@ -138,6 +138,31 @@ void BfaFolderAnimationProgress(void *native_owner) {
     if(owner && owner->blocks_pending && owner->rows_view)BfaSchedulePaint(owner->rows_view);
 }
 
+void BfaRowAnimationProgress(void *animator) {
+    for(BfaOwner *owner=owners;owner;owner=owner->next)
+        if(*(void **)((unsigned char *)owner->native_owner+0x550)==animator && owner->rows_view)
+            BfaSchedulePaint(owner->rows_view);
+}
+
+NATIVE_CALLS static int animated_row_y(BfaOwner *owner,void *row,int fallback) {
+    unsigned char *animator=*(unsigned char **)((unsigned char *)owner->native_owner+0x550);
+    if(!animator)return fallback;
+    unsigned char *entry=*(unsigned char **)(animator+0xb8);
+    while(entry && entry!=animator+0xb8){
+        uintptr_t key=*(uintptr_t *)(entry+0x20);
+        if(key==(uintptr_t)row){
+            void *animation=*(void **)(entry+0x48);
+            if(!animation)return fallback;
+            int rect[4];
+            /* Same per-row animation and rectangle interpolation as RVA 0xAB05A80. */
+            ((void (*)(void*,void*,void*,void*))BfaNativeAddress(0xad8c400))(animation,rect,entry+0x28,entry+0x38);
+            return rect[1];
+        }
+        entry=*(unsigned char **)(entry+((uintptr_t)row>key?8:0));
+    }
+    return fallback;
+}
+
 NATIVE_CALLS static void *replace_highlight(unsigned char *row,void *value) {
  unsigned char *key=BfaNativeAddress(0x10a35d50);
  return ((void *(*)(void*,void*,void*,void*,void*,void*))BfaNativeAddress(0x48dd6b0))(
@@ -473,7 +498,7 @@ int BfaSetOwnerAppearance(BfaOwner *owner, int64_t identifier,
 }
 
 /* Layout stays native. Paint one rounded block over each visible subtree. */
-void BfaPaintFolderBlocks(BfaOwner *owner, void *canvas, void *view, void *background) {
+NATIVE_CALLS void BfaPaintFolderBlocks(BfaOwner *owner, void *canvas, void *view, void *background) {
     unsigned char *container = view;
     void **children = *(void ***)(container + 0x1a0);
     size_t count = *(size_t *)(container + 0x1a8);
@@ -545,6 +570,7 @@ void BfaPaintFolderBlocks(BfaOwner *owner, void *canvas, void *view, void *backg
                 height=record->block_from_height+(int)((record->block_target_height-record->block_from_height)*progress);
                 if(height>*(int *)(row+0x1d4))expanded=1;
             }
+            y=animated_row_y(owner,row,y);
             record->block_height=height;record->block_valid=1;
             BfaPaintFolderBlock(background, canvas, view, x, y, width, height,
                                 appearance.color, expanded, row[0x453] || row[0x450]);

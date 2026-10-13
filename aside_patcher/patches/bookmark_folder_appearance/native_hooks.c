@@ -25,6 +25,12 @@ extern void BfaBeginFolderTransition(void *,void *);
 extern void BfaOriginalFolderToggle(void *,void *,void *);
 extern void BfaOriginalAnimationProgress(void *);
 extern void BfaFolderAnimationProgress(void *);
+extern void BfaOriginalRowAnimationProgress(void *,void *);
+extern void BfaRowAnimationProgress(void *);
+void BfaRowAnimationProgressHook(void *animator,void *animation) {
+ BfaOriginalRowAnimationProgress(animator,animation);
+ BfaRowAnimationProgress(animator);
+}
 void BfaFolderToggleHook(void *owner,void *node,void *event) {
  BfaBeginFolderTransition(owner,node);
  BfaOriginalFolderToggle(owner,node,event);

@@ -40,7 +40,10 @@ accumulate internal padding; reset/collapse recalculate it before native layout
 calculates animation targets. Empty folders keep the same standard row height.
 Folder backgrounds follow the existing eased native height animation, while native
 row animation continues to position their contents. Rapid toggles restart from the
-last painted block height. Visibility follows the native expanded-folder IDs and
+last painted block height. Background positions use each row's native BoundsAnimator
+record and rectangle interpolation; row-animation ticks repaint the container so
+sibling backgrounds move with their labels instead of waiting for bounds to commit.
+Visibility follows the native expanded-folder IDs and
 the current active bookmark path. Inactive descendants are hidden through native
 View::SetVisible; their native row objects and loaded-tab metadata remain alive.
 Native retained-child caches and bookmark/tab API behavior are preserved. Folder
@@ -55,9 +58,9 @@ row border pass reproduces the native half-pixel outline with nested bounds.
 Hidden dragged rows are excluded from subtree backgrounds; row geometry/state
 changes repaint the container, and dragged headers paint their own folder color.
 
-Fourteen verified hooks cover owner construction/destruction, row icon updates/destruction,
+Fifteen verified hooks cover owner construction/destruction, row icon updates/destruction,
 folder menus/toggling, model removal, background/border/mask painting, immediate layout,
-and native animation progress.
+and native container/row animation progress.
 The embedded payload separates executable code and writable storage, with relocations,
 unwind records, and CFG callback targets. It builds from immutable verified originals
 and uses existing transactional backups/rollback. The Chats builder runs first;
