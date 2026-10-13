@@ -54,15 +54,6 @@ NATIVE_CALLS int BfaPaintInsetRow(void *raw_row,void *canvas,int inset) {
  }
  return 1;
 }
-int BfaPaintDraggedFolderBlock(void *row,void *canvas,void *container,int color) {
- if(!BfaHasFolderBackground(container))return 0;
- FolderBackground *background=*(FolderBackground **)((unsigned char *)container+0x228);
- unsigned char *view=row;int depth=*(int *)(view+0x3f8),inset=depth>0?depth*14:0;
- int width=*(int *)(view+0x1d0)-inset-(depth>0?6:0);
- int height=*(int *)(view+0x1d4);if(width<=0 || height<=0)return 0;
- BfaPaintFolderBlock(background->rounded,canvas,row,inset,0,width,height,color,view[0x455],0);
- return 1;
-}
 NATIVE_CALLS static void paint_inset_outline(void *raw_row,void *canvas,int inset,int selected) {
  unsigned char *row=raw_row;
  void *widget=*(void **)(row+0x190);if(!widget)return;

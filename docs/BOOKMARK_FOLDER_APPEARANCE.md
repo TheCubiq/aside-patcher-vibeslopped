@@ -38,6 +38,8 @@ gaps. Expanded colored folders reserve 4 pixels inside their last visible descen
 and 4 pixels outside the block through native margins. Shared nested endings
 accumulate internal padding; reset/collapse recalculate it before native layout
 calculates animation targets. Empty folders keep the same standard row height.
+Native rebuilds can clear an owned margin value in place; footer updates check the
+actual bottom margin rather than trusting the cached padding amount.
 Folder backgrounds follow the existing eased native height animation, while native
 row animation continues to position their contents. Rapid toggles restart from the
 last painted block height. Background positions use each row's native BoundsAnimator
@@ -55,8 +57,10 @@ customization no longer applies. Colored folder headers omit the tab hover fill.
 The bookmark container also paints selected-row outlines independently at native
 RVA 0x3893610. Its full-width pass is suppressed for decorated nested rows; their
 row border pass reproduces the native half-pixel outline with nested bounds.
-Hidden dragged rows are excluded from subtree backgrounds; row geometry/state
-changes repaint the container, and dragged headers paint their own folder color.
+Dragged subtree backgrounds use the native per-row drag offsets at +0x45C/+0x460.
+They paint in the shared container so the header layer's 32-pixel clip does not cut
+off the folder fill. Native drag-state updates already repaint that container;
+canceling a drag restores ordinary subtree geometry and spacing.
 
 Fifteen verified hooks cover owner construction/destruction, row icon updates/destruction,
 folder menus/toggling, model removal, background/border/mask painting, immediate layout,

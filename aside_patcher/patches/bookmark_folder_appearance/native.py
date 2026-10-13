@@ -12,7 +12,7 @@ from ...pe import append_section, file_offset, parse_layout, relative_jump
 
 ORIGINAL_SHA256 = "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510"
 TOGGLE_SHA256 = "601914ed1154e9685c2c67116ec862eb7c8f7dd13d994e0ce920fff94d4231a8"
-MANIFEST_SHA256 = "d0a74489213a926227b3391dd84ea810e42e8508126a8bbb13eb388b7e1ad5a5"
+MANIFEST_SHA256 = "e8e7b3c4482606ccf749a3a510498395e8dd84da070cf6b9e54e438de749e490"
 TRAMPOLINE_SIZE = 512
 # name, entry RVA, verified overwrite bytes, copied register pushes, stack allocation
 HOOKS = (

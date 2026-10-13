@@ -2,7 +2,6 @@
 #include "native_ui.h"
 #include "native_background.h"
 #define NATIVE_CALLS __declspec(guard(nocf))
-extern int BfaPaintDraggedFolderBlock(void*,void*,void*,int);
 
 typedef struct BfaRow BfaRow;
 struct BfaRow {
@@ -49,7 +48,8 @@ static int dragging_ancestor(BfaOwner *owner,unsigned char *node) {
  for(;node;node=*(unsigned char **)(node+0x38)){
   for(BfaRow *record=owner->rows;record;record=record->next){
    unsigned char *row=record->rendering.row;
-   if(*(void **)(row+0x3f0)==node && row[0x458])return 1;
+   if(*(void **)(row+0x3f0)==node &&
+      (row[0x458] || (record->suppressed_outline && record->saved_dragged)))return 1;
   }
  }
  return 0;
@@ -144,6 +144,15 @@ void BfaRowAnimationProgress(void *animator) {
             BfaSchedulePaint(owner->rows_view);
 }
 
+static void drag_row_offset(void *raw_row,int *x,int *y) {
+    unsigned char *row=raw_row;
+    /* RVA 0x3888170 stores the translation and invalidates the parent itself. */
+    if(row[0x457]){
+        *x+=*(int *)(row+0x45c);
+        *y+=*(int *)(row+0x460);
+    }
+}
+
 NATIVE_CALLS static int animated_row_y(BfaOwner *owner,void *row,int fallback) {
     unsigned char *animator=*(unsigned char **)((unsigned char *)owner->native_owner+0x550);
     if(!animator)return fallback;
@@ -195,7 +204,9 @@ NATIVE_CALLS static void refresh_highlight(BfaRow *record,int inset) {
 NATIVE_CALLS static void set_row_padding(BfaRow *record) {
     unsigned char *row=record->rendering.row;
     int *current=row_margins(row),wanted=record->requested_padding;
-    if(record->padding && current!=record->owned_margins)record->padding=0;
+    /* Native rebuilds can clear the owned margins in place. */
+    if(record->padding && (current!=record->owned_margins ||
+       !current || current[2]!=record->base_margins[2]+record->padding))record->padding=0;
     if(!record->padding){
         record->base_has_margins=current!=0;
         for(int i=0;i<4;i++)record->base_margins[i]=current?current[i]:0;
@@ -250,7 +261,7 @@ static void apply_folder_spacing(BfaOwner *owner,void *raw_view) {
         unsigned char *row=children[i];BfaRow *record=find_row(owner,row);
         if(!row || !record || !row[0x1d8])continue;
         unsigned char *node=*(unsigned char **)(row+0x3f0);
-        if(!node || *(int *)(node+0xf8)==0 || dragging_ancestor(owner,node))continue;
+        if(!node || *(int *)(node+0xf8)==0)continue;
         BfaStringView guid=BfaStringBytes((BfaString *)(node+0x68));
         if(!BfaValidGuid(guid.data,guid.size))continue;
         BfaAppearance appearance;BfaReadAppearance(owner->prefs,guid.data,&appearance);
@@ -314,13 +325,15 @@ void BfaRowStatePainted(void *raw_row) {
 }
 
 int BfaPaintDraggingFolder(void *raw_row,void *canvas) {
+ (void)canvas;
  unsigned char *row=raw_row,*node=*(unsigned char **)(row+0x3f0);
  if(!node || *(int *)(node+0xf8)==0)return 0;
  BfaOwner *owner=find_owner(*(void **)(row+0x3e0));if(!owner || !owner->prefs || !owner->rows_view)return 0;
  BfaStringView guid=BfaStringBytes((BfaString *)(node+0x68));if(!BfaValidGuid(guid.data,guid.size))return 0;
  BfaAppearance appearance;BfaReadAppearance(owner->prefs,guid.data,&appearance);
  if(!BfaValidColor(appearance.color))return 0;
- return BfaPaintDraggedFolderBlock(row,canvas,owner->rows_view,appearance.color);
+ /* The shared container paints the complete block, outside the row layer's clip. */
+ return 1;
 }
 
 void BfaRefreshRowMask(void *raw_row,int force) {
@@ -510,7 +523,7 @@ NATIVE_CALLS void BfaPaintFolderBlocks(BfaOwner *owner, void *canvas, void *view
         if (!record) continue;
         unsigned char *node = *(unsigned char **)(row + 0x3f0);
         if (!node || *(int *)(node + 0xf8) == 0) continue;
-        if(dragging_ancestor(owner,node))continue;
+        int dragging=dragging_ancestor(owner,node);
         BfaStringView guid = BfaStringBytes((BfaString *)(node + 0x68));
         if (!BfaValidGuid(guid.data, guid.size)) continue;
         BfaAppearance appearance;
@@ -562,7 +575,7 @@ NATIVE_CALLS void BfaPaintFolderBlocks(BfaOwner *owner, void *canvas, void *view
                 record->block_target_valid=1;continue;
             }
             unsigned char *native_owner=owner->native_owner;
-            if(owner->blocks_pending && owner->blocks_captured && native_owner &&
+            if(!dragging && owner->blocks_pending && owner->blocks_captured && native_owner &&
                native_owner[0x568] && record->block_valid && record->block_target_valid){
                 /* Native height animation uses this same eased value at RVA 0x3886500. */
                 double progress=*(double *)(native_owner+0x5c8);
@@ -570,7 +583,8 @@ NATIVE_CALLS void BfaPaintFolderBlocks(BfaOwner *owner, void *canvas, void *view
                 height=record->block_from_height+(int)((record->block_target_height-record->block_from_height)*progress);
                 if(height>*(int *)(row+0x1d4))expanded=1;
             }
-            y=animated_row_y(owner,row,y);
+            if(dragging)drag_row_offset(row,&x,&y);
+            else y=animated_row_y(owner,row,y);
             record->block_height=height;record->block_valid=1;
             BfaPaintFolderBlock(background, canvas, view, x, y, width, height,
                                 appearance.color, expanded, row[0x453] || row[0x450]);
