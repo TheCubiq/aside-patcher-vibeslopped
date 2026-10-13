@@ -67,7 +67,7 @@ NATIVE_CALLS void *BfaActionButton(BfaMenu *menu,const uint16_t *label,int actio
  struct {void *state;uint64_t valid;} callback={state,1};
  unsigned char text[24]={0},image[64]={0};
  /* Icons used by the native group menu, verified at its ImageModel calls. */
- size_t glyph=action==-2?0x10c6aa10:action==101?0x10560a28:action==102?0x10563ab8:action==103?0x1055f920:0x1055f3b8;
+ size_t glyph=action==-2?0x10c6aa10:action==101?0x10560a28:action==102?0x10563ab8:action==103?0x1055f920:action==104?0x10c6a378:0x1055f3b8;
  BfaImageModel(image,BfaNativeAddress(glyph),0xde,16,0);
  /* Native action constructor takes optional<ImageModel>, present byte at +40. */
  image[40]=1;

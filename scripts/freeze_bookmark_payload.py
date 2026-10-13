@@ -18,7 +18,7 @@ BINDINGS = {
     }.items()
 }
 for index, name in enumerate(
-    ("OwnerConstructor", "OwnerDestructor", "RowIcon", "RowDestructor", "FolderMenu", "ModelRemove", "ViewBackground", "RowBackground", "RowBorder")
+    ("OwnerConstructor", "OwnerDestructor", "RowIcon", "RowDestructor", "FolderMenu", "ModelRemove", "ViewBackground", "RowBackground", "RowBorder", "RowMask", "RowsPaint")
 ):
     BINDINGS["BfaOriginal" + name] = ("trampoline", index)
 

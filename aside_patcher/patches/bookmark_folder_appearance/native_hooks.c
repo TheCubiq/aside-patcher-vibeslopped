@@ -11,6 +11,14 @@ extern void BfaOriginalViewBackground(void *,void *);
 extern void BfaOriginalRowBackground(void *,void *);
 extern void BfaOriginalRowBorder(void *,void *);
 extern void BfaPaintInsetOutline(void *,void *,int);
+extern void BfaOriginalRowMask(void *);
+extern int BfaColoredFolder(void *);
+extern void BfaRefreshRowMask(void *,int);
+extern void BfaOriginalRowsPaint(void *,void *);
+extern void BfaSuppressContainerOutline(void *,int);
+extern void BfaPaintInsetSelectedOutline(void *,void *,int);
+extern void BfaRowStatePainted(void *);
+extern int BfaPaintDraggingFolder(void *,void *);
 void *BfaOwnerConstructorHook(void *owner,void *browser,void *view,void *model) {
  void *result=BfaOriginalOwnerConstructor(owner,browser,view,model);
  BfaOwner *context=BfaRetainOwner(owner);BfaReleaseOwner(context);return result;
@@ -33,6 +41,19 @@ void BfaViewBackgroundHook(void *view,void *canvas) {
 }
 void BfaRowBackgroundHook(void *view,void *canvas) {
  unsigned char *row=view;
+ BfaRowStatePainted(view);
+ if(row[0x458] && *(int *)(row+0x464)==0 && BfaColoredFolder(view)){
+  unsigned char hovered=row[0x453],selected=row[0x450],dragged=row[0x458];
+  row[0x453]=0;row[0x450]=0;row[0x458]=0;BfaOriginalRowBackground(view,canvas);
+  row[0x453]=hovered;row[0x450]=selected;row[0x458]=dragged;
+  if(BfaPaintDraggingFolder(view,canvas))return;
+  BfaOriginalRowBackground(view,canvas);return;
+ }
+ if(BfaColoredFolder(view) && !row[0x458] && *(int *)(row+0x464)==0){
+  unsigned char hovered=row[0x453],selected=row[0x450];
+  row[0x453]=0;row[0x450]=0;BfaOriginalRowBackground(view,canvas);
+  row[0x453]=hovered;row[0x450]=selected;return;
+ }
  /* Insertion indicators retain their native path; folder targets use inset fill. */
  int drop=*(int *)(row+0x464);
  if(drop>1 || (!row[0x450] && !row[0x453] && !row[0x458] && drop!=1)) {
@@ -49,10 +70,26 @@ void BfaRowBackgroundHook(void *view,void *canvas) {
  /* Native paint clears the row's layer first; draw after that clear. */
  if(!BfaPaintInsetRow(view,canvas,inset))BfaOriginalRowBackground(view,canvas);
 }
+void BfaRowMaskHook(void *view) {
+ BfaOriginalRowMask(view);
+ BfaRefreshRowMask(view,1);
+}
+void BfaRowsPaintHook(void *view,void *canvas) {
+ BfaSuppressContainerOutline(view,1);
+ BfaOriginalRowsPaint(view,canvas);
+ BfaSuppressContainerOutline(view,0);
+}
 void BfaRowBorderHook(void *view,void *canvas) {
  unsigned char *row=view;
  int inset=*(int *)(row+0x464)==1?BfaNestedRowInset(view):0;
- if(!inset){BfaOriginalRowBorder(view,canvas);return;}
+ if(!inset){
+  BfaOriginalRowBorder(view,canvas);
+  if(row[0x450] || row[0x458]==1){
+   inset=BfaNestedRowInset(view);
+   if(inset && !BfaColoredFolder(view))BfaPaintInsetSelectedOutline(view,canvas,inset);
+  }
+  return;
+ }
  *(int *)(row+0x464)=0;BfaOriginalRowBorder(view,canvas);*(int *)(row+0x464)=1;
  BfaPaintInsetOutline(view,canvas,inset);
 }

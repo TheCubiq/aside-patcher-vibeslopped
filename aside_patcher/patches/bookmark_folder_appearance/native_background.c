@@ -1,5 +1,6 @@
 #include "native_background.h"
 #define NATIVE_CALLS __declspec(guard(nocf))
+
 /* Native Background virtual slots are verified against the vendor image. */
 typedef struct {
  void **methods;
@@ -53,7 +54,16 @@ NATIVE_CALLS int BfaPaintInsetRow(void *raw_row,void *canvas,int inset) {
  }
  return 1;
 }
-NATIVE_CALLS void BfaPaintInsetOutline(void *raw_row,void *canvas,int inset) {
+int BfaPaintDraggedFolderBlock(void *row,void *canvas,void *container,int color) {
+ if(!BfaHasFolderBackground(container))return 0;
+ FolderBackground *background=*(FolderBackground **)((unsigned char *)container+0x228);
+ unsigned char *view=row;int depth=*(int *)(view+0x3f8),inset=depth>0?depth*14:0;
+ int width=*(int *)(view+0x1d0)-inset-(depth>0?6:0);
+ int height=*(int *)(view+0x1d4)-(depth>0?2:0);if(width<=0 || height<=0)return 0;
+ BfaPaintFolderBlock(background->rounded,canvas,row,inset,0,width,height,color,view[0x455],0);
+ return 1;
+}
+NATIVE_CALLS static void paint_inset_outline(void *raw_row,void *canvas,int inset,int selected) {
  unsigned char *row=raw_row;
  void *widget=*(void **)(row+0x190);if(!widget)return;
  void *provider=((void *(*)(void*))BfaNativeAddress(0x5433810))((unsigned char *)widget+0x48);
@@ -64,15 +74,22 @@ NATIVE_CALLS void BfaPaintInsetOutline(void *raw_row,void *canvas,int inset) {
  float *rgba=(float *)flags;
  rgba[0]=(float)((color>>16)&255)/255.0f;rgba[1]=(float)((color>>8)&255)/255.0f;
  rgba[2]=(float)(color&255)/255.0f;rgba[3]=(float)(color>>24)/255.0f;
- *(float *)(flags+16)=1.5f;*(float *)(flags+20)=4.0f;
+ *(float *)(flags+16)=selected?0.5f:1.5f;*(float *)(flags+20)=4.0f;
  *(uint64_t *)(flags+24)=0xbf80000000000341ull;
- float rect[4]={(float)inset+1.0f,1.0f,(float)*(int *)(row+0x1d0)-7.0f,
-                (float)*(int *)(row+0x1d4)-3.0f};
+ float edge=selected?-0.25f:1.0f;
+ float rect[4]={(float)inset+edge,edge,(float)*(int *)(row+0x1d0)-6.0f-edge,
+                (float)*(int *)(row+0x1d4)-2.0f-edge};
  void *backend=*(void **)((unsigned char *)canvas+0xc0);
  void (*draw)(void*,const float*,float,float,void*)=
      *(void (**)(void*,const float*,float,float,void*))(*(uintptr_t *)backend+0x100);
  float radius=*(float *)BfaNativeAddress(0xf99f9d8);
  draw(backend,rect,radius,radius,flags);
+}
+void BfaPaintInsetOutline(void *row,void *canvas,int inset) {
+ paint_inset_outline(row,canvas,inset,0);
+}
+void BfaPaintInsetSelectedOutline(void *row,void *canvas,int inset) {
+ paint_inset_outline(row,canvas,inset,1);
 }
 NATIVE_CALLS void BfaInstallFolderBackground(BfaOwner *owner,void *view) {
  void *prototype=0;BfaRoundedBackground(&prototype,(uintptr_t)1<<32,0,0);

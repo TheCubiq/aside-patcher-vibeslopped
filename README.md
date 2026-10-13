@@ -24,8 +24,9 @@ and independently updated settings bundles must be inspected and added explicitl
 - `chats`: permanently hides the complete section, as in the original patch.
 - `ask-aside`: keeps the toolbar button hidden.
 - `bookmark-folder-appearance`: adds native preset colors, the native icon picker,
-  and reset to bookmark folder menus. Expanded folders receive rounded tinted
-  blocks; nested hover highlights respect indentation. Choices persist by GUID
+  reset, and New Folder to bookmark folder menus. Expanded folders receive rounded tinted
+  blocks; nested hover and active-link outlines respect indentation. Folder drag
+  previews retain their color; folder headers omit the tab-style hover fill. Choices persist by GUID
   locally per profile. See `docs/BOOKMARK_FOLDER_APPEARANCE.md`.
 
 `chats-toggle` and `chats` are mutually exclusive. Previously verified revisions can be upgraded by enabling the same active targets.
@@ -49,7 +50,7 @@ uv run python -m aside_patcher disable ask-aside
 uv run python -m aside_patcher disable chats-toggle
 uv run python -m aside_patcher enable bookmark-folder-appearance
 uv run python -m aside_patcher disable bookmark-folder-appearance
-uv run python -m aside_patcher restore
+uv run python -m aside_patcher restoret
 ```
 
 Close Aside before applying or restoring. Run these commands from an elevated

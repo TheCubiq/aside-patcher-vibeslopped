@@ -24,6 +24,7 @@ typedef struct {
 } CloseState;
 typedef struct {BfaBindState base; BfaMenu *menu;} IconState;
 static BfaMenu *menus;
+static void new_folder(BfaMenu *menu);
 
 static void zero(void *data, size_t size) {
     for(size_t i=0;i<size;i++)((unsigned char *)data)[i]=0;
@@ -62,8 +63,9 @@ NATIVE_CALLS static void cleanup(CloseState *state) {
         if(*link){*link=menu->next;release_menu(menu);}
         unsigned char *owner=BfaOwnerPointer(menu->owner);
         if(owner && *(int64_t *)(owner+0x9e0)==menu->generation){
-            *(int *)(owner+0x9f0)=menu->command;
+            *(int *)(owner+0x9f0)=menu->command==4?0:menu->command;
             ((void (*)(void*,int64_t))BfaNativeAddress(0x388ef20))(owner,menu->generation);
+            if(menu->command==4)new_folder(menu);
         }
     }
 }
@@ -103,6 +105,25 @@ NATIVE_CALLS static void popup(BfaMenu *menu,void *view,void *anchor,int main) {
 static int appearance(BfaMenu *menu,BfaAppearance *value) {
     return !menu->closing && BfaOwnerAppearance(menu->owner,menu->identifier,menu->guid,value);
 }
+static void folder_created(void *state,const void *node) {(void)state;(void)node;}
+static void destroy_folder_created(void *state) {BfaFree(state,sizeof(BfaBindState));}
+NATIVE_CALLS static void new_folder(BfaMenu *menu) {
+    BfaAppearance value;
+    if(!BfaOwnerAppearance(menu->owner,menu->identifier,menu->guid,&value))return;
+    unsigned char *owner=BfaOwnerPointer(menu->owner);
+    unsigned char *node=BfaFindFolder(owner,menu->identifier);
+    unsigned char *browser=*(unsigned char **)(owner+0x528);if(!browser)return;
+    void *profile=*(void **)(browser+0x40);if(!profile)return;
+    unsigned char details[240]={0};
+    BfaBindState *state=BfaAllocate(sizeof(*state));zero(state,sizeof(*state));
+    state->references=1;state->invoke=(void (*)(void))folder_created;
+    state->destroy=destroy_folder_created;state->query=BfaQueryState;
+    void *callback=state;
+    /* Native BookmarkEditor::EditDetails NewFolder(parent, append index). */
+    ((void *(*)(void*,void*,size_t))BfaNativeAddress(0x9cc3380))(details,node,*(size_t *)(node+0x48));
+    ((void (*)(void*,void*,void*,int,void**))BfaNativeAddress(0xbaaf360))(0,profile,details,0,&callback);
+    ((void (*)(void*))BfaNativeAddress(0x9cc3210))(details);
+}
 NATIVE_CALLS static void pick_icon(IconState *state,BfaString *owned) {
     BfaMenu *menu=state->menu;BfaAppearance value;
     BfaStringView key=BfaStringBytes(owned);
@@ -127,7 +148,7 @@ NATIVE_CALLS static void picker(BfaMenu *menu,void *anchor,BfaAppearance value) 
 NATIVE_CALLS void BfaEditorAction(BfaActionState *state,void *event) {
     (void)event;BfaMenu *menu=state->menu;BfaAppearance value;
     if(!appearance(menu,&value))return;
-    if(state->action>=101 && state->action<=103){menu->command=state->action-100;close_menu(menu);return;}
+    if(state->action>=101 && state->action<=104){menu->command=state->action-100;close_menu(menu);return;}
     if(state->action==-2){picker(menu,(void *)state->anchor,value);return;}
     if(state->action==-3){value.color=-1;value.icon=-1;}else value.color=state->action;
     if(!BfaSetOwnerAppearance(menu->owner,menu->identifier,menu->guid,value))return;
@@ -176,6 +197,7 @@ NATIVE_CALLS int BfaShowFolderMenu(void *raw_owner,void *raw_row,const void *eve
     BfaAddChild(view,colors);
     BfaAddChild(view,BfaActionButton(menu,(const uint16_t *)L"Change icon",-2,1));
     BfaAddChild(view,BfaActionButton(menu,(const uint16_t *)L"Reset appearance",-3,0));
+    BfaAddChild(view,BfaActionButton(menu,(const uint16_t *)L"New Folder",104,0));
     BfaAddChild(view,BfaActionButton(menu,(const uint16_t *)L"Rename",101,0));
     BfaAddChild(view,BfaActionButton(menu,(const uint16_t *)L"Delete",102,0));
     BfaAddChild(view,BfaActionButton(menu,(const uint16_t *)L"Manage Bookmarks",103,0));

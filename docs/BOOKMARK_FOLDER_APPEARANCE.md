@@ -6,10 +6,14 @@ Unknown inputs, changed hook instructions, and changed payload sources are refus
 
 ## Behavior
 
-Folder menus contain the eight group colors, Change icon, Reset appearance, and
+Folder menus contain the eight group colors, Change icon, Reset appearance, New Folder, and
 the original Rename, Delete, and Manage Bookmarks commands. Color and icon are
 independent; subfolders have independent appearances without inheritance.
 Policy-managed folders retain their original menus.
+
+New Folder opens the native bookmark editor with the selected folder preselected
+as parent. Saving creates an ordinary undecorated folder; cancel leaves bookmarks
+unchanged. The native editor owns its normal selection and validation behavior.
 
 The local profile preference aside.bookmark_folder_appearance stores preset
 identifiers under bookmark GUIDs. Rename/move preserve decorations; subtree deletion
@@ -32,7 +36,16 @@ last visible descendant through native margins and recursive layout invalidation
 Shared nested endings accumulate padding; reset/collapse recalculate it. Standard
 bookmark expansion remains; tab-group motion has not been transplanted.
 
-Nine verified hooks cover owner construction/destruction, row icon updates/destruction,
+Active-link focus outlines use the same native pill highlight generator as group
+controls, with nested insets. Original generators are retained and restored when
+customization no longer applies. Colored folder headers omit the tab hover fill.
+The bookmark container also paints selected-row outlines independently at native
+RVA 0x3893610. Its full-width pass is suppressed for decorated nested rows; their
+row border pass reproduces the native half-pixel outline with nested bounds.
+Hidden dragged rows are excluded from subtree backgrounds; row geometry/state
+changes repaint the container, and dragged headers paint their own folder color.
+
+Ten verified hooks cover owner construction/destruction, row icon updates/destruction,
 folder menus, model removal, default background paint, and row background/border paint.
 The embedded payload separates executable code and writable storage, with relocations,
 unwind records, and CFG callback targets. It builds from immutable verified originals
@@ -49,12 +62,13 @@ chat-agent account content can still appear: profile isolation is not account is
 Live checks cover restart, rename/move, duplicate names, nested appearances, reset,
 subtree deletion, same-profile window refresh, native commands, light/dark rendering,
 hover submenus, cursor placement, folding stress, closing windows with menus open,
-and inset drag targets. Footer reset is checked by row geometry and screenshots.
+inset drag targets, active-link outlines after dragging, and native New Folder
+save/cancel. Footer reset is checked by row geometry and screenshots.
 Fresh combination checks must pass before their hashes are registered or installed.
 
 The Python suite has 45 tests; the native storage/model harness uses MSVC /W4 /WX.
-Black, Flake8, Pylint, and numpydoc pass. Mollify reports two existing hotspots in
-common/models.py and common/utils.py (99/100).
+Black, Flake8, Pylint, and numpydoc pass. Mollify reports existing hotspots in
+common/models.py, common/utils.py, pe.py, and recipes.py (99/100).
 
 ## Rebuilding
 

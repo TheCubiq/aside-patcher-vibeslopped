@@ -1,0 +1,4 @@
+# Frozen native source and manifest hashes require stable checkout bytes.
+aside_patcher/patches/bookmark_folder_appearance/native_*.[ch] text eol=lf
+aside_patcher/patches/bookmark_folder_appearance/payload.json text eol=lf
+aside_patcher/patches/bookmark_folder_appearance/payload.bin -text
