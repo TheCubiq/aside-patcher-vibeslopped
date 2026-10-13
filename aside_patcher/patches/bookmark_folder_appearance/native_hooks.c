@@ -19,6 +19,25 @@ extern void BfaSuppressContainerOutline(void *,int);
 extern void BfaPaintInsetSelectedOutline(void *,void *,int);
 extern void BfaRowStatePainted(void *);
 extern int BfaPaintDraggingFolder(void *,void *);
+extern void BfaOriginalLayoutImmediately(void *);
+extern void BfaCaptureFolderTargets(void *);
+extern void BfaBeginFolderTransition(void *,void *);
+extern void BfaOriginalFolderToggle(void *,void *,void *);
+extern void BfaOriginalAnimationProgress(void *);
+extern void BfaFolderAnimationProgress(void *);
+void BfaFolderToggleHook(void *owner,void *node,void *event) {
+ BfaBeginFolderTransition(owner,node);
+ BfaOriginalFolderToggle(owner,node,event);
+}
+void BfaAnimationProgressHook(void *owner) {
+ BfaOriginalAnimationProgress(owner);
+ BfaFolderAnimationProgress(owner);
+}
+void BfaLayoutImmediatelyHook(void *view) {
+ BfaPrepareFolderPaint(view);
+ BfaOriginalLayoutImmediately(view);
+ BfaCaptureFolderTargets(view);
+}
 void *BfaOwnerConstructorHook(void *owner,void *browser,void *view,void *model) {
  void *result=BfaOriginalOwnerConstructor(owner,browser,view,model);
  BfaOwner *context=BfaRetainOwner(owner);BfaReleaseOwner(context);return result;

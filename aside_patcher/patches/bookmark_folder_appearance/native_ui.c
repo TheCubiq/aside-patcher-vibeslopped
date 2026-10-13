@@ -88,7 +88,9 @@ NATIVE_CALLS static void closing(CloseState *state) {
 NATIVE_CALLS static void popup(BfaMenu *menu,void *view,void *anchor,int main) {
     void *delegate=BfaAllocate(0x450);int rect[4]={0};
     if(main){rect[0]=menu->origin[0];rect[1]=menu->origin[1];}
-    ((void (*)(void*,void*,void*,void*,unsigned,unsigned,int,int))BfaNativeAddress(0xba74c40))(delegate,anchor,0,rect,main?0:4,main?0:6,main,main);
+    /* Explicit cursor bounds still need the anchor widget's bubble lifetime. */
+    void *anchor_widget=main?*(void **)((unsigned char *)anchor+0x190):0;
+    ((void (*)(void*,void*,void*,void*,unsigned,unsigned,int,int))BfaNativeAddress(0xba74c40))(delegate,anchor,anchor_widget,rect,main?0:4,main?0:6,main,main);
     void *content=view;
     ((void (*)(void*,void**))BfaNativeAddress(0xaa75d50))(delegate,&view);
     CloseState *state=BfaAllocate(sizeof(*state));zero(state,sizeof(*state));

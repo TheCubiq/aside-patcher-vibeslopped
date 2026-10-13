@@ -12,7 +12,7 @@ from ...pe import append_section, file_offset, parse_layout, relative_jump
 
 ORIGINAL_SHA256 = "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510"
 TOGGLE_SHA256 = "601914ed1154e9685c2c67116ec862eb7c8f7dd13d994e0ce920fff94d4231a8"
-MANIFEST_SHA256 = "1c7417f0dedeec9d3c4f65112dc1729ae865c3efb3988280adf93dda99fbe0c0"
+MANIFEST_SHA256 = "ff7a9ec85f756a83d7d6efac24a37f5a8ddcf01666b3aea08463366672dfefac"
 TRAMPOLINE_SIZE = 512
 # name, entry RVA, verified overwrite bytes, copied register pushes, stack allocation
 HOOKS = (
@@ -27,6 +27,9 @@ HOOKS = (
     ("RowBorder", 0x3898720, "4157415656", ((2, 15), (4, 14), (5, 6)), 0),
     ("RowMask", 0x3894A20, "4157415656", ((2, 15), (4, 14), (5, 6)), 0),
     ("RowsPaint", 0x3893610, "415741564155", ((2, 15), (4, 14), (6, 13)), 0),
+    ("LayoutImmediately", 0x4E53EF0, "415741564155", ((2, 15), (4, 14), (6, 13)), 0),
+    ("FolderToggle", 0x3884F80, "415741564155", ((2, 15), (4, 14), (6, 13)), 0),
+    ("AnimationProgress", 0x3886500, "56574883ec38", ((1, 6), (2, 7)), 56),
 )
 
 

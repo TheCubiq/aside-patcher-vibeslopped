@@ -8,7 +8,7 @@
   "files": {
     "dll": {
       "original_sha256": "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510",
-      "patched_sha256": "f52190dc0f80c65173f4746a62e5dde1d5ef5c41bbafad49796f7a253cf6b2c9",
+      "patched_sha256": "2bca82c39de9220a6c85ef84e8205ed11438899988d5350e33bd23cd21c8b619",
       "builder_order": 20
     }
   }

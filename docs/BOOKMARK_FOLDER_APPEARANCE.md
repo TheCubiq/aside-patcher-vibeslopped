@@ -26,15 +26,25 @@ and the bookmark manager are unchanged.
 The folder editor composes Aside's native palette/action controls and popup styling.
 Change icon opens AsideIconPickerView on hover and uses its 48-icon collection.
 Menus use the screen cursor converted through the native display/DIP API; keyboard
-invocation falls back to the row. This is a folder-specific adapter. Native folder
+invocation falls back to the row. Explicit cursor anchoring retains the native
+anchor widget, so menus and icon submenus keep the collapsed sidebar popup open.
+This is a folder-specific adapter. Native folder
 commands still dispatch through their original handlers.
 
 Rounded subtree backgrounds reuse native group colors, alpha, corner radius, and
 the rounded Background painter. Nested hover, selection, and folder-drop fill and
-outline use inset geometry. Expanded colored folders reserve 6 pixels below their
-last visible descendant through native margins and recursive layout invalidation.
-Shared nested endings accumulate padding; reset/collapse recalculate it. Standard
-bookmark expansion remains; tab-group motion has not been transplanted.
+outline use inset geometry. Visible rows and folder blocks have 4-pixel vertical
+gaps. Expanded colored folders reserve 4 pixels inside their last visible descendant
+and 4 pixels outside the block through native margins. Shared nested endings
+accumulate internal padding; reset/collapse recalculate it before native layout
+calculates animation targets. Empty folders keep the same standard row height.
+Folder backgrounds follow the existing eased native height animation, while native
+row animation continues to position their contents. Rapid toggles restart from the
+last painted block height. Visibility follows the native expanded-folder IDs and
+the current active bookmark path. Inactive descendants are hidden through native
+View::SetVisible; their native row objects and loaded-tab metadata remain alive.
+Native retained-child caches and bookmark/tab API behavior are preserved. Folder
+carets reflect actual expansion preferences rather than stale loaded-child caches.
 
 Active-link focus outlines use the same native pill highlight generator as group
 controls, with nested insets. Original generators are retained and restored when
@@ -45,8 +55,9 @@ row border pass reproduces the native half-pixel outline with nested bounds.
 Hidden dragged rows are excluded from subtree backgrounds; row geometry/state
 changes repaint the container, and dragged headers paint their own folder color.
 
-Ten verified hooks cover owner construction/destruction, row icon updates/destruction,
-folder menus, model removal, default background paint, and row background/border paint.
+Fourteen verified hooks cover owner construction/destruction, row icon updates/destruction,
+folder menus/toggling, model removal, background/border/mask painting, immediate layout,
+and native animation progress.
 The embedded payload separates executable code and writable storage, with relocations,
 unwind records, and CFG callback targets. It builds from immutable verified originals
 and uses existing transactional backups/rollback. The Chats builder runs first;
@@ -63,7 +74,9 @@ Live checks cover restart, rename/move, duplicate names, nested appearances, res
 subtree deletion, same-profile window refresh, native commands, light/dark rendering,
 hover submenus, cursor placement, folding stress, closing windows with menus open,
 inset drag targets, active-link outlines after dragging, and native New Folder
-save/cancel. Footer reset is checked by row geometry and screenshots.
+save/cancel. Collapsed-sidebar menus, active versus inactive loaded bookmarks,
+empty-folder heights, and intermediate fold frames are checked in the isolated trial.
+Footer reset is checked by row geometry and screenshots.
 Fresh combination checks must pass before their hashes are registered or installed.
 
 The Python suite has 45 tests; the native storage/model harness uses MSVC /W4 /WX.

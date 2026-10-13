@@ -41,7 +41,7 @@ NATIVE_CALLS int BfaPaintInsetRow(void *raw_row,void *canvas,int inset) {
  if(!provider)return 0;
  unsigned char *rounded=background->rounded;
  *(int *)(rounded+0x20)=0;*(int *)(rounded+0x24)=inset;
- *(int *)(rounded+0x28)=2;*(int *)(rounded+0x2c)=6;
+ *(int *)(rounded+0x28)=0;*(int *)(rounded+0x2c)=6;
  /* Reproduce the native base fill and folder-drop fill in the same order. */
  int colors[2],count=0;
  if(row[0x450] || row[0x458]==1)colors[count++]=0xd6;
@@ -59,7 +59,7 @@ int BfaPaintDraggedFolderBlock(void *row,void *canvas,void *container,int color)
  FolderBackground *background=*(FolderBackground **)((unsigned char *)container+0x228);
  unsigned char *view=row;int depth=*(int *)(view+0x3f8),inset=depth>0?depth*14:0;
  int width=*(int *)(view+0x1d0)-inset-(depth>0?6:0);
- int height=*(int *)(view+0x1d4)-(depth>0?2:0);if(width<=0 || height<=0)return 0;
+ int height=*(int *)(view+0x1d4);if(width<=0 || height<=0)return 0;
  BfaPaintFolderBlock(background->rounded,canvas,row,inset,0,width,height,color,view[0x455],0);
  return 1;
 }
@@ -78,7 +78,7 @@ NATIVE_CALLS static void paint_inset_outline(void *raw_row,void *canvas,int inse
  *(uint64_t *)(flags+24)=0xbf80000000000341ull;
  float edge=selected?-0.25f:1.0f;
  float rect[4]={(float)inset+edge,edge,(float)*(int *)(row+0x1d0)-6.0f-edge,
-                (float)*(int *)(row+0x1d4)-2.0f-edge};
+                (float)*(int *)(row+0x1d4)-edge};
  void *backend=*(void **)((unsigned char *)canvas+0xc0);
  void (*draw)(void*,const float*,float,float,void*)=
      *(void (**)(void*,const float*,float,float,void*))(*(uintptr_t *)backend+0x100);

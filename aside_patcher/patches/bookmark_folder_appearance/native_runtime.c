@@ -15,6 +15,9 @@ struct BfaRow {
     int highlight_inset;
     int paint_x,paint_y,paint_width,paint_height,paint_state;
     int saved_selected,saved_dragged,suppressed_outline;
+    int block_height,block_valid;
+    int block_from_height,block_target_height,block_target_valid;
+    int hidden_by_patch;
 };
 struct BfaOwner {
     BfaOwner *next;
@@ -25,6 +28,7 @@ struct BfaOwner {
     void *rows_view;
     size_t references;
     int laying_out;
+    int blocks_pending,blocks_captured;
 };
 static BfaOwner *owners;
 
@@ -62,6 +66,78 @@ static void *row_property(unsigned char *row,size_t rva) {
 }
 static int *row_margins(unsigned char *row) {return row_property(row,0x10a35cb0);}
 
+static int folder_expanded(unsigned char *owner,unsigned char *node) {
+    int64_t *ids=*(int64_t **)(owner+0x648),id=*(int64_t *)(node+0x60);
+    size_t lo=0,hi=*(size_t *)(owner+0x650),count=hi;
+    while(lo<hi){size_t mid=lo+(hi-lo)/2;if(ids[mid]<id)lo=mid+1;else hi=mid;}
+    return lo<count && ids[lo]==id;
+}
+
+NATIVE_CALLS static void project_folder_rows(BfaOwner *owner,void *view) {
+    unsigned char *native_owner=owner->native_owner,*active=0;
+    if(native_owner[0x721]==1 && native_owner[0x8f0]==1)
+        active=BfaFindFolder(native_owner,*(int64_t *)(native_owner+0x8e8));
+    for(BfaRow *record=owner->rows;record;record=record->next){
+        unsigned char *row=record->rendering.row,*node=*(unsigned char **)(row+0x3f0);
+        if(*(void **)(row+0x198)!=view || !node || dragging_ancestor(owner,node))continue;
+        int visible=1;
+        unsigned char *ancestor=*(unsigned char **)(node+0x38);
+        for(int depth=*(int *)(row+0x3f8);depth>0 && ancestor;--depth){
+            if(!folder_expanded(native_owner,ancestor)){visible=0;break;}
+            ancestor=*(unsigned char **)(ancestor+0x38);
+        }
+        for(ancestor=active;ancestor;ancestor=*(unsigned char **)(ancestor+0x38))
+            if(ancestor==node){visible=1;break;}
+        /* Keep loaded native row objects and their tab metadata alive. */
+        if(!visible && row[0x1d8]){
+            record->hidden_by_patch=1;
+            ((void (*)(void*,int))BfaNativeAddress(0x5190ec0))(row,0);
+        }else if(visible && record->hidden_by_patch){
+            record->hidden_by_patch=0;
+            ((void (*)(void*,int))BfaNativeAddress(0x5190ec0))(row,1);
+        }
+        if(*(int *)(node+0xf8)!=0){
+            int expanded=folder_expanded(native_owner,node);
+            if(row[0x455]!=expanded){
+                row[0x455]=(unsigned char)expanded;
+                unsigned char *caret=*(unsigned char **)(row+0x440);
+                if(caret && caret[0x420]!=expanded){
+                    caret[0x420]=(unsigned char)expanded;
+                    ((void (*)(void*,int))BfaNativeAddress(0x18ce660))(caret+0x398,!expanded);
+                    BfaSchedulePaint(caret);
+                }
+                BfaSchedulePaint(row);
+            }
+        }
+    }
+}
+
+void BfaBeginFolderTransition(void *native_owner,void *raw_node) {
+    unsigned char *node=raw_node;
+    if(!node || !*(int *)(node+0xf8))return;
+    BfaOwner *owner=find_owner(native_owner);if(!owner)return;
+    owner->blocks_pending=1;owner->blocks_captured=0;
+    for(BfaRow *record=owner->rows;record;record=record->next){
+        record->block_from_height=record->block_height;
+        record->block_target_valid=0;
+    }
+}
+
+void BfaCaptureFolderTargets(void *view) {
+    for(BfaOwner *owner=owners;owner;owner=owner->next){
+        if(owner->rows_view!=view)continue;
+        if(owner->blocks_pending && !owner->blocks_captured){
+            BfaPaintFolderBlocks(owner,0,view,0);owner->blocks_captured=1;
+        }
+        return;
+    }
+}
+
+void BfaFolderAnimationProgress(void *native_owner) {
+    BfaOwner *owner=find_owner(native_owner);
+    if(owner && owner->blocks_pending && owner->rows_view)BfaSchedulePaint(owner->rows_view);
+}
+
 NATIVE_CALLS static void *replace_highlight(unsigned char *row,void *value) {
  unsigned char *key=BfaNativeAddress(0x10a35d50);
  return ((void *(*)(void*,void*,void*,void*,void*,void*))BfaNativeAddress(0x48dd6b0))(
@@ -79,14 +155,14 @@ NATIVE_CALLS static void refresh_highlight(BfaRow *record,int inset) {
  }
  if(!record->highlight){
   record->original_highlight=replace_highlight(row,0);
-  int margins[4]={0,inset,2,6};
+  int margins[4]={0,inset,0,6};
   /* Same native pill generator installed by Aside's tab-group controls. */
   ((void (*)(void*,const int*))BfaNativeAddress(0xaad7ea0))(row,margins);
   record->highlight=row_property(row,0x10a35d50);
   record->highlight_inset=inset;BfaSchedulePaint(row);
  }else if(inset!=record->highlight_inset){
   int *margins=(int *)((unsigned char *)record->highlight+8);
-  margins[0]=0;margins[1]=inset;margins[2]=2;margins[3]=6;
+  margins[0]=0;margins[1]=inset;margins[2]=0;margins[3]=6;
   record->highlight_inset=inset;BfaSchedulePaint(row);
  }
 }
@@ -141,6 +217,7 @@ static void apply_folder_spacing(BfaOwner *owner,void *raw_view) {
         if(row && *(void **)row==BfaNativeAddress(0xfe16378) && !find_row(owner,row))
             BfaRowUpdated(row);
     }
+    project_folder_rows(owner,raw_view);
     for(BfaRow *record=owner->rows;record;record=record->next){
         record->requested_padding=0;record->footer=0;record->footer_last=0;
     }
@@ -154,13 +231,15 @@ static void apply_folder_spacing(BfaOwner *owner,void *raw_view) {
         BfaAppearance appearance;BfaReadAppearance(owner->prefs,guid.data,&appearance);
         if(!BfaValidColor(appearance.color))continue;
         size_t end=subtree_end(children,count,i,node);
-        if(!row[0x455] && end==i)continue;
+        if(end==i)continue;
         BfaRow *last=find_row(owner,children[end]);if(!last)continue;
         record->footer=1;record->footer_last=children[end];
-        last->requested_padding+=6;
+        last->requested_padding+=4;
     }
     for(BfaRow *record=owner->rows;record;record=record->next){
         unsigned char *row=record->rendering.row;
+        /* Four pixels inside each ending folder, four outside the outer one. */
+        if(record->requested_padding)record->requested_padding+=4;
         if(*(void **)(row+0x198)==raw_view)set_row_padding(record);
     }
     owner->laying_out=0;
@@ -258,6 +337,7 @@ BfaOwner *BfaRetainOwner(void *native_owner) {
         owner->rows_view = 0;
         owner->references = 1; /* Registry ownership until the native destructor. */
         owner->laying_out=0;
+        owner->blocks_pending=0;owner->blocks_captured=0;
         BfaRegisterPreference(owner->prefs);
         owner->next = owners;
         owners = owner;
@@ -439,22 +519,39 @@ void BfaPaintFolderBlocks(BfaOwner *owner, void *canvas, void *view, void *backg
             int footer=0;
             BfaRow *last=find_row(owner,record->footer_last);
             if(record->footer && last){
-                footer=last->requested_padding;
+                footer=last->requested_padding-4;
                 unsigned char *ancestor=*(unsigned char **)(node+0x38);
                 while(ancestor){
                     for(BfaRow *parent=owner->rows;parent;parent=parent->next){
                         unsigned char *parent_row=parent->rendering.row;
                         if(*(void **)(parent_row+0x3f0)==ancestor && parent->footer &&
-                           parent->footer_last==record->footer_last)footer-=6;
+                           parent->footer_last==record->footer_last)footer-=4;
                     }
                     ancestor=*(unsigned char **)(ancestor+0x38);
                 }
             }
-            int height=bottom-y+footer-(depth>0?2:0);
+            int height=bottom-y+footer;
             if(height<=0)continue;
+            if(!canvas){
+                record->block_target_height=height;
+                record->block_target_valid=1;continue;
+            }
+            unsigned char *native_owner=owner->native_owner;
+            if(owner->blocks_pending && owner->blocks_captured && native_owner &&
+               native_owner[0x568] && record->block_valid && record->block_target_valid){
+                /* Native height animation uses this same eased value at RVA 0x3886500. */
+                double progress=*(double *)(native_owner+0x5c8);
+                if(!(progress>=0.0 && progress<=1.0))progress=1.0;
+                height=record->block_from_height+(int)((record->block_target_height-record->block_from_height)*progress);
+                if(height>*(int *)(row+0x1d4))expanded=1;
+            }
+            record->block_height=height;record->block_valid=1;
             BfaPaintFolderBlock(background, canvas, view, x, y, width, height,
                                 appearance.color, expanded, row[0x453] || row[0x450]);
         }
+    }
+    if(canvas && owner->native_owner && !((unsigned char *)owner->native_owner)[0x568]){
+        owner->blocks_pending=0;owner->blocks_captured=0;
     }
 }
 
