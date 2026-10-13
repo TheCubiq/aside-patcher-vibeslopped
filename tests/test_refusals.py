@@ -83,11 +83,21 @@ class TestRefusals(TestInstallationFixture):
         self.assertEqual(self.dll.read_bytes(), self.original["dll"])
         self.assertEqual(self.ui.read_bytes(), self.original["appearance"])
 
-    def test_updated_settings_component_refuses(self):
+    def updated_component(self) -> dict:
         component = self.root / "components"
         (component / "1.0").mkdir(parents=True)
         (component / "2.0").mkdir()
-        build = replace(self.build, component={"directory": str(component), "version": "1.0"})
+        return {"directory": str(component), "version": "1.0"}
+
+    def test_updated_settings_component_refuses(self):
+        build = replace(self.build, component=self.updated_component())
         with self.assertRaisesRegex(Refusal, "component version"):
             run_installation(build, "enable", ["chats-toggle"])
         self.assertFalse(self.backups.exists())
+
+    def test_native_only_change_preserves_updated_settings_component(self):
+        build = replace(self.build, component=dict(self.updated_component(), file="appearance"))
+        self.assertEqual(run_installation(build, "enable", ["ask-aside"]), 0)
+        self.assertEqual(self.ui.read_bytes(), self.original["appearance"])
+        with self.assertRaisesRegex(Refusal, "component version"):
+            run_installation(build, "enable", ["chats-toggle"])

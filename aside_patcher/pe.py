@@ -176,8 +176,10 @@ def resolve_blocks(payload: Payload) -> None:
         payload.data[offset : offset + len(data)] = data
 
 
-def append_section(data: bytearray, layout: ImageLayout, payload: Payload) -> bytes:
-    """Append the executable hook section and update PE header sizes.
+def append_section(
+    data: bytearray, layout: ImageLayout, payload: Payload, *, name: bytes = b".chatmod", characteristics: int = 0x60000020
+) -> bytes:
+    """Append a payload section and update PE header sizes.
 
     Parameters
     ----------
@@ -187,6 +189,10 @@ def append_section(data: bytearray, layout: ImageLayout, payload: Payload) -> by
         Original PE header offsets and section mappings.
     payload : Payload
         New section contents, hook blocks, and shared symbolic addresses.
+    name : bytes, optional
+        PE section name, limited to eight bytes.
+    characteristics : int, optional
+        Section permissions and content flags; executable hooks by default.
 
     Returns
     -------
@@ -194,11 +200,13 @@ def append_section(data: bytearray, layout: ImageLayout, payload: Payload) -> by
         Final DLL contents containing the new executable section.
     """
     count = len(layout.sections)
+    if not name or len(name) > 8 or layout.section_table + (count + 1) * 40 > min(s.file_offset for s in layout.sections):
+        raise Refusal("Payload section does not fit the verified PE headers.")
     new_offset = (len(data) + 511) & ~511
     raw_size = (len(payload.data) + 511) & ~511
     new_header = struct.pack(
         "<8sIIIIIIHHI",
-        b".chatmod",
+        name,
         len(payload.data),
         payload.rva,
         raw_size,
@@ -207,12 +215,13 @@ def append_section(data: bytearray, layout: ImageLayout, payload: Payload) -> by
         0,
         0,
         0,
-        0x60000020,
+        characteristics,
     )
     data[layout.section_table + count * 40 : layout.section_table + (count + 1) * 40] = new_header
     struct.pack_into("<H", data, layout.pe_header + 6, count + 1)
     struct.pack_into("<I", data, layout.optional_header + 56, (payload.rva + len(payload.data) + 4095) & ~4095)
-    struct.pack_into("<I", data, layout.optional_header + 4, struct.unpack_from("<I", data, layout.optional_header + 4)[0] + raw_size)
+    size_field = layout.optional_header + (4 if characteristics & 0x20 else 8)
+    struct.pack_into("<I", data, size_field, struct.unpack_from("<I", data, size_field)[0] + raw_size)
     data.extend(b"\0" * (new_offset - len(data)))
     data.extend(payload.data)
     data.extend(b"\0" * (raw_size - len(payload.data)))

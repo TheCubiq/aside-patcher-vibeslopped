@@ -5,7 +5,7 @@ from __future__ import annotations
 from .common.exceptions import Refusal
 from .common.models import Installation
 from .common.utils import file_sha256, report_status, require_app_stopped, validate_component
-from .recipes import prepare_changes
+from .recipes import prepare_changes, validate_component_change
 from .transaction import replace_transaction
 
 
@@ -28,12 +28,13 @@ def run_installation(build: Installation, command: str, targets: list[str] | Non
     """
     if command != "status":
         require_app_stopped()
-    validate_component(build.component)
     hashes = {name: file_sha256(f.path) for name, f in build.files.items()}
     if command == "status":
+        validate_component(build.component)
         return report_status(build, hashes)
     current = build.identify(hashes)
     desired = requested_state(build, current, command, targets or [])
+    validate_component_change(build, hashes, desired)
     if desired == current and hashes == build.states[desired]:
         print("Requested state is already installed.")
         return 0

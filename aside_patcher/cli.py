@@ -9,6 +9,7 @@ from pathlib import Path
 from .common.exceptions import Refusal
 from .common.models import MANIFEST_PATH
 from .installation import run_installation
+from .native_scope import native_only_build
 from .manifest import load_build
 from .patches import PATCHES
 
@@ -26,6 +27,9 @@ def _parser() -> argparse.ArgumentParser:
         "--manifest", type=Path, default=MANIFEST_PATH, help="Supported build manifest; useful for verified copy trials."
     )
     commands = parser.add_subparsers(dest="command", required=True)
+    parser.add_argument(
+        "--native-only", action="store_true", help="Inspect the DLL or change bookmark appearance without settings files."
+    )
     commands.add_parser("list", help="List available patches and their affected files.")
     commands.add_parser("status", help="Show installed file hashes and patch state.")
     choices = tuple(patch.patch_id for patch in PATCHES)
@@ -52,6 +56,12 @@ def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
         build = load_build(args.manifest)
+        if args.native_only:
+            if args.command != "status" and (
+                args.command not in {"enable", "disable"} or set(args.target) != {"bookmark-folder-appearance"}
+            ):
+                raise Refusal("Native-only mode supports status and enabling/disabling bookmark-folder-appearance only.")
+            build = native_only_build(build)
         if args.command == "list":
             for patch in build.patches.values():
                 print(f"{patch.patch_id}: {patch.description}")

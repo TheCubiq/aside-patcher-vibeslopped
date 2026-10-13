@@ -4,7 +4,7 @@ from pathlib import Path
 
 from .common.exceptions import Refusal
 from .common.models import Artifact, Installation
-from .common.utils import backup_directory, find_all, preserve_original, read_binary, sha256
+from .common.utils import backup_directory, find_all, preserve_original, read_binary, sha256, validate_component
 
 
 def render(original: bytes, artifact: Artifact, targets: tuple[str, ...]) -> bytes:
@@ -28,7 +28,8 @@ def render(original: bytes, artifact: Artifact, targets: tuple[str, ...]) -> byt
         raise Refusal(f"Original backup hash mismatch for {artifact.path.name}.")
     result = original
     sites = []
-    for target in targets:
+    ordered = sorted(targets, key=lambda target: artifact.recipes.get(target, {}).get("builder_order", 0))
+    for target in ordered:
         recipe = artifact.recipes.get(target)
         if not recipe:
             continue
@@ -100,3 +101,22 @@ def prepare_changes(build: Installation, hashes: dict[str, str], desired: tuple[
         if before != after:
             changes[artifact.path] = (before, after)
     return changes
+
+
+def validate_component_change(build: Installation, hashes: dict[str, str], desired: tuple[str, ...]) -> None:
+    """Require the settings version guard whenever its artifact will change.
+
+    Parameters
+    ----------
+    build : Installation
+        Supported artifacts and optional component-to-artifact association.
+    hashes : dict[str, str]
+        Exact observed artifact hashes already recognized as an installation state.
+    desired : tuple of str
+        Allowlisted requested patch combination.
+    """
+    component_file = (build.component or {}).get("file")
+    if component_file and component_file not in hashes:
+        raise Refusal("Settings component refers to an unknown artifact.")
+    if not component_file or hashes[component_file] != build.states[desired][component_file]:
+        validate_component(build.component)

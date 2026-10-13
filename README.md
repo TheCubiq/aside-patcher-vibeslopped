@@ -23,6 +23,10 @@ and independently updated settings bundles must be inspected and added explicitl
   changes immediately in all windows. Its divider hides with the section. Bookmarks stays independent.
 - `chats`: permanently hides the complete section, as in the original patch.
 - `ask-aside`: keeps the toolbar button hidden.
+- `bookmark-folder-appearance`: adds native preset colors, the native icon picker,
+  and reset to bookmark folder menus. Expanded folders receive rounded tinted
+  blocks; nested hover highlights respect indentation. Choices persist by GUID
+  locally per profile. See `docs/BOOKMARK_FOLDER_APPEARANCE.md`.
 
 `chats-toggle` and `chats` are mutually exclusive. Previously verified revisions can be upgraded by enabling the same active targets.
 Selecting either replaces
@@ -43,6 +47,8 @@ uv run python -m aside_patcher enable chats
 uv run python -m aside_patcher enable chats ask-aside
 uv run python -m aside_patcher disable ask-aside
 uv run python -m aside_patcher disable chats-toggle
+uv run python -m aside_patcher enable bookmark-folder-appearance
+uv run python -m aside_patcher disable bookmark-folder-appearance
 uv run python -m aside_patcher restore
 ```
 
@@ -53,6 +59,18 @@ overwritten with different contents. Restore returns both files to vendor
 originals and accepts only a known installed state and verified original backups.
 It leaves the stored Chats preference intact; reinstalling the toggle reuses
 your choice.
+
+Native-only changes can preserve the exact known settings artifact after its
+active component updates. Changes to the settings artifact still require the
+explicit supported component version. File hash guards apply to every operation.
+Disabling folder appearance retains its saved profile preference.
+
+If the independently updated settings bundle is unavailable, use
+`uv run python -m aside_patcher --native-only enable bookmark-folder-appearance`
+or `--native-only disable bookmark-folder-appearance`. This explicit mode checks
+and changes only the supported DLL, preserves existing native patches, and leaves
+settings files untouched. It also supports `--native-only status`; other patch
+changes and restore require the complete supported installation.
 
 Patching changes the vendor-signed DLL and its hash. Each installed patch
 must be checked in a fresh Aside launch, on an ordinary page and in Settings;
