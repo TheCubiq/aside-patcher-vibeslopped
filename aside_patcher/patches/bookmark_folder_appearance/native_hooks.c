@@ -1,6 +1,7 @@
 /* Exact hook entry points are guarded and relocated by the payload builder. */
 #include "native_ui.h"
 #include "native_background.h"
+#include <intrin.h>
 extern void *BfaOriginalOwnerConstructor(void *,void *,void *,void *);
 extern void *BfaOriginalOwnerDestructor(void *,unsigned);
 extern void BfaOriginalRowIcon(void *);
@@ -26,14 +27,24 @@ extern void BfaOriginalFolderToggle(void *,void *,void *);
 extern void BfaOriginalAnimationProgress(void *);
 extern void BfaFolderAnimationProgress(void *);
 extern void BfaOriginalRowAnimationProgress(void *,void *);
-extern void BfaRowAnimationProgress(void *);
+extern void BfaRowAnimationProgress(void *,void *);
+extern void *BfaOriginalPreferredSize(void *,void *,void *);
+extern void BfaPrepareFolderMeasurement(void *,int);
+extern void BfaFinishFolderUpdate(void *);
+void *BfaPreferredSizeHook(void *view,void *size,void *bounds) {
+ /* Prepare every new measurement except the owner's earlier old-height snapshot. */
+ if(_ReturnAddress()!=BfaNativeAddress(0x388672c))
+  BfaPrepareFolderMeasurement(view,_ReturnAddress()==BfaNativeAddress(0x3886e63));
+ return BfaOriginalPreferredSize(view,size,bounds);
+}
 void BfaRowAnimationProgressHook(void *animator,void *animation) {
  BfaOriginalRowAnimationProgress(animator,animation);
- BfaRowAnimationProgress(animator);
+ BfaRowAnimationProgress(animator,animation);
 }
 void BfaFolderToggleHook(void *owner,void *node,void *event) {
  BfaBeginFolderTransition(owner,node);
  BfaOriginalFolderToggle(owner,node,event);
+ BfaFinishFolderUpdate(owner);
 }
 void BfaAnimationProgressHook(void *owner) {
  BfaOriginalAnimationProgress(owner);

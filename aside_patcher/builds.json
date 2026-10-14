@@ -72,7 +72,7 @@
             "bookmark-folder-appearance"
           ],
           "sha256": {
-            "dll": "f9c88e6dad022b876cb0889d39bb1a9059fc8f2e5e35faebdc53c32a50e8be03",
+            "dll": "7a04261abc6753ee5c8e20f92d90e426f037145d316a06713aad649ea970a8bb",
             "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
           }
         },
@@ -82,7 +82,7 @@
             "chats"
           ],
           "sha256": {
-            "dll": "eb3b69875e5e83bc47b4aa1ff7fefa6bad91c9b67690f688476746206b7fa10b",
+            "dll": "9ac331eb155aa4f3b161f381e28e7e1fe809cae60da6fdda297b2db4999a6714",
             "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
           }
         },
@@ -92,7 +92,7 @@
             "bookmark-folder-appearance"
           ],
           "sha256": {
-            "dll": "a4ee79410b7b9bde20cd0b822af314a78d450d93b88b29a78145be5a782af7f4",
+            "dll": "a58471d3915422cca397ed1a292969d6b1b34e41c01fed484d474cb9b410bef9",
             "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
           }
         },
@@ -103,7 +103,7 @@
             "chats"
           ],
           "sha256": {
-            "dll": "ff258d04a12b1a0a0c3b6766e481fe94076f091d112eb15853e7c09119fba057",
+            "dll": "6adea86258a0b0652a929007ed5c1ef11a62bc12841bd2a55f33ff89e10d1c62",
             "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
           }
         },
@@ -113,7 +113,7 @@
             "chats-toggle"
           ],
           "sha256": {
-            "dll": "fe8087dcb1ea3aa63359de7eeffe24780aaf4b8a32d05b36dd26a0fb520886ba",
+            "dll": "1172ec693d6e9d8e460fa3f7957c384ca93c9e867421526067d3b68c4eee0bce",
             "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
           }
         },
@@ -124,7 +124,7 @@
             "chats-toggle"
           ],
           "sha256": {
-            "dll": "6244af62702ff66abca3b929684553540a0a09491d192e5e0a9accf9a1ccae75",
+            "dll": "c396f6ec9e0781d02ef96131552fb00572f719ab6dc1cb8f07dde40a89aa7739",
             "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
           }
         }
@@ -496,6 +496,128 @@
           ],
           "sha256": {
             "dll": "5fd2bf83e26970fd11125d55c900da1a17bf2bd570fb8606ec1515763f6cbb11",
+            "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
+          }
+        },
+        {
+          "targets": [
+            "bookmark-folder-appearance"
+          ],
+          "sha256": {
+            "dll": "f9c88e6dad022b876cb0889d39bb1a9059fc8f2e5e35faebdc53c32a50e8be03",
+            "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
+          }
+        },
+        {
+          "targets": [
+            "bookmark-folder-appearance",
+            "chats"
+          ],
+          "sha256": {
+            "dll": "eb3b69875e5e83bc47b4aa1ff7fefa6bad91c9b67690f688476746206b7fa10b",
+            "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
+          }
+        },
+        {
+          "targets": [
+            "ask-aside",
+            "bookmark-folder-appearance"
+          ],
+          "sha256": {
+            "dll": "a4ee79410b7b9bde20cd0b822af314a78d450d93b88b29a78145be5a782af7f4",
+            "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
+          }
+        },
+        {
+          "targets": [
+            "ask-aside",
+            "bookmark-folder-appearance",
+            "chats"
+          ],
+          "sha256": {
+            "dll": "ff258d04a12b1a0a0c3b6766e481fe94076f091d112eb15853e7c09119fba057",
+            "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
+          }
+        },
+        {
+          "targets": [
+            "bookmark-folder-appearance",
+            "chats-toggle"
+          ],
+          "sha256": {
+            "dll": "fe8087dcb1ea3aa63359de7eeffe24780aaf4b8a32d05b36dd26a0fb520886ba",
+            "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
+          }
+        },
+        {
+          "targets": [
+            "ask-aside",
+            "bookmark-folder-appearance",
+            "chats-toggle"
+          ],
+          "sha256": {
+            "dll": "6244af62702ff66abca3b929684553540a0a09491d192e5e0a9accf9a1ccae75",
+            "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
+          }
+        },
+        {
+          "targets": [
+            "bookmark-folder-appearance"
+          ],
+          "sha256": {
+            "dll": "4704013c20ca21efb12e79ce682778872003348f34c90fbaed7c190a644c3f1d",
+            "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
+          }
+        },
+        {
+          "targets": [
+            "bookmark-folder-appearance",
+            "chats"
+          ],
+          "sha256": {
+            "dll": "4961b63b3ed01399de861d2e809d4f2a201fb34e74617721aa03d6de65d54ef9",
+            "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
+          }
+        },
+        {
+          "targets": [
+            "ask-aside",
+            "bookmark-folder-appearance"
+          ],
+          "sha256": {
+            "dll": "4ce3e295d42ddc9e4944bfd4f47962b93c6f7ef58f3a12cfbf58575ee8a84231",
+            "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
+          }
+        },
+        {
+          "targets": [
+            "ask-aside",
+            "bookmark-folder-appearance",
+            "chats"
+          ],
+          "sha256": {
+            "dll": "f928f33aa515acae86858f6ce8aea73dab18370171e542d8fa4c412c991c1465",
+            "appearance": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b"
+          }
+        },
+        {
+          "targets": [
+            "bookmark-folder-appearance",
+            "chats-toggle"
+          ],
+          "sha256": {
+            "dll": "cf5ecca0b959f2863672f07731505fd6528db6ceff56f8ba0aa02e931e558dee",
+            "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
+          }
+        },
+        {
+          "targets": [
+            "ask-aside",
+            "bookmark-folder-appearance",
+            "chats-toggle"
+          ],
+          "sha256": {
+            "dll": "120addcb9d190bbb26cd09876f66e0cec8b53635ff110ae518f3ff4925344a72",
             "appearance": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
           }
         }
