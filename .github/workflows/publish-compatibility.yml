@@ -1,0 +1,77 @@
+name: Approve and publish tested compatibility
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_run_id:
+        description: Successful compatibility workflow run ID to approve
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: compatibility-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    environment: compatibility-publishing
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Validate trusted successful candidate provenance
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_RUN: ${{ inputs.candidate_run_id }}
+        run: |
+          if ($env:CANDIDATE_RUN -notmatch '^\d+$') { throw 'Invalid candidate run ID' }
+          $run=gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:CANDIDATE_RUN"|ConvertFrom-Json
+          if ($run.conclusion -ne 'success' -or $run.head_branch -ne 'main' -or $run.event -notin @('schedule','workflow_dispatch') -or $run.path -ne '.github/workflows/compatibility.yml') { throw 'Candidate is not from a successful trusted main-branch workflow' }
+          $jobs=gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:CANDIDATE_RUN/jobs?per_page=100"|ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $runtime=@($jobs.jobs|Where-Object name -eq 'runtime')
+          if ($runtime.Count -ne 1 -or $runtime[0].conclusion -ne 'success') { throw 'Interactive VM validation has not passed for this candidate' }
+          gh run download $env:CANDIDATE_RUN --name "tested-$env:CANDIDATE_RUN" --dir approved
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $candidate=Get-ChildItem approved -Filter candidate.json -Recurse
+          if (@($candidate).Count -ne 1) { throw 'Ambiguous candidate provenance' }
+          $record=Get-Content $candidate.FullName -Raw|ConvertFrom-Json
+          if ($record.source_commit -ne $run.head_sha) { throw 'Candidate source does not match the tested workflow commit' }
+      - name: Sign exact tested bytes
+        shell: pwsh
+        env:
+          ASIDE_SIGNING_KEY: ${{ secrets.ASIDE_SIGNING_KEY }}
+          CANDIDATE_RUN: ${{ inputs.candidate_run_id }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if (-not $env:ASIDE_SIGNING_KEY) { throw 'Configure the owner signing key in the publishing environment' }
+          $private=Join-Path $env:RUNNER_TEMP 'owner.private.pem'
+          [IO.File]::WriteAllText($private,$env:ASIDE_SIGNING_KEY)
+          try {
+            $package=Get-ChildItem approved -Filter package.unsigned.json -Recurse
+            $runtime=Get-ChildItem approved -Filter runtime.json -Recurse
+            if (@($package).Count -ne 1 -or @($runtime).Count -ne 1) { throw 'Ambiguous tested candidate artifacts' }
+            $releases=gh api "repos/$env:GITHUB_REPOSITORY/releases?per_page=100"|ConvertFrom-Json
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            $previous=@($releases|Where-Object { -not $_.draft -and -not $_.prerelease -and ($_.assets.name -contains 'catalog.json') })|Select-Object -First 1
+            $catalogArgs=@()
+            if ($previous) {
+              gh release download $previous.tag_name --pattern catalog.json --dir previous
+              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+              $catalogArgs=@('--previous-catalog','previous/catalog.json')
+            }
+            uv run --extra catalog python scripts/compatibility_release.py sign --candidate $package.DirectoryName --runtime $runtime.FullName --private $private --public compatibility/public-key.pem --sequence $env:GITHUB_RUN_NUMBER --tag "compatibility-$env:CANDIDATE_RUN" --output signed @catalogArgs
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          } finally { Remove-Item -LiteralPath $private -ErrorAction SilentlyContinue }
+      - name: Publish approved support
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_RUN: ${{ inputs.candidate_run_id }}
+        run: |
+          gh release create "compatibility-$env:CANDIDATE_RUN" signed/*.json --title "Verified Aside compatibility $env:CANDIDATE_RUN" --notes "Owner-approved compatibility artifacts from tested candidate run $env:CANDIDATE_RUN." --latest
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

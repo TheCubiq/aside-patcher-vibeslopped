@@ -1,0 +1,2874 @@
+{
+  "schema_version": 1,
+  "installable": false,
+  "baseline": "1.0.928.2",
+  "versions": [
+    {
+      "version": "1.0.914.1",
+      "dll_sha256": "9a2117222374507bfde876b9afe01326782547dad0ec242c7d96ee2b30cfeeac",
+      "package_sha256": "4ee4adefb509ca14ce97d6398c49ffe8446b0d362fe72c6c83ce3a3d9db8a382",
+      "source": "https://releases.aside.com/dev-updater/windows/1.0.914.1/Aside-1.0.914.1-win-x64.crx3",
+      "signature": {
+        "publisher": "CN=AT YOUR SIDE INC, O=AT YOUR SIDE INC, L=San Francisco, S=California, C=US",
+        "product_version": "1.0.914.1",
+        "timestamp_publisher": "CN=Microsoft Public RSA Time Stamping Authority, OU=nShield TSS ESN:7A00-05E0-D947, OU=Microsoft America Operations, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+        "file_version": "1.0.914.1",
+        "signature_status": "Valid"
+      },
+      "status": "awaiting validation",
+      "hooks": [
+        {
+          "name": "OwnerConstructor",
+          "baseline_rva": 59241408,
+          "matches": [
+            57256336
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "OwnerDestructor",
+          "baseline_rva": 59352352,
+          "matches": [],
+          "unique": false,
+          "prologue_unchanged": false
+        },
+        {
+          "name": "RowIcon",
+          "baseline_rva": 59336144,
+          "matches": [
+            57348304
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowDestructor",
+          "baseline_rva": 59347216,
+          "matches": [
+            3743680,
+            35342912,
+            35973424,
+            40618912,
+            42393392,
+            42887408,
+            43402256,
+            47089696,
+            47377360,
+            47387696,
+            47425616,
+            47450096,
+            48223808,
+            49277536,
+            54231536,
+            54431792,
+            54641296,
+            56026000,
+            56123824,
+            56411776,
+            57359504,
+            59385696,
+            59386368
+          ],
+          "unique": false,
+          "prologue_unchanged": false
+        },
+        {
+          "name": "FolderMenu",
+          "baseline_rva": 59285984,
+          "matches": [
+            57299488
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "ModelRemove",
+          "baseline_rva": 191371664,
+          "matches": [],
+          "unique": false,
+          "prologue_unchanged": false
+        },
+        {
+          "name": "ViewBackground",
+          "baseline_rva": 5516944,
+          "matches": [
+            5414272
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowBackground",
+          "baseline_rva": 59345360,
+          "matches": [
+            57357648
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowBorder",
+          "baseline_rva": 59344672,
+          "matches": [
+            57356960
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowMask",
+          "baseline_rva": 59329056,
+          "matches": [
+            57341200
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowsPaint",
+          "baseline_rva": 59323920,
+          "matches": [],
+          "unique": false,
+          "prologue_unchanged": false
+        },
+        {
+          "name": "LayoutImmediately",
+          "baseline_rva": 82132720,
+          "matches": [],
+          "unique": false,
+          "prologue_unchanged": false
+        },
+        {
+          "name": "FolderToggle",
+          "baseline_rva": 59264896,
+          "matches": [],
+          "unique": false,
+          "prologue_unchanged": false
+        },
+        {
+          "name": "AnimationProgress",
+          "baseline_rva": 59270400,
+          "matches": [
+            57284592
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowAnimationProgress",
+          "baseline_rva": 179329664,
+          "matches": [
+            176377920
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "PreferredSize",
+          "baseline_rva": 73330416,
+          "matches": [
+            71414032
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        }
+      ],
+      "byte_patches": [
+        {
+          "id": "chats",
+          "sites": [
+            {
+              "baseline_offset": 57368901,
+              "exact_matches": [
+                55797320,
+                248365382
+              ]
+            },
+            {
+              "baseline_offset": 57482735,
+              "exact_matches": []
+            },
+            {
+              "baseline_offset": 57482901,
+              "exact_matches": []
+            }
+          ]
+        },
+        {
+          "id": "ask-aside",
+          "sites": [
+            {
+              "baseline_offset": 15320400,
+              "exact_matches": []
+            },
+            {
+              "baseline_offset": 15320468,
+              "exact_matches": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "version": "1.0.922.1",
+      "dll_sha256": "68ea77122834bf9f37a9826fdb39e35957bcac07ff59eaa8f974fbc95104a89c",
+      "package_sha256": "e400a01a69c7336e0524c23b91c74c650388a569899cd233f9858663db8710de",
+      "source": "https://releases.aside.com/dev-updater/windows/1.0.922.1/Aside-1.0.922.1-win-x64.crx3",
+      "signature": {
+        "publisher": "CN=AT YOUR SIDE INC, O=AT YOUR SIDE INC, L=San Francisco, S=California, C=US",
+        "product_version": "1.0.922.1",
+        "timestamp_publisher": "CN=Microsoft Public RSA Time Stamping Authority, OU=nShield TSS ESN:7D00-05E0-D947, OU=Microsoft America Operations, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+        "file_version": "1.0.922.1",
+        "signature_status": "Valid"
+      },
+      "status": "awaiting validation",
+      "hooks": [
+        {
+          "name": "OwnerConstructor",
+          "baseline_rva": 59241408,
+          "matches": [
+            59158784
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "OwnerDestructor",
+          "baseline_rva": 59352352,
+          "matches": [
+            48530160,
+            59269728,
+            59304480
+          ],
+          "unique": false,
+          "prologue_unchanged": false
+        },
+        {
+          "name": "RowIcon",
+          "baseline_rva": 59336144,
+          "matches": [
+            59253520
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowDestructor",
+          "baseline_rva": 59347216,
+          "matches": [
+            3790928,
+            32503216,
+            36670864,
+            37172608,
+            43077200,
+            44020752,
+            48300480,
+            48460832,
+            48470864,
+            48554784,
+            50434864,
+            55544576,
+            55761616,
+            56002320,
+            57552816,
+            57971056,
+            59264592,
+            61335664,
+            61336448
+          ],
+          "unique": false,
+          "prologue_unchanged": false
+        },
+        {
+          "name": "FolderMenu",
+          "baseline_rva": 59285984,
+          "matches": [
+            59203360
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "ModelRemove",
+          "baseline_rva": 191371664,
+          "matches": [
+            191288080
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "ViewBackground",
+          "baseline_rva": 5516944,
+          "matches": [
+            5510944
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowBackground",
+          "baseline_rva": 59345360,
+          "matches": [
+            59262736
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowBorder",
+          "baseline_rva": 59344672,
+          "matches": [
+            59262048
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowMask",
+          "baseline_rva": 59329056,
+          "matches": [
+            59246432
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowsPaint",
+          "baseline_rva": 59323920,
+          "matches": [
+            59241296
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "LayoutImmediately",
+          "baseline_rva": 82132720,
+          "matches": [
+            81999280
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "FolderToggle",
+          "baseline_rva": 59264896,
+          "matches": [
+            59182272
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "AnimationProgress",
+          "baseline_rva": 59270400,
+          "matches": [
+            59187776
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowAnimationProgress",
+          "baseline_rva": 179329664,
+          "matches": [
+            179244960
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "PreferredSize",
+          "baseline_rva": 73330416,
+          "matches": [
+            73227904
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        }
+      ],
+      "byte_patches": [
+        {
+          "id": "chats",
+          "sites": [
+            {
+              "baseline_offset": 57368901,
+              "exact_matches": [
+                57320629
+              ]
+            },
+            {
+              "baseline_offset": 57482735,
+              "exact_matches": []
+            },
+            {
+              "baseline_offset": 57482901,
+              "exact_matches": []
+            }
+          ]
+        },
+        {
+          "id": "ask-aside",
+          "sites": [
+            {
+              "baseline_offset": 15320400,
+              "exact_matches": []
+            },
+            {
+              "baseline_offset": 15320468,
+              "exact_matches": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "version": "1.0.928.1",
+      "dll_sha256": "b10d9e79bf160e6529b9845ca602aee00e431ed71dff63fd0bf087674d4919fc",
+      "package_sha256": "29a7b5a253b9158fbf37e443b4e1d8e11bd82299f6bc295653f72be05c98142a",
+      "source": "https://releases.aside.com/dev-updater/windows/1.0.928.1/Aside-1.0.928.1-win-x64.crx3",
+      "signature": {
+        "publisher": "CN=AT YOUR SIDE INC, O=AT YOUR SIDE INC, L=San Francisco, S=California, C=US",
+        "product_version": "1.0.928.1",
+        "timestamp_publisher": "CN=Microsoft Public RSA Time Stamping Authority, OU=nShield TSS ESN:A500-05E0-D947, OU=Microsoft America Operations, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+        "file_version": "1.0.928.1",
+        "signature_status": "Valid"
+      },
+      "status": "awaiting validation",
+      "hooks": [
+        {
+          "name": "OwnerConstructor",
+          "baseline_rva": 59241408,
+          "matches": [
+            59241232
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "OwnerDestructor",
+          "baseline_rva": 59352352,
+          "matches": [
+            48519984,
+            59352176,
+            59386928
+          ],
+          "unique": false,
+          "prologue_unchanged": false
+        },
+        {
+          "name": "RowIcon",
+          "baseline_rva": 59336144,
+          "matches": [
+            59335968
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowDestructor",
+          "baseline_rva": 59347216,
+          "matches": [
+            3796400,
+            32500224,
+            36669568,
+            37174560,
+            43053072,
+            43999664,
+            48288464,
+            48449600,
+            48460016,
+            48544608,
+            50424512,
+            55550848,
+            55777152,
+            56021200,
+            57601696,
+            58024240,
+            59347040,
+            61436768,
+            61437552
+          ],
+          "unique": false,
+          "prologue_unchanged": false
+        },
+        {
+          "name": "FolderMenu",
+          "baseline_rva": 59285984,
+          "matches": [
+            59285808
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "ModelRemove",
+          "baseline_rva": 191371664,
+          "matches": [
+            191371472
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "ViewBackground",
+          "baseline_rva": 5516944,
+          "matches": [
+            5516944
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowBackground",
+          "baseline_rva": 59345360,
+          "matches": [
+            59345184
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowBorder",
+          "baseline_rva": 59344672,
+          "matches": [
+            59344496
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowMask",
+          "baseline_rva": 59329056,
+          "matches": [
+            59328880
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowsPaint",
+          "baseline_rva": 59323920,
+          "matches": [
+            59323744
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "LayoutImmediately",
+          "baseline_rva": 82132720,
+          "matches": [
+            82132544
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "FolderToggle",
+          "baseline_rva": 59264896,
+          "matches": [
+            59264720
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "AnimationProgress",
+          "baseline_rva": 59270400,
+          "matches": [
+            59270224
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowAnimationProgress",
+          "baseline_rva": 179329664,
+          "matches": [
+            179329472
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "PreferredSize",
+          "baseline_rva": 73330416,
+          "matches": [
+            73330240
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        }
+      ],
+      "byte_patches": [
+        {
+          "id": "chats",
+          "sites": [
+            {
+              "baseline_offset": 57368901,
+              "exact_matches": [
+                57368901
+              ]
+            },
+            {
+              "baseline_offset": 57482735,
+              "exact_matches": [
+                57482735
+              ]
+            },
+            {
+              "baseline_offset": 57482901,
+              "exact_matches": [
+                57482901
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ask-aside",
+          "sites": [
+            {
+              "baseline_offset": 15320400,
+              "exact_matches": [
+                15320400
+              ]
+            },
+            {
+              "baseline_offset": 15320468,
+              "exact_matches": [
+                15320468
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "version": "1.0.928.2",
+      "dll_sha256": "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510",
+      "package_sha256": "7fb756dbb157c15461d91495d244a3358d424bf42bf7aaae3593e6849e402fe8",
+      "source": "https://releases.aside.com/dev-updater/windows/1.0.928.2/Aside-1.0.928.2-win-x64.crx3",
+      "signature": {
+        "publisher": "CN=AT YOUR SIDE INC, O=AT YOUR SIDE INC, L=San Francisco, S=California, C=US",
+        "product_version": "1.0.928.2",
+        "timestamp_publisher": "CN=Microsoft Public RSA Time Stamping Authority, OU=nShield TSS ESN:7800-05E0-D947, OU=Microsoft America Operations, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+        "file_version": "1.0.928.2",
+        "signature_status": "Valid"
+      },
+      "status": "baseline verified",
+      "hooks": [
+        {
+          "name": "OwnerConstructor",
+          "baseline_rva": 59241408,
+          "matches": [
+            59241408
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "OwnerDestructor",
+          "baseline_rva": 59352352,
+          "matches": [
+            48519984,
+            59352352,
+            59387104
+          ],
+          "unique": false,
+          "prologue_unchanged": false
+        },
+        {
+          "name": "RowIcon",
+          "baseline_rva": 59336144,
+          "matches": [
+            59336144
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowDestructor",
+          "baseline_rva": 59347216,
+          "matches": [
+            3796400,
+            32500224,
+            36669568,
+            37174560,
+            43053072,
+            43999664,
+            48288464,
+            48449600,
+            48460016,
+            48544608,
+            50424512,
+            55550848,
+            55777152,
+            56021200,
+            57601696,
+            58024240,
+            59347216,
+            61436944,
+            61437728
+          ],
+          "unique": false,
+          "prologue_unchanged": false
+        },
+        {
+          "name": "FolderMenu",
+          "baseline_rva": 59285984,
+          "matches": [
+            59285984
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "ModelRemove",
+          "baseline_rva": 191371664,
+          "matches": [
+            191371664
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "ViewBackground",
+          "baseline_rva": 5516944,
+          "matches": [
+            5516944
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowBackground",
+          "baseline_rva": 59345360,
+          "matches": [
+            59345360
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowBorder",
+          "baseline_rva": 59344672,
+          "matches": [
+            59344672
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowMask",
+          "baseline_rva": 59329056,
+          "matches": [
+            59329056
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowsPaint",
+          "baseline_rva": 59323920,
+          "matches": [
+            59323920
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "LayoutImmediately",
+          "baseline_rva": 82132720,
+          "matches": [
+            82132720
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "FolderToggle",
+          "baseline_rva": 59264896,
+          "matches": [
+            59264896
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "AnimationProgress",
+          "baseline_rva": 59270400,
+          "matches": [
+            59270400
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "RowAnimationProgress",
+          "baseline_rva": 179329664,
+          "matches": [
+            179329664
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        },
+        {
+          "name": "PreferredSize",
+          "baseline_rva": 73330416,
+          "matches": [
+            73330416
+          ],
+          "unique": true,
+          "prologue_unchanged": true
+        }
+      ],
+      "byte_patches": [
+        {
+          "id": "chats",
+          "sites": [
+            {
+              "baseline_offset": 57368901,
+              "exact_matches": [
+                57368901
+              ]
+            },
+            {
+              "baseline_offset": 57482735,
+              "exact_matches": [
+                57482735
+              ]
+            },
+            {
+              "baseline_offset": 57482901,
+              "exact_matches": [
+                57482901
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ask-aside",
+          "sites": [
+            {
+              "baseline_offset": 15320400,
+              "exact_matches": [
+                15320400
+              ]
+            },
+            {
+              "baseline_offset": 15320468,
+              "exact_matches": [
+                15320468
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "bookmark_dependencies": [
+    {
+      "source": "native_background.c",
+      "line": 25,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x20"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 31,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x228"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 36,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x198"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 38,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x228"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 39,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x190"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 40,
+      "native_addresses": [
+        "0x5433810"
+      ],
+      "layout_operands": [
+        "0x48"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 43,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x20",
+        "0x24"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 44,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x28",
+        "0x2c"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 47,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x450",
+        "0x458"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 48,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x453"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 49,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x464"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 51,
+      "native_addresses": [
+        "0x533e900"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_background.c",
+      "line": 53,
+      "native_addresses": [
+        "0x2e81660"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_background.c",
+      "line": 59,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x190"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 60,
+      "native_addresses": [
+        "0x5433810"
+      ],
+      "layout_operands": [
+        "0x48"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 62,
+      "native_addresses": [
+        "0x533e900"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_background.c",
+      "line": 71,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1d0"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 72,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1d4"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 73,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xc0"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 75,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x100"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 76,
+      "native_addresses": [
+        "0xf99f9d8"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_background.c",
+      "line": 94,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x228"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 95,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x228"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 103,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x190"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 104,
+      "native_addresses": [
+        "0x5433810"
+      ],
+      "layout_operands": [
+        "0x48"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 106,
+      "native_addresses": [
+        "0x35049a0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_background.c",
+      "line": 107,
+      "native_addresses": [
+        "0x533e900"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_background.c",
+      "line": 113,
+      "native_addresses": [
+        "0x533e900"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_background.c",
+      "line": 117,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x20",
+        "0x24"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 118,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x28",
+        "0x1d4"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 119,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x2c",
+        "0x1d0"
+      ]
+    },
+    {
+      "source": "native_background.c",
+      "line": 120,
+      "native_addresses": [
+        "0x2e81660"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 3,
+      "native_addresses": [
+        "0x5df7be0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 4,
+      "native_addresses": [
+        "0x3ff4ee0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 5,
+      "native_addresses": [
+        "0x40704d0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 6,
+      "native_addresses": [
+        "0x3ff5490"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 7,
+      "native_addresses": [
+        "0x66cb50"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 9,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x528"
+      ]
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 11,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x40"
+      ]
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 13,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x168"
+      ]
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 17,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x28"
+      ]
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 20,
+      "native_addresses": [
+        "0x5438c20"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 22,
+      "native_addresses": [
+        "0x4caff90"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 27,
+      "native_addresses": [
+        "0x3884980"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 30,
+      "native_addresses": [
+        "0x912e10"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 31,
+      "native_addresses": [
+        "0xace5b0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 32,
+      "native_addresses": [
+        "0x4bba970"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 33,
+      "native_addresses": [
+        "0x1db04c0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 34,
+      "native_addresses": [
+        "0x7d2dd0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_bindings.c",
+      "line": 35,
+      "native_addresses": [
+        "0x562eec0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 12,
+      "native_addresses": [
+        "0x11bd2300",
+        "0xbca8b20"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 13,
+      "native_addresses": [
+        "0x40232c0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 16,
+      "native_addresses": [
+        "0x5df7be0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 20,
+      "native_addresses": [
+        "0x6e2cd0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 22,
+      "native_addresses": [
+        "0x5df7be0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 23,
+      "native_addresses": [
+        "0x8f70f0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 24,
+      "native_addresses": [
+        "0xfb322b0",
+        "0xfb32370"
+      ],
+      "layout_operands": [
+        "0x30"
+      ]
+    },
+    {
+      "source": "native_controls.c",
+      "line": 25,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x100",
+        "0x100"
+      ]
+    },
+    {
+      "source": "native_controls.c",
+      "line": 26,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x11c",
+        "0x120"
+      ]
+    },
+    {
+      "source": "native_controls.c",
+      "line": 27,
+      "native_addresses": [
+        "0x9b4820"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 31,
+      "native_addresses": [
+        "0x5192d50"
+      ],
+      "layout_operands": [
+        "0x1a8"
+      ]
+    },
+    {
+      "source": "native_controls.c",
+      "line": 37,
+      "native_addresses": [
+        "0x6e15b0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 41,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x4c0",
+        "0x4c8",
+        "0x4d0"
+      ]
+    },
+    {
+      "source": "native_controls.c",
+      "line": 43,
+      "native_addresses": [
+        "0x1e21260"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 44,
+      "native_addresses": [
+        "0x6e1d90"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 45,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x479",
+        "0x458"
+      ]
+    },
+    {
+      "source": "native_controls.c",
+      "line": 46,
+      "native_addresses": [
+        "0x6e29b0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 47,
+      "native_addresses": [
+        "0x4c42d40"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 48,
+      "native_addresses": [
+        "0xb6e0de0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 54,
+      "native_addresses": [
+        "0x4028850"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 55,
+      "native_addresses": [
+        "0x6d8d20"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 58,
+      "native_addresses": [
+        "0x6dfe40"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 59,
+      "native_addresses": [
+        "0xba74c10"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 74,
+      "native_addresses": [
+        "0x4028850"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_controls.c",
+      "line": 75,
+      "native_addresses": [
+        "0x369c210"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 36,
+      "native_addresses": [
+        "0x388672c"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 37,
+      "native_addresses": [
+        "0x3886e63"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 81,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x458",
+        "0x464"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 82,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x453",
+        "0x450",
+        "0x458"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 83,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x453",
+        "0x450",
+        "0x458"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 84,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x453",
+        "0x450",
+        "0x458"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 88,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x458",
+        "0x464"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 89,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x453",
+        "0x450"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 90,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x453",
+        "0x450"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 91,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x453",
+        "0x450"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 94,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x464"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 95,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x450",
+        "0x453",
+        "0x458"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 102,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x450",
+        "0x453",
+        "0x458"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 103,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x450",
+        "0x453",
+        "0x458",
+        "0x464"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 105,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x450",
+        "0x453",
+        "0x458",
+        "0x464"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 120,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x464"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 123,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x450",
+        "0x458"
+      ]
+    },
+    {
+      "source": "native_hooks.c",
+      "line": 129,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x464",
+        "0x464"
+      ]
+    },
+    {
+      "source": "native_render.c",
+      "line": 41,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x450"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 51,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x38"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 54,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 55,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x458"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 63,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xe8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 64,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xe8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 73,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x648",
+        "0x60"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 74,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x650"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 81,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1bc"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 83,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1c4"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 85,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1c4",
+        "0x1d0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 88,
+      "native_addresses": [
+        "0x1e21260"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 91,
+      "native_addresses": [
+        "0x1e21260"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 97,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x721",
+        "0x8f0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 98,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x8e8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 100,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 101,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x198"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 103,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x38"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 104,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 106,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x38"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 108,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x38"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 113,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1d8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 115,
+      "native_addresses": [
+        "0x5190ec0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 118,
+      "native_addresses": [
+        "0x5190ec0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 121,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xf8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 123,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x455"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 124,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x455"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 125,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x440"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 126,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x420"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 127,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x420"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 128,
+      "native_addresses": [
+        "0x18ce660"
+      ],
+      "layout_operands": [
+        "0x398"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 139,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xf8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 157,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 158,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1c8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 159,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x38",
+        "0x38"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 162,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 163,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1cc",
+        "0x1d4"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 167,
+      "native_addresses": [
+        "0x4e522d0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 182,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xb8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 183,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xb8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 184,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x20"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 196,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x550"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 200,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x48"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 201,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x34",
+        "0x44"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 206,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1d4"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 208,
+      "native_addresses": [
+        "0x5190ec0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 220,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x457"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 221,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x45c"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 222,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x460"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 227,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1c8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 228,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x550"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 232,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x48"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 235,
+      "native_addresses": [
+        "0xad8c400"
+      ],
+      "layout_operands": [
+        "0x28",
+        "0x38"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 237,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x20"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 247,
+      "native_addresses": [
+        "0x10a35d50"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 248,
+      "native_addresses": [
+        "0x48dd6b0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 249,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xd8",
+        "0x18"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 252,
+      "native_addresses": [
+        "0x10a35d50"
+      ],
+      "layout_operands": [
+        "0x18"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 265,
+      "native_addresses": [
+        "0xaad7ea0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 296,
+      "native_addresses": [
+        "0x48dd6b0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 297,
+      "native_addresses": [
+        "0x10a35cb0",
+        "0x10a35ec8"
+      ],
+      "layout_operands": [
+        "0xd8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 298,
+      "native_addresses": [
+        "0x363cd0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 299,
+      "native_addresses": [
+        "0x363cd0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 302,
+      "native_addresses": [
+        "0x4567210"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 309,
+      "native_addresses": [
+        "0xfe16378"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 310,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 311,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x38"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 312,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x38"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 315,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1d8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 324,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1a0",
+        "0x1a8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 328,
+      "native_addresses": [
+        "0xfe16378"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 337,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1d8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 338,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 339,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xf8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 340,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x68"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 354,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x198"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 361,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f8",
+        "0x1d0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 363,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3e0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 365,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 367,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xf8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 368,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x68"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 375,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x38"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 381,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 382,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xf8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 383,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3e0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 384,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x68"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 391,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3e0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 394,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1c8",
+        "0x1cc",
+        "0x1d0",
+        "0x1d4"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 395,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1d8",
+        "0x453",
+        "0x450",
+        "0x458",
+        "0x464"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 404,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 405,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xf8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 406,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3e0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 407,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x68"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 416,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3e0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 429,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x450",
+        "0x458"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 430,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x450",
+        "0x458"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 432,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x450",
+        "0x458"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 587,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x138"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 615,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1d8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 629,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1c8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 633,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x455"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 634,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x455"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 637,
+      "native_addresses": [
+        "0xfe16378"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 642,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1d8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 646,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1c8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 666,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x38"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 670,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f0"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 673,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x38"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 688,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x568"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 690,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x5c8"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 693,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x1d4"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 698,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x453",
+        "0x450"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 701,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x550"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 702,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x568"
+      ]
+    },
+    {
+      "source": "native_runtime.c",
+      "line": 703,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xc0"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 47,
+      "native_addresses": [
+        "0x20d57f0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 59,
+      "native_addresses": [
+        "0xaafb850"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 65,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x9e0"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 66,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x9f0"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 67,
+      "native_addresses": [
+        "0x388ef20"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 80,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3d0"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 84,
+      "native_addresses": [
+        "0x414f0b0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 92,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x190"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 93,
+      "native_addresses": [
+        "0xba74c40"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 95,
+      "native_addresses": [
+        "0xaa75d50"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 100,
+      "native_addresses": [
+        "0xaafc1c0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 104,
+      "native_addresses": [
+        "0x369a770"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 105,
+      "native_addresses": [
+        "0x276bd50"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 117,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x528"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 118,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x40"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 125,
+      "native_addresses": [
+        "0x9cc3380"
+      ],
+      "layout_operands": [
+        "0x48"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 126,
+      "native_addresses": [
+        "0xbaaf360"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 127,
+      "native_addresses": [
+        "0x9cc3210"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 147,
+      "native_addresses": [
+        "0x37813b0"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 158,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x4d0"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 159,
+      "native_addresses": [
+        "0xba74c10"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 171,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x3f0"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 172,
+      "native_addresses": [],
+      "layout_operands": [
+        "0xf8",
+        "0x138"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 173,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x6c8",
+        "0x6d0"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 174,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x68"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 184,
+      "native_addresses": [
+        "0xef5d80"
+      ],
+      "layout_operands": []
+    },
+    {
+      "source": "native_ui.c",
+      "line": 188,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x60"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 189,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x9c0",
+        "0x9c8"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 190,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x9e0",
+        "0x9f0"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 196,
+      "native_addresses": [],
+      "layout_operands": [
+        "0x4d0"
+      ]
+    },
+    {
+      "source": "native_ui.c",
+      "line": 197,
+      "native_addresses": [
+        "0xba74c10"
+      ],
+      "layout_operands": []
+    }
+  ],
+  "remaining_validation": [
+    "All native bindings and object layouts",
+    "Control flow and calling conventions",
+    "Native icon/color resources",
+    "Interactive per-patch and combination checks"
+  ]
+}
