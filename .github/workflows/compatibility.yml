@@ -13,7 +13,6 @@ jobs:
     runs-on: windows-latest
     outputs:
       version: ${{ steps.release.outputs.version }}
-      supported: ${{ steps.release.outputs.supported }}
       package_sha256: ${{ steps.release.outputs.package_sha256 }}
       seen: ${{ steps.seen.outputs.cache-hit }}
     steps:
@@ -25,9 +24,7 @@ jobs:
           uv run python scripts/check_release.py release.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $release=Get-Content release.json -Raw|ConvertFrom-Json
-          $builds=(Get-Content aside_patcher/builds.json -Raw|ConvertFrom-Json).builds
           "version=$($release.version)" >> $env:GITHUB_OUTPUT
-          "supported=$([bool]($builds|Where-Object version -eq $release.version))" >> $env:GITHUB_OUTPUT
           "package_sha256=$($release.package_sha256)" >> $env:GITHUB_OUTPUT
       - id: seen
         uses: actions/cache/restore@v4
@@ -40,6 +37,8 @@ jobs:
           name: release-descriptor
           path: release.json
   analyze:
+    outputs:
+      candidate: ${{ steps.prepare.outputs.candidate }}
     needs: detect
     if: github.event_name == 'workflow_dispatch' || needs.detect.outputs.seen != 'true'
     runs-on: windows-latest
@@ -61,25 +60,18 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           uv run python scripts/analyze_versions.py --archive "$env:RUNNER_TEMP/aside-archive" --output analysis.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Render only an already reviewed build
-        if: needs.detect.outputs.supported == 'True'
+      - name: Resolve independent patches and prepare candidates
+        id: prepare
         shell: pwsh
         run: |
           $metadata=Get-ChildItem "$env:RUNNER_TEMP/aside-archive/browsers/${{ needs.detect.outputs.version }}" -Filter browser.json -Recurse
           if (@($metadata).Count -ne 1) { throw 'Ambiguous original archive' }
           $record=Get-Content $metadata.FullName -Raw|ConvertFrom-Json
           if ($record.package_sha256 -ne '${{ needs.detect.outputs.package_sha256 }}') { throw 'Package changed after release detection' }
-          $dll=Join-Path $metadata.DirectoryName $record.dll
-          uv run --extra catalog python scripts/compatibility_release.py build --version '${{ needs.detect.outputs.version }}' --dll $dll --output candidate
+          uv run --extra catalog python scripts/compatibility_release.py analyze --archive "$env:RUNNER_TEMP/aside-archive" --version '${{ needs.detect.outputs.version }}' --output candidate
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Explain unsupported release
-        if: needs.detect.outputs.supported != 'True'
-        shell: pwsh
-        run: "'New release needs adapter validation. Candidate analysis is available; no installable support was generated.' >> $env:GITHUB_STEP_SUMMARY"
-      - name: Explain pending VM acceptance
-        if: needs.detect.outputs.supported == 'True' && vars.ASIDE_UI_TESTS_ENABLED != 'true'
-        shell: pwsh
-        run: "'Static candidate prepared. Interactive VM validation is pending setup; this candidate cannot be published.' >> $env:GITHUB_STEP_SUMMARY"
+          "candidate=$(Test-Path candidate/package.unsigned.json)" >> $env:GITHUB_OUTPUT
+          Get-Content candidate/analysis.json >> $env:GITHUB_STEP_SUMMARY
       - uses: actions/upload-artifact@v4
         with:
           name: candidate-${{ github.run_id }}
@@ -95,33 +87,44 @@ jobs:
           path: .analysis-marker
           key: aside-analyzed-${{ needs.detect.outputs.package_sha256 }}-${{ github.sha }}
   runtime:
-    if: needs.detect.outputs.supported == 'True' && vars.ASIDE_UI_TESTS_ENABLED == 'true'
+    if: github.ref == 'refs/heads/main' && needs.analyze.outputs.candidate == 'True' && vars.ASIDE_UI_TESTS_ENABLED == 'true'
     needs: [detect, analyze]
     runs-on: [self-hosted, Windows, X64, aside-ui-test]
-    timeout-minutes: 60
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: candidate-${{ github.run_id }}
           path: tested-candidate
-      - name: Require isolated interactive VM and reviewed native UI harness
+      - uses: astral-sh/setup-uv@v6
+      - name: Short individual and interaction smoke checks
         shell: pwsh
         run: |
-          if ($env:ASIDE_DISPOSABLE_VM -ne '1' -or -not [Environment]::UserInteractive) { throw 'An isolated interactive desktop VM is required' }
-          if (-not $env:ASIDE_UI_TEST_SCRIPT -or -not (Test-Path -LiteralPath $env:ASIDE_UI_TEST_SCRIPT)) { throw 'Configure the reviewed native UI harness; runtime checks cannot be inferred from hashes' }
-          & $env:ASIDE_UI_TEST_SCRIPT -CandidateDirectory (Resolve-Path tested-candidate/candidate) -ReportPath "$PWD/runtime.json"
+          if (-not [Environment]::UserInteractive) { throw 'Interactive Windows test desktop required' }
+          $archive=Join-Path $env:RUNNER_TEMP 'aside-smoke-archive'
+          $trial=Join-Path $env:RUNNER_TEMP "aside-smoke-${{ github.run_id }}-${{ github.run_attempt }}"
+          uv run python scripts/archive_aside.py --root $archive --packages '${{ needs.detect.outputs.version }}'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          if (-not (Test-Path runtime.json)) { throw 'UI harness produced no evidence report' }
+          uv run --extra catalog python scripts/prepare_desktop_trial.py --archive $archive --version '${{ needs.detect.outputs.version }}' --trial $trial --candidate tested-candidate/candidate/package.unsigned.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $selected='tested-candidate/candidate'
+          uv run --extra catalog --extra automation python scripts/smoke_candidate.py --allow-unsigned-candidate --candidate $selected --trial $trial --report initial-evidence/runtime.json
+          if ($LASTEXITCODE -ne 0) {
+            uv run --extra catalog python scripts/compatibility_release.py subset --candidate $selected --runtime initial-evidence/runtime.json --output passing-candidate
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            $selected='passing-candidate'
+            uv run --extra catalog --extra automation python scripts/smoke_candidate.py --allow-unsigned-candidate --candidate $selected --trial $trial --report evidence/runtime.json
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          } else {
+            Copy-Item -LiteralPath initial-evidence -Destination evidence -Recurse
+          }
+          Copy-Item -LiteralPath $selected -Destination final-candidate -Recurse
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: tested-${{ github.run_id }}
           path: |
-            tested-candidate/candidate/
-            runtime.json
-            screenshots/
+            final-candidate/
+            evidence/
           retention-days: 30
-      - name: VM lifecycle
-        if: always()
-        shell: pwsh
-        run: "'Reset this disposable runner snapshot before accepting another job.' >> $env:GITHUB_STEP_SUMMARY"

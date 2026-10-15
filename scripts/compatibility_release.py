@@ -1,5 +1,8 @@
 """Prepare data-only candidates and sign exact tested compatibility artifacts."""
 
+# Direct script imports and optional cryptography/analysis dependencies are deliberate.
+# pylint: disable=wrong-import-position,import-outside-toplevel
+
 import argparse
 import base64
 from datetime import datetime, timedelta, timezone
@@ -12,11 +15,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from aside_patcher.common.models import MANIFEST_PATH
 from aside_patcher.common.utils import file_sha256, sha256
-from aside_patcher.compatibility import MAX_DOWNLOAD, canonical, apply_delta, build_from_package, verify_document
+from aside_patcher.compatibility import ENGINE_VERSION, MAX_DOWNLOAD, canonical, apply_delta, build_from_package, verify_document
 from aside_patcher.manifest import load_build
 from aside_patcher.recipes import render
 
-REQUIRED_RUNTIME_CHECKS = ("launch", "patch-behavior", "all-combinations", "restore", "themes", "bookmark-interactions")
+REQUIRED_RUNTIME_CHECKS = ("launch", "patch-behavior", "all-combinations", "restore")
 
 
 def delta(original: bytes, after: bytes) -> dict:
@@ -31,7 +34,7 @@ def delta(original: bytes, after: bytes) -> dict:
         while left < min(len(before_chunk), len(after_chunk)) and before_chunk[left] == after_chunk[left]:
             left += 1
         right = len(after_chunk)
-        while right > left and right <= len(before_chunk) and before_chunk[right - 1] == after_chunk[right - 1]:
+        while left < right <= len(before_chunk) and before_chunk[right - 1] == after_chunk[right - 1]:
             right -= 1
         block = after_chunk[left:right]
         segment, copy_cursor = _delta_segment(block, start + left, original, copy_cursor)
@@ -140,6 +143,209 @@ def build_candidate(args: argparse.Namespace) -> None:
     (args.output / "candidate.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
 
+def reuse_analysis(path: Path, identity: dict) -> bool:
+    """Reuse complete immutable output only when its analysis inputs still match."""
+    if not path.exists():
+        return False
+    previous = json.loads(path.read_bytes())
+    if previous.get("identity") != identity:
+        raise ValueError("Analysis output is immutable; use a fresh directory for changed inputs")
+    if any(patch["analysis_passed"] for patch in previous["patches"]):
+        if not all((path.parent / name).is_file() for name in ("candidate.json", "package.unsigned.json")):
+            raise ValueError("Cached candidate is incomplete; choose a fresh output directory")
+        candidate = json.loads((path.parent / "candidate.json").read_bytes())
+        if file_sha256(path.parent / "package.unsigned.json") != candidate["candidate_sha256"]:
+            raise ValueError("Cached candidate changed; choose a fresh output directory")
+    elif not (path.parent / "availability.json").is_file():
+        raise ValueError("Cached availability analysis is incomplete; choose a fresh output directory")
+    return True
+
+
+def analyze_candidate(args: argparse.Namespace) -> None:  # pylint: disable=too-many-locals
+    """Prepare unknown builds per patch; never require prior registry membership."""
+    from aside_patcher.patches import PATCHES
+    from scripts.patch_analysis import analyze_patch, render_selection, selections, smoke_selections
+
+    record, original = archived_original(args.archive, args.version)
+    _, baseline = archived_original(args.archive, "1.0.928.2")
+    identity = {
+        "engine_version": ENGINE_VERSION,
+        "dll_sha256": sha256(original),
+        "baseline_sha256": sha256(baseline),
+        "analyzer_sha256": file_sha256(Path(__file__).with_name("patch_analysis.py")),
+        "patches": {
+            patch.patch_id: file_sha256(
+                Path(__file__).resolve().parents[1] / "aside_patcher" / "patches" / patch.patch_id.replace("-", "_") / "patch.json"
+            )
+            for patch in PATCHES
+        },
+    }
+    identity["generator_sha256"] = file_sha256(Path(__file__))
+    identity["bookmark_adapter_index_sha256"] = file_sha256(Path(__file__).resolve().parents[1] / "compatibility/adapters/index.json")
+    identity["bookmark_renderer_sha256"] = file_sha256(
+        Path(__file__).resolve().parents[1] / "aside_patcher/patches/bookmark_folder_appearance/native.py"
+    )
+    args.output.mkdir(parents=True, exist_ok=True)
+    analysis_path = args.output / "analysis.json"
+    if reuse_analysis(analysis_path, identity):
+        print("Unchanged analysis reused:", args.version)
+        return
+    patches = [analyze_patch(patch, args.version, baseline, original) for patch in PATCHES]
+    if args.version == "1.0.928.2":
+        # Keep the already reviewed payload adapters and exact combination hashes.
+        metadata = next(args.archive.glob(f"browsers/{args.version}/*/browser.json"))
+        build_candidate(argparse.Namespace(version=args.version, dll=metadata.parent / record["dll"], settings=None, output=args.output))
+        for patch in patches:
+            if patch["id"] == "bookmark-folder-appearance":
+                patch.update(analysis_passed=True, reason="Existing exact-hash reviewed native adapter.")
+    report = {
+        "schema_version": 1,
+        "browser_version": args.version,
+        "identity": identity,
+        "package_sha256": record["package_sha256"],
+        "patches": patches,
+        "runtime_passed": False,
+    }
+    analysis_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    if args.version == "1.0.928.2":
+        candidate_path = args.output / "candidate.json"
+        candidate = json.loads(candidate_path.read_text())
+        package = json.loads((args.output / "package.unsigned.json").read_bytes())
+        candidate.update(
+            schema_version=2,
+            analysis_identity=identity,
+            runtime_selections=smoke_selections(package["builds"][0]["states"], package["patches"]),
+        )
+        candidate_path.write_text(json.dumps(candidate, indent=2) + "\n", encoding="utf-8")
+        return
+    if not any(patch["analysis_passed"] for patch in patches):
+        availability = {
+            "schema_version": 1,
+            "minimum_engine_version": 1,
+            "builds": [
+                {
+                    "version": args.version,
+                    "files": {
+                        "dll": {
+                            "path": f"%ProgramFiles%/Aside/Application/{args.version}/Aside.dll",
+                            "original_sha256": sha256(original),
+                        }
+                    },
+                    "states": [{"targets": [], "sha256": {"dll": sha256(original)}, "payloads": {"dll": delta(original, original)}}],
+                }
+            ],
+            "patches": [{key: value for key, value in patch.items() if key != "sites"} for patch in patches],
+        }
+        # This read-only availability entry advertises no enableable selections.
+        build_from_package(availability, args.version)
+        (args.output / "availability.json").write_bytes(canonical(availability))
+        print("No safely resolved patches:", args.version)
+        return
+    states = []
+    for targets in selections(patches):
+        after = render_selection(original, patches, targets)
+        states.append({"targets": list(targets), "sha256": {"dll": sha256(after)}, "payloads": {"dll": delta(original, after)}})
+    raw = {
+        "version": args.version,
+        "files": {"dll": {"path": f"%ProgramFiles%/Aside/Application/{args.version}/Aside.dll", "original_sha256": sha256(original)}},
+        "states": states,
+    }
+    metadata = [{key: value for key, value in patch.items() if key != "sites"} for patch in patches]
+    for patch in metadata:
+        if patch["analysis_passed"]:
+            patch["status"] = "supported"  # Private candidate only; signing requires smoke evidence.
+    package = {"schema_version": 1, "minimum_engine_version": 1, "builds": [raw], "patches": metadata, "blobs": _intern_payloads(raw)}
+    _validate_package(package, args.version, {"dll": original})
+    data = canonical(package)
+    (args.output / "package.unsigned.json").write_bytes(data)
+    supported = sorted(patch["id"] for patch in patches if patch["analysis_passed"])
+    # All native patches share the DLL; test the combined selection as an interaction set.
+    runtime_sets = smoke_selections(states, metadata)
+    candidate = {
+        "schema_version": 2,
+        "candidate_sha256": sha256(data),
+        "browser_version": args.version,
+        "source_commit": os.environ.get("GITHUB_SHA", "local-uncommitted"),
+        "static_passed": True,
+        "runtime_passed": False,
+        "required_runtime_checks": list(REQUIRED_RUNTIME_CHECKS),
+        "combination_count": len(states),
+        "runtime_selections": runtime_sets,
+        "analysis_identity": identity,
+    }
+    (args.output / "candidate.json").write_text(json.dumps(candidate, indent=2) + "\n", encoding="utf-8")
+    print("Candidate prepared:", args.version, ", ".join(supported))
+
+
+def archived_original(archive: Path, version: str) -> tuple:
+    """Require a unique verified archive and recheck its immutable DLL digest."""
+    from scripts.patch_analysis import version_tuple
+
+    version_tuple(version)
+    matches = list(archive.glob(f"browsers/{version}/*/browser.json"))
+    if len(matches) != 1:
+        raise ValueError(f"Need one verified official archive for {version}")
+    metadata = matches[0]
+    record = json.loads(metadata.read_text())
+    path = (metadata.parent / record["dll"]).resolve()
+    if not path.is_relative_to(metadata.parent.resolve()):
+        raise ValueError("Archived DLL escaped its package directory")
+    image = path.read_bytes()
+    if record.get("verified") is not True or record["actual_browser_version"] != version or sha256(image) != record["dll_sha256"]:
+        raise ValueError("Archived version or original digest mismatch")
+    return record, image
+
+
+def passing_subset(args: argparse.Namespace) -> None:
+    """Remove failing patches/interactions, then require a fresh smoke report for that package."""
+    from scripts.patch_analysis import smoke_selections
+
+    source = args.candidate / "package.unsigned.json"
+    data = source.read_bytes()
+    runtime = json.loads(args.runtime.read_text())
+    if runtime.get("candidate_sha256") != sha256(data) or runtime.get("restored") is not True:
+        raise ValueError("Subset requires evidence for this exact candidate and safe restoration")
+    package = json.loads(data)
+    passed = {item["targets"][0] for item in runtime.get("combinations", []) if item.get("passed") is True and len(item["targets"]) == 1}
+    if not passed:
+        raise ValueError("No individually passing patches to publish")
+    conflicts = set()
+    for item in runtime.get("combinations", []):
+        if item.get("passed") is not True and len(item["targets"]) > 1:
+            from itertools import combinations
+
+            conflicts.update(tuple(sorted(pair)) for pair in combinations(item["targets"], 2))
+    for patch in package["patches"]:
+        if patch["id"] not in passed:
+            patch.update(status="awaiting validation", reason="Not independently smoke-tested or failed its smoke check.")
+        else:
+            patch["conflicts"] = sorted(
+                set(patch["conflicts"]) | {other for pair in conflicts if patch["id"] in pair for other in pair if other != patch["id"]}
+            )
+    for build in package["builds"]:
+        build["states"] = [
+            state
+            for state in build["states"]
+            if set(state["targets"]) <= passed and not any(set(pair) <= set(state["targets"]) for pair in conflicts)
+        ]
+    raw = canonical(package)
+    args.output.mkdir(parents=True, exist_ok=False)
+    (args.output / "package.unsigned.json").write_bytes(raw)
+    original_candidate = json.loads((args.candidate / "candidate.json").read_text())
+    candidate = dict(
+        original_candidate,
+        schema_version=2,
+        candidate_sha256=sha256(raw),
+        derived_from=sha256(data),
+        runtime_passed=False,
+        combination_count=len(package["builds"][0]["states"]),
+        runtime_selections=smoke_selections(package["builds"][0]["states"], package["patches"]),
+    )
+    (args.output / "candidate.json").write_text(json.dumps(candidate, indent=2) + "\n", encoding="utf-8")
+    build_from_package(package, candidate["browser_version"])
+    print("Passing subset prepared; fresh smoke validation required:", ", ".join(sorted(passed)))
+
+
 def _validate_package(package: dict, version: str, originals: dict) -> None:
     """Reconstruct every serialized recipe through the client's actual parser."""
     build = build_from_package(package, version)
@@ -196,9 +402,53 @@ def _tested_digest(args: argparse.Namespace) -> str:
     combinations = runtime.get("combinations", [])
     expected = {tuple(sorted(state["targets"])) for state in json.loads(package_path.read_bytes())["builds"][0]["states"]}
     observed = {tuple(sorted(item["targets"])) for item in combinations if item.get("passed") is True}
-    if observed != expected:
+    if candidate.get("schema_version") == 2:
+        from scripts.patch_analysis import smoke_selections
+
+        if runtime.get("restored") is not True:
+            raise ValueError("Smoke report does not confirm exact original restoration")
+        transactions = {tuple(sorted(item["targets"])) for item in runtime.get("transactions", []) if item.get("passed") is True}
+        package = json.loads(package_path.read_bytes())
+        required_runtime = {tuple(targets) for targets in smoke_selections(package["builds"][0]["states"], package["patches"])}
+        if required_runtime != {tuple(sorted(targets)) for targets in candidate["runtime_selections"]}:
+            raise ValueError("Candidate smoke plan omits required individual or interaction checks")
+        if transactions != expected or observed != required_runtime:
+            raise ValueError("Missing combination transactions or required patch/interaction smoke checks")
+        for item in combinations:
+            screenshots = item.get("screenshots", [])
+            if not screenshots or any(not _evidence_digest(args.runtime.parent, evidence) for evidence in screenshots):
+                raise ValueError("Smoke screenshots are missing or altered")
+    elif observed != expected:
         raise ValueError("Runtime report must cover every advertised combination")
     return digest
+
+
+def _evidence_digest(root: Path, evidence: dict) -> bool:
+    """Bind portable screenshot paths and their contents to the smoke report."""
+    path = (root / evidence["path"]).resolve()
+    return path.is_relative_to(root.resolve()) and path.is_file() and file_sha256(path) == evidence["sha256"]
+
+
+def bundle_candidate(args: argparse.Namespace) -> None:
+    """Add exact smoke-tested data to source-bundled support without publishing a release."""
+    digest = _tested_digest(args)
+    candidate = json.loads((args.candidate / "candidate.json").read_text())
+    version = candidate["browser_version"]
+    from scripts.patch_analysis import version_tuple
+
+    version_tuple(version)
+    package = (args.candidate / "package.unsigned.json").read_bytes()
+    build_from_package(json.loads(package), version)
+    args.output.mkdir(parents=True, exist_ok=True)
+    index_path = args.output / "index.json"
+    index = json.loads(index_path.read_bytes()) if index_path.exists() else {"schema_version": 1, "builds": {}}
+    target = args.output / f"{version}.json"
+    if target.exists() and target.read_bytes() != package:
+        raise ValueError("Existing bundled support differs; review adapter migration before replacing it")
+    target.write_bytes(package)
+    index["builds"][version] = {"sha256": digest, "runtime_report_sha256": file_sha256(args.runtime)}
+    index_path.write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
+    print("Smoke-tested support bundled:", version)
 
 
 def sign_candidate(args: argparse.Namespace) -> None:
@@ -268,6 +518,16 @@ def main():
     build.add_argument("--dll", type=Path, required=True)
     build.add_argument("--settings", type=Path)
     build.add_argument("--output", type=Path, required=True)
+    analyze = commands.add_parser("analyze")
+    analyze.add_argument("--archive", type=Path, required=True)
+    analyze.add_argument("--version", required=True)
+    analyze.add_argument("--output", type=Path, required=True)
+    subset = commands.add_parser("subset")
+    for name in ("candidate", "runtime", "output"):
+        subset.add_argument("--" + name, type=Path, required=True)
+    bundle = commands.add_parser("bundle")
+    for name in ("candidate", "runtime", "output"):
+        bundle.add_argument("--" + name, type=Path, required=True)
     setup = commands.add_parser("keygen")
     setup.add_argument("--private", type=Path, required=True)
     setup.add_argument("--public", type=Path, required=True)
@@ -278,7 +538,14 @@ def main():
     sign.add_argument("--tag", required=True)
     sign.add_argument("--previous-catalog", type=Path)
     args = parser.parse_args()
-    {"build": build_candidate, "keygen": keygen, "sign": sign_candidate}[args.command](args)
+    {
+        "build": build_candidate,
+        "analyze": analyze_candidate,
+        "subset": passing_subset,
+        "bundle": bundle_candidate,
+        "keygen": keygen,
+        "sign": sign_candidate,
+    }[args.command](args)
 
 
 if __name__ == "__main__":

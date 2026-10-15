@@ -11,5 +11,16 @@
       "patched_sha256": "7a04261abc6753ee5c8e20f92d90e426f037145d316a06713aad649ea970a8bb",
       "builder_order": 20
     }
+  },
+  "compatibility": {
+    "analyzer": "native-payload",
+    "baseline": "1.0.928.2",
+    "requires": [
+      "group-icons"
+    ],
+    "minimum_version": "1.0.922.1"
+  },
+  "smoke": {
+    "kind": "folder-appearance"
   }
 }

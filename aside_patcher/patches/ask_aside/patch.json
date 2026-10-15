@@ -22,5 +22,19 @@
       "original_sha256": "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510",
       "patched_sha256": "3325f6313bb5366fc90ae5f15ff0fc0565a7d0c937c466edaa8ddc11b32377fe"
     }
+  },
+  "compatibility": {
+    "analyzer": "instruction-sites",
+    "baseline": "1.0.928.2",
+    "requires": [
+      "native-toolbar"
+    ]
+  },
+  "smoke": {
+    "kind": "hidden-control",
+    "selector": {
+      "class_name": "LabelButtonLabel",
+      "text": "Ask Aside"
+    }
   }
 }

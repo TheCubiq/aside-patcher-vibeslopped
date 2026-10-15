@@ -23,5 +23,15 @@
       "original_sha256": "aba2b034aa3f60ad466639009b1bbc07e76c9320e15c64c935ae146058dbc67b",
       "patched_sha256": "3c23f4f678c224356c1602a62f74ad79744a8c357075cec6f485d09354c16947"
     }
+  },
+  "compatibility": {
+    "analyzer": "native-settings",
+    "baseline": "1.0.928.2",
+    "requires": [
+      "settings-component"
+    ]
+  },
+  "smoke": {
+    "kind": "native-settings"
   }
 }
