@@ -48,7 +48,12 @@ def masked_bytes(data: bytes) -> tuple[bytes, set]:
             if item.imm_size:
                 mask.update(range(start + item.imm_offset, start + item.imm_offset + item.imm_size))
         if any(operand.type == X86_OP_MEM and operand.mem.base == X86_REG_RIP for operand in item.operands):
-            mask.update(range(start + item.disp_offset, start + item.disp_offset + item.disp_size))
+            # x64 RIP-relative addressing always encodes disp32. Capstone can
+            # incorrectly report disp_size=2 for prefixed SIMD instructions.
+            displacement = item.bytes[item.disp_offset : item.disp_offset + 4]
+            if len(displacement) != 4 or int.from_bytes(displacement, "little", signed=True) != item.disp:
+                raise ValueError("RIP displacement encoding disagrees with disassembly")
+            mask.update(range(start + item.disp_offset, start + item.disp_offset + 4))
     pattern = b"".join(b"." if index in mask else re.escape(bytes([value])) for index, value in enumerate(data))
     return pattern, mask
 
@@ -202,7 +207,7 @@ def analyze_patch(definition, version: str, baseline: bytes, image: bytes) -> di
     if exclusion:
         return dict(result, status="unsupported", reason=exclusion)
     if definition.patch_id == "bookmark-folder-appearance":
-        from aside_patcher.patches.bookmark_folder_appearance.adapters import load_adapter
+        from aside_patcher.patches.bookmark_folder_appearance.adapters import UnknownNativeBuild, load_adapter
 
         try:
             adapter, _, _ = load_adapter(image)
@@ -215,6 +220,19 @@ def analyze_patch(definition, version: str, baseline: bytes, image: bytes) -> di
                 native_adapter=adapter["original_sha256"],
                 reason="Exact native adapter resolved; candidate runtime checks pending.",
             )
+        except UnknownNativeBuild:
+            from scripts.native_discovery import discover_bookmarks
+
+            try:
+                discovery = discover_bookmarks(baseline, image)
+                return dict(
+                    result,
+                    native_discovery=discovery,
+                    reason=f"Native discovery: {discovery['structural_matches']} code and {discovery['data_matches']} data matches; "
+                    f"{discovery['remaining']} dependencies require validation. No installable adapter generated.",
+                )
+            except (ValueError, Refusal) as error:
+                return dict(result, reason=str(error))
         except (ValueError, Refusal) as error:
             return dict(result, reason=str(error))
     if definition.compatibility.get("analyzer") != "instruction-sites":

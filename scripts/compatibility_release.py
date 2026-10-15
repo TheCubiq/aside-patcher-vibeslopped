@@ -185,6 +185,8 @@ def analyze_candidate(args: argparse.Namespace) -> None:  # pylint: disable=too-
     identity["bookmark_renderer_sha256"] = file_sha256(
         Path(__file__).resolve().parents[1] / "aside_patcher/patches/bookmark_folder_appearance/native.py"
     )
+    identity["native_discovery_sha256"] = file_sha256(Path(__file__).with_name("native_discovery.py"))
+    identity["native_resources_sha256"] = file_sha256(Path(__file__).with_name("native_resources.py"))
     args.output.mkdir(parents=True, exist_ok=True)
     analysis_path = args.output / "analysis.json"
     if reuse_analysis(analysis_path, identity):
@@ -194,7 +196,9 @@ def analyze_candidate(args: argparse.Namespace) -> None:  # pylint: disable=too-
     if args.version == "1.0.928.2":
         # Keep the already reviewed payload adapters and exact combination hashes.
         metadata = next(args.archive.glob(f"browsers/{args.version}/*/browser.json"))
-        build_candidate(argparse.Namespace(version=args.version, dll=metadata.parent / record["dll"], settings=None, output=args.output))
+        build_candidate(
+            argparse.Namespace(version=args.version, dll=metadata.parent / record["dll"], settings=None, output=args.output)
+        )
         for patch in patches:
             if patch["id"] == "bookmark-folder-appearance":
                 patch.update(analysis_passed=True, reason="Existing exact-hash reviewed native adapter.")
@@ -306,7 +310,9 @@ def passing_subset(args: argparse.Namespace) -> None:
     if runtime.get("candidate_sha256") != sha256(data) or runtime.get("restored") is not True:
         raise ValueError("Subset requires evidence for this exact candidate and safe restoration")
     package = json.loads(data)
-    passed = {item["targets"][0] for item in runtime.get("combinations", []) if item.get("passed") is True and len(item["targets"]) == 1}
+    passed = {
+        item["targets"][0] for item in runtime.get("combinations", []) if item.get("passed") is True and len(item["targets"]) == 1
+    }
     if not passed:
         raise ValueError("No individually passing patches to publish")
     conflicts = set()
@@ -320,7 +326,8 @@ def passing_subset(args: argparse.Namespace) -> None:
             patch.update(status="awaiting validation", reason="Not independently smoke-tested or failed its smoke check.")
         else:
             patch["conflicts"] = sorted(
-                set(patch["conflicts"]) | {other for pair in conflicts if patch["id"] in pair for other in pair if other != patch["id"]}
+                set(patch["conflicts"])
+                | {other for pair in conflicts if patch["id"] in pair for other in pair if other != patch["id"]}
             )
     for build in package["builds"]:
         build["states"] = [

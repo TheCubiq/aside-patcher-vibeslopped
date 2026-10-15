@@ -33,7 +33,8 @@ data-only candidates, including nonconflicting toolbar combinations. Shared
 rendering reproduces both laptop-tested bookmark outputs exactly. New candidates
 still require their normal smoke gate before bundling or signing. Unknown builds
 remain unresolved until their native dependencies are established; the private
-cross-version discovery scripts are not yet a general automatic native resolver.
+cross-version discovery is now automated as described below, but remains a
+candidate/evidence stage rather than an automatic adapter approval system.
 Native settings-toggle adapters remain separate work. This is not a guarantee
 that every patch supports every browser version.
 
@@ -50,6 +51,41 @@ branches. Ambiguous matches or changed dependencies produce per-patch reports.
 Native payload analysis accepts exact reviewed bookmark adapters. Settings
 analysis still requires its own adapter. Neither copies baseline addresses into
 an unknown build.
+
+## Unknown-build native discovery
+
+Unknown bookmark builds now trigger read-only discovery during normal analysis.
+It compares complete x64 function bodies and unwind boundaries while retaining
+registers, object-field offsets and local branch topology. Unique references from
+matched callers can disambiguate otherwise identical functions. RIP displacement
+masking explicitly handles prefixed SIMD instructions whose displacement size is
+misreported by Capstone.
+
+Typed resource checks compare full vtable regions, vector names and path words,
+all 48 icon keys/labels, preset colors, PE-defined TLS identity and referenced
+constants/global slots. Baseline dependency identities come from reviewed data;
+target addresses are discovered rather than copied from a version map. Repeated
+method checks are cached. Analysis has a 120-second default budget and preserves
+partial evidence on expiry.
+
+```powershell
+uv run --extra catalog python scripts/native_discovery.py --archive <official-archive> --version <browser-version> --output <fresh-report.json>
+```
+
+Reports contain candidate RVAs, per-dependency evidence/failures and exact image
+hashes. They are always non-installable: discovery alone cannot authorize an
+adapter. Unresolved dependencies, payload rebuilding and runtime smoke validation
+remain explicit gates before publishing. The earlier private resource-mapping
+scripts are not required to run this discovery command.
+
+The `.928.1` rediscovery resolved 104 of 106 dependencies in 38 seconds, without
+using precomputed target addresses. Resolved addresses matched the reviewed map.
+Two bindings in one vtable region remained blocked: its method at baseline RVA
+`0x1a06380` has unmasked byte changes near offsets `0x122a`–`0x1230`, after a
+`UD1` instruction. Linear decoding differs there. The report correctly requires
+independent instruction/data validation instead of broadly masking those bytes.
+Both builds' existing reviewed adapters remain usable; this is a limitation of
+automatic rediscovery, not evidence that the patch fails on `.928.1`.
 
 ```powershell
 uv run --extra catalog python scripts/compatibility_release.py analyze --archive <official-archive> --version <browser-version> --output <fresh-candidate>
@@ -112,7 +148,7 @@ patch-local metadata and independent results, not a community distribution syste
 
 ## Verification status
 
-127 local unit tests pass after native adapter integration. Existing aggregate
+135 local unit tests pass after native discovery integration. Existing aggregate
 quality findings below remain separate from targeted adapter checks.
 The last aggregate quality run failed Mollify (88/100, 50 findings), including
 existing churn and new orchestration complexity/duplication findings; it is not

@@ -11,6 +11,10 @@ from ...patch_loader import local_asset
 ROOT = Path(__file__).resolve().parents[3] / "compatibility/adapters"
 
 
+class UnknownNativeBuild(Refusal):
+    """No reviewed bindings exist; maintenance may attempt read-only discovery."""
+
+
 def load_adapter(original: bytes) -> tuple[dict, dict, bytes]:
     """Require pinned adapter, source templates, metadata and compiled payload.
 
@@ -28,7 +32,7 @@ def load_adapter(original: bytes) -> tuple[dict, dict, bytes]:
     index = json.loads((ROOT / "index.json").read_bytes())
     entry = index.get("originals", {}).get(digest)
     if entry is None:
-        raise Refusal("No verified bookmark adapter for this original DLL.")
+        raise UnknownNativeBuild("No verified bookmark adapter for this original DLL.")
     document = local_asset(ROOT, entry["file"])
     if sha256(document) != entry["sha256"]:
         raise Refusal("Bookmark adapter digest mismatch.")
