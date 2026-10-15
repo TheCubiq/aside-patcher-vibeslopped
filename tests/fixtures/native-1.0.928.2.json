@@ -1,0 +1,845 @@
+{
+  "schema_version": 1,
+  "browser_version": "1.0.928.2",
+  "targets": [
+    "ask-aside",
+    "bookmark-folder-appearance"
+  ],
+  "coverage": "Native folder expansion, menu contents, hover submenu and reset. Other acceptance cases remain pending.",
+  "cases": [
+    {
+      "id": "baseline-color",
+      "steps": [
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "LabelButtonLabel",
+            "text": "Ask Aside"
+          },
+          "expected": 0
+        },
+        {
+          "action": "theme",
+          "value": 2
+        },
+        {
+          "action": "remember",
+          "selector": {
+            "class_name": "Label",
+            "text": "Acceptance Parent"
+          },
+          "name": "--EnabledColor",
+          "as": "parent-color"
+        }
+      ]
+    },
+    {
+      "id": "light-theme-roundtrip",
+      "steps": [
+        {
+          "action": "theme",
+          "value": 1
+        },
+        {
+          "action": "changed",
+          "selector": {
+            "class_name": "Label",
+            "text": "Acceptance Parent"
+          },
+          "name": "--EnabledColor",
+          "from": "parent-color"
+        },
+        {
+          "action": "theme",
+          "value": 2
+        },
+        {
+          "action": "unchanged",
+          "selector": {
+            "class_name": "Label",
+            "text": "Acceptance Parent"
+          },
+          "name": "--EnabledColor",
+          "from": "parent-color"
+        }
+      ]
+    },
+    {
+      "id": "folder-expand",
+      "steps": [
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Acceptance Parent"
+          }
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Trial Page"
+          },
+          "expected": 1
+        }
+      ]
+    },
+    {
+      "id": "folder-collapse",
+      "steps": [
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Acceptance Parent"
+          }
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Trial Page"
+          },
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "folder-menu",
+      "steps": [
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Acceptance Parent"
+          },
+          "button": "right"
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "TabGroupColorButton"
+          },
+          "expected": 8
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "TabGroupMenuItemButton",
+            "text": "New Folder"
+          },
+          "expected": 1
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "TabGroupMenuItemButton",
+            "text": "Reset appearance"
+          },
+          "expected": 1
+        }
+      ]
+    },
+    {
+      "id": "choose-color",
+      "steps": [
+        {
+          "action": "click-index",
+          "selector": {
+            "class_name": "TabGroupColorButton"
+          },
+          "expected_count": 8,
+          "index": 5
+        },
+        {
+          "action": "changed",
+          "selector": {
+            "class_name": "Label",
+            "text": "Acceptance Parent"
+          },
+          "name": "--EnabledColor",
+          "from": "parent-color"
+        }
+      ]
+    },
+    {
+      "id": "icon-picker-hover",
+      "steps": [
+        {
+          "action": "hover",
+          "selector": {
+            "class_name": "TabGroupMenuItemButton",
+            "text": "Change icon"
+          }
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "IconButton"
+          },
+          "expected": 48
+        }
+      ]
+    },
+    {
+      "id": "choose-icon",
+      "steps": [
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "IconButton",
+            "text": "Star"
+          }
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "IconButton"
+          },
+          "expected": 0
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "TabGroupMenuItemButton"
+          },
+          "expected": 0
+        },
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Acceptance Parent"
+          },
+          "button": "right"
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "TabGroupColorButton"
+          },
+          "expected": 8
+        }
+      ]
+    },
+    {
+      "id": "reset",
+      "steps": [
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "TabGroupMenuItemButton",
+            "text": "Reset appearance"
+          }
+        },
+        {
+          "action": "unchanged",
+          "selector": {
+            "class_name": "Label",
+            "text": "Acceptance Parent"
+          },
+          "name": "--EnabledColor",
+          "from": "parent-color"
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "IconButton"
+          },
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "loaded-inactive-fold",
+      "steps": [
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "TabGroupMenuItemButton",
+            "text": "Manage Bookmarks"
+          }
+        },
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Acceptance Parent"
+          }
+        },
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Trial Page"
+          }
+        },
+        {
+          "action": "open-tab",
+          "url": "about:blank"
+        },
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Acceptance Parent"
+          }
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Trial Page"
+          },
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "decorate-for-identity",
+      "steps": [
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Acceptance Parent"
+          },
+          "button": "right"
+        },
+        {
+          "action": "click-index",
+          "selector": {
+            "class_name": "TabGroupColorButton"
+          },
+          "index": 5,
+          "expected_count": 8
+        },
+        {
+          "action": "hover",
+          "selector": {
+            "class_name": "TabGroupMenuItemButton",
+            "text": "Change icon"
+          }
+        },
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "IconButton",
+            "text": "Star"
+          }
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "TabGroupMenuItemButton"
+          },
+          "expected": 0
+        }
+      ]
+    },
+    {
+      "id": "duplicate-name-colors",
+      "steps": [
+        {
+          "action": "click-index",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Same Name"
+          },
+          "index": 0,
+          "expected_count": 2,
+          "button": "right"
+        },
+        {
+          "action": "click-index",
+          "selector": {
+            "class_name": "TabGroupColorButton"
+          },
+          "index": 1,
+          "expected_count": 8
+        },
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "TabGroupMenuItemButton",
+            "text": "Manage Bookmarks"
+          }
+        },
+        {
+          "action": "click-index",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Same Name"
+          },
+          "index": 1,
+          "expected_count": 2,
+          "button": "right"
+        },
+        {
+          "action": "click-index",
+          "selector": {
+            "class_name": "TabGroupColorButton"
+          },
+          "index": 6,
+          "expected_count": 8
+        },
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "TabGroupMenuItemButton",
+            "text": "Manage Bookmarks"
+          }
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Same Name"
+          },
+          "expected": 2
+        }
+      ]
+    },
+    {
+      "id": "nested-independent-color",
+      "steps": [
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Acceptance Parent"
+          }
+        },
+        {
+          "action": "unchanged",
+          "selector": {
+            "class_name": "Label",
+            "text": "Nested Folder"
+          },
+          "name": "--EnabledColor",
+          "from": "parent-color"
+        },
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Nested Folder"
+          },
+          "button": "right"
+        },
+        {
+          "action": "click-index",
+          "selector": {
+            "class_name": "TabGroupColorButton"
+          },
+          "index": 4,
+          "expected_count": 8
+        },
+        {
+          "action": "hover",
+          "selector": {
+            "class_name": "TabGroupMenuItemButton",
+            "text": "Change icon"
+          }
+        },
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "IconButton",
+            "text": "Rocket"
+          }
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "TabGroupMenuItemButton"
+          },
+          "expected": 0
+        },
+        {
+          "action": "remember",
+          "selector": {
+            "class_name": "Label",
+            "text": "Nested Folder"
+          },
+          "name": "--EnabledColor",
+          "as": "nested-color"
+        }
+      ]
+    },
+    {
+      "id": "rename-retains-appearance",
+      "steps": [
+        {
+          "action": "bookmark",
+          "method": "update",
+          "arguments": [
+            "12",
+            {
+              "title": "Renamed Nested"
+            }
+          ]
+        },
+        {
+          "action": "unchanged",
+          "selector": {
+            "class_name": "Label",
+            "text": "Renamed Nested"
+          },
+          "name": "--EnabledColor",
+          "from": "nested-color"
+        }
+      ]
+    },
+    {
+      "id": "move-retains-appearance",
+      "steps": [
+        {
+          "action": "bookmark",
+          "method": "update",
+          "arguments": [
+            "21",
+            {
+              "title": "Moved Parent"
+            }
+          ]
+        },
+        {
+          "action": "bookmark",
+          "method": "move",
+          "arguments": [
+            "12",
+            {
+              "parentId": "21"
+            }
+          ]
+        },
+        {
+          "action": "click",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Moved Parent"
+          }
+        },
+        {
+          "action": "unchanged",
+          "selector": {
+            "class_name": "Label",
+            "text": "Renamed Nested"
+          },
+          "name": "--EnabledColor",
+          "from": "nested-color"
+        }
+      ]
+    },
+    {
+      "id": "delete-recreate-no-inheritance",
+      "steps": [
+        {
+          "action": "remember",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Empty Folder"
+          },
+          "name": "Height",
+          "as": "empty-height"
+        },
+        {
+          "action": "bookmark",
+          "method": "removeTree",
+          "arguments": [
+            "12"
+          ]
+        },
+        {
+          "action": "count",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Renamed Nested"
+          },
+          "expected": 0
+        },
+        {
+          "action": "bookmark",
+          "method": "create",
+          "arguments": [
+            {
+              "parentId": "21",
+              "title": "Renamed Nested"
+            }
+          ]
+        },
+        {
+          "action": "unchanged",
+          "selector": {
+            "class_name": "Label",
+            "text": "Renamed Nested"
+          },
+          "name": "--EnabledColor",
+          "from": "parent-color"
+        },
+        {
+          "action": "unchanged",
+          "selector": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Renamed Nested"
+          },
+          "name": "Height",
+          "from": "empty-height"
+        }
+      ]
+    },
+    {
+      "id": "drag-reorder-folder",
+      "steps": [
+        {
+          "action": "real-drag",
+          "source": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Same Name"
+          },
+          "target": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Empty Folder"
+          },
+          "fraction": [
+            0.05,
+            0.5
+          ],
+          "edge": "before"
+        },
+        {
+          "action": "bookmark-assert",
+          "reference": {
+            "id": "20"
+          },
+          "expected": {
+            "parentId": "1",
+            "index": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "drag-nested-folder-between-parents",
+      "steps": [
+        {
+          "action": "real-drag",
+          "source": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Renamed Nested"
+          },
+          "target": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Acceptance Parent"
+          },
+          "fraction": [
+            0.5,
+            0.5
+          ]
+        },
+        {
+          "action": "bookmark-assert",
+          "reference": {
+            "title": "Renamed Nested"
+          },
+          "expected": {
+            "parentId": "10"
+          }
+        }
+      ]
+    },
+    {
+      "id": "drag-bookmark-in-and-out",
+      "steps": [
+        {
+          "action": "real-drag",
+          "source": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Trial Page"
+          },
+          "target": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Moved Parent"
+          },
+          "fraction": [
+            0.5,
+            0.5
+          ]
+        },
+        {
+          "action": "bookmark-assert",
+          "reference": {
+            "id": "11"
+          },
+          "expected": {
+            "parentId": "21"
+          }
+        },
+        {
+          "action": "real-drag",
+          "source": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Trial Page"
+          },
+          "target": {
+            "class_name": "VerticalBookmarkRowView",
+            "text": "Empty Folder"
+          },
+          "fraction": [
+            0.05,
+            0.5
+          ],
+          "edge": "before"
+        },
+        {
+          "action": "bookmark-assert",
+          "reference": {
+            "id": "11"
+          },
+          "expected": {
+            "parentId": "1"
+          }
+        }
+      ]
+    },
+    {
+      "id": "record-restart-expectations",
+      "steps": [
+        {
+          "action": "remember",
+          "selector": {
+            "class_name": "Label",
+            "text": "Acceptance Parent"
+          },
+          "name": "--EnabledColor",
+          "as": "persist-parent"
+        },
+        {
+          "action": "remember",
+          "selector": {
+            "class_name": "Label",
+            "text": "Same Name"
+          },
+          "name": "--EnabledColor",
+          "as": "persist-duplicate"
+        },
+        {
+          "action": "remember",
+          "selector": {
+            "class_name": "Label",
+            "text": "Moved Parent"
+          },
+          "name": "--EnabledColor",
+          "as": "persist-moved"
+        },
+        {
+          "action": "remember",
+          "selector": {
+            "class_name": "Label",
+            "text": "Renamed Nested"
+          },
+          "name": "--EnabledColor",
+          "as": "persist-new"
+        }
+      ]
+    }
+  ],
+  "expected_appearance": {
+    "da80bdd3-765b-5f00-8cb3-49c15d5e20f1": {
+      "color": 1,
+      "icon": "star"
+    },
+    "01b67750-cdd0-531a-9ea8-8d77dd766ca0": {
+      "color": 2,
+      "icon": null
+    },
+    "467ab3aa-5705-5a3f-9b4d-7f94f73dff5b": {
+      "color": 6,
+      "icon": null
+    }
+  },
+  "absent_appearance": [
+    "a542598d-b063-5640-a1df-874fe3e52d3e"
+  ],
+  "restart_checks": [
+    {
+      "action": "property",
+      "selector": {
+        "class_name": "Label",
+        "text": "Acceptance Parent"
+      },
+      "name": "--EnabledColor",
+      "from": "persist-parent"
+    },
+    {
+      "action": "property",
+      "selector": {
+        "class_name": "Label",
+        "text": "Same Name"
+      },
+      "name": "--EnabledColor",
+      "from": "persist-duplicate"
+    },
+    {
+      "action": "property",
+      "selector": {
+        "class_name": "Label",
+        "text": "Moved Parent"
+      },
+      "name": "--EnabledColor",
+      "from": "persist-moved"
+    },
+    {
+      "action": "property",
+      "selector": {
+        "class_name": "Label",
+        "text": "Renamed Nested"
+      },
+      "name": "--EnabledColor",
+      "from": "persist-new"
+    }
+  ],
+  "restored_checks": [
+    {
+      "action": "count",
+      "selector": {
+        "class_name": "LabelButtonLabel",
+        "text": "Ask Aside"
+      },
+      "expected": 1
+    },
+    {
+      "action": "property",
+      "selector": {
+        "class_name": "Label",
+        "text": "Acceptance Parent"
+      },
+      "name": "--EnabledColor",
+      "from": "parent-color"
+    },
+    {
+      "action": "real-click",
+      "selector": {
+        "class_name": "VerticalBookmarkRowView",
+        "text": "Acceptance Parent"
+      },
+      "button": "right"
+    },
+    {
+      "action": "count",
+      "selector": {
+        "class_name": "TabGroupColorButton"
+      },
+      "expected": 0
+    },
+    {
+      "action": "uia-menu",
+      "expected": [
+        "Rename",
+        "Delete",
+        "Manage Bookmarks"
+      ]
+    }
+  ]
+}

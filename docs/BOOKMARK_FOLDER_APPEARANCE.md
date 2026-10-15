@@ -73,7 +73,7 @@ static edits follow native builders.
 ## Verification
 
 Trial artifacts and screenshots:
-D:\Users\kubaj\programovani\re\tools\aside-analysis\bookmark-appearance.
+<analysis-root>\bookmark-appearance.
 The separate trial installation/profile contains synthetic bookmarks. External
 chat-agent account content can still appear: profile isolation is not account isolation.
 

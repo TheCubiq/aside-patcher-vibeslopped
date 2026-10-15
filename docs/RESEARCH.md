@@ -5,7 +5,7 @@
 - Aside `1.0.928.2`
 - Input: `C:\Program Files\Aside\Application\1.0.928.2\Aside.dll`
 - SHA-256: `9CDC4B08D095ABB48FDFEC2BABF7BE54ED35EB67EC20AF9341D4CF5302E5D510`
-- The analysis copy and Ghidra project live under `D:\Users\kubaj\programovani\re\tools\aside-analysis`, outside this repository.
+- The analysis copy and Ghidra project live under `<analysis-root>`, outside this repository.
 
 ## Findings
 
@@ -98,7 +98,7 @@
   absent; Bookmarks and Tabs remained visible. Native UI Automation confirmed
   the same controls. Appearance Settings rendered and its sidebar menu worked.
 - Screenshot evidence is outside Git at
-  `D:\Users\kubaj\programovani\re\tools\aside-analysis\installed-google.png`.
+  `<analysis-root>\installed-google.png`.
 - All 12 unit tests passed. Copied DLLs also passed byte-for-byte restoration;
   the installed DLL was left patched after successful launch/UI verification.
 - Atomic replacement uses a single exclusive temporary-file creation attempt.
@@ -145,7 +145,7 @@
 ### Copy and installed validation
 
 - Copied installation and isolated profile live outside Git under
-  `D:\Users\kubaj\programovani\re\tools\aside-analysis\toggle-trial` and
+  `<analysis-root>\toggle-trial` and
   `toggle-profile`. CDP on port 9223 tested the copy without changing the
   installed browser or Codex configuration.
 - Fresh isolated profile returned Chats false / Bookmarks true. Actual checkbox

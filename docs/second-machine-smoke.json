@@ -1,0 +1,39 @@
+{
+  "kind": "second-machine-installation-smoke",
+  "passed": true,
+  "scope": "Existing UAC acceptance reused; this run checks apply, launch, screenshots, exact restoration and relaunch.",
+  "original_hashes": {
+    "dll": "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510"
+  },
+  "phases": [
+    {
+      "phase": "patched",
+      "launch_passed": true,
+      "screenshot": "patched.png"
+    },
+    {
+      "phase": "restored",
+      "launch_passed": true,
+      "screenshot": "restored.png"
+    }
+  ],
+  "patched_hashes": {
+    "dll": "a58471d3915422cca397ed1a292969d6b1b34e41c01fed484d474cb9b410bef9"
+  },
+  "restored": true,
+  "schema_version": 1,
+  "date": "2026-10-15",
+  "platform": "Windows 11 x64",
+  "browser_version": "1.0.928.2",
+  "targets": [
+    "ask-aside",
+    "bookmark-folder-appearance"
+  ],
+  "uac_evidence": "docs/second-machine-acceptance.json",
+  "publication_eligible": false,
+  "full_ui_regression_passed": false,
+  "evidence_sha256": {
+    "patched.png": "47ac365953efb0658da2e9673d91b66ad6baae816d5555edcf1f7706100bc6c8",
+    "restored.png": "4230dd994249d7f1b42048a2eb638312fe0bd55c4cc438e7854a14d51c7e39b8"
+  }
+}

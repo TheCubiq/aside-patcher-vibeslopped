@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-15",
+  "platform": "Windows 11 x64",
+  "browser_version": "1.0.928.2",
+  "kind": "manual-second-machine-acceptance",
+  "targets": [
+    "bookmark-folder-appearance",
+    "ask-aside"
+  ],
+  "runtime_passed": false,
+  "publication_eligible": false,
+  "scope": "One protected fixture, one combination, synthetic profile, dark theme.",
+  "reported_passes": [
+    "unelevated-gui",
+    "protected-apply-uac",
+    "graceful-restart",
+    "profile-persistence",
+    "nested-and-duplicate-name-styles",
+    "rename-persistence",
+    "loaded-inactive-fold-animation",
+    "protected-restore-uac"
+  ],
+  "independently_checked": [
+    "screenshots-reviewed",
+    "restored-original-hash",
+    "no-recovery-journal",
+    "ordinary-installation-unchanged",
+    "test-browser-closed",
+    "temporary-launch-tasks-removed"
+  ],
+  "untested": [
+    "drag-drop",
+    "light-theme",
+    "collapsed-sidebar-popup",
+    "all-advertised-combinations-on-second-machine",
+    "alternate-admin-credentials",
+    "automated-disposable-vm-reset",
+    "approved-candidate-to-client-catalog"
+  ],
+  "original_restored_sha256": "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510",
+  "patched_sha256": "a58471d3915422cca397ed1a292969d6b1b34e41c01fed484d474cb9b410bef9",
+  "evidence": {
+    "customized-icon-picker.png": "5ea0dfb5fb3dfca69bcf7087d968e5715e48dbae2182364540ee5edd3ccb6c3e",
+    "customized-nested-folders.png": "0e4286e7eb3b336c5ba61a9ad3d3f3a98e068508bf8b92817320213eaa67480b",
+    "desktop-acceptance-report.md": "5267c935cfd9770218d3ceec350ac866e38c700aa97f8442c891be730279d0b4",
+    "independent-state-check.txt": "c9ed975bf5b3e02a9f46e360f698587bb2ce15eac4c13a55230ad3d0e8d5ca2f",
+    "patcher-review.png": "7b748feb07e402e955929ab0ea630e9763daa6e540a730e5ba0e9df106fab0c6",
+    "restored-browser.png": "ebb114b591bae6849a41fb2ed213961953abaf851ad2c779d1fb6cfed4d91f1c",
+    "restored-context-menu.png": "797075d3f2a15cf3c6a33d40a5f7403621361ea597874f4c06d88bdc29fdc4c4",
+    "restored-state.png": "7513ade4ec0facc9f08061affa453ed72b2489cb87e2c9ea49f36314d30a71bc"
+  }
+}

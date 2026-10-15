@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "roots": {
+    "bookmark_bar": {
+      "name": "Bookmarks bar",
+      "id": "1",
+      "guid": "00000000-0000-4000-a000-000000000002",
+      "date_added": "13370000000000000",
+      "date_last_used": "0",
+      "type": "folder",
+      "children": [
+        {
+          "name": "Acceptance Parent",
+          "id": "10",
+          "guid": "da80bdd3-765b-5f00-8cb3-49c15d5e20f1",
+          "date_added": "13370000000000000",
+          "date_last_used": "0",
+          "type": "folder",
+          "children": [
+            {
+              "name": "Trial Page",
+              "id": "11",
+              "guid": "0c603dea-c659-5a8f-b927-33244cb4a537",
+              "date_added": "13370000000000000",
+              "date_last_used": "0",
+              "type": "url",
+              "url": "about:blank"
+            },
+            {
+              "name": "Nested Folder",
+              "id": "12",
+              "guid": "a542598d-b063-5640-a1df-874fe3e52d3e",
+              "date_added": "13370000000000000",
+              "date_last_used": "0",
+              "type": "folder",
+              "children": [
+                {
+                  "name": "Nested Page",
+                  "id": "13",
+                  "guid": "dbc84165-fdcc-56b7-b795-915c6fd33377",
+                  "date_added": "13370000000000000",
+                  "date_last_used": "0",
+                  "type": "url",
+                  "url": "about:version"
+                }
+              ],
+              "date_modified": "13370000000000000"
+            }
+          ],
+          "date_modified": "13370000000000000"
+        },
+        {
+          "name": "Same Name",
+          "id": "20",
+          "guid": "01b67750-cdd0-531a-9ea8-8d77dd766ca0",
+          "date_added": "13370000000000000",
+          "date_last_used": "0",
+          "type": "folder",
+          "children": [],
+          "date_modified": "13370000000000000"
+        },
+        {
+          "name": "Same Name",
+          "id": "21",
+          "guid": "467ab3aa-5705-5a3f-9b4d-7f94f73dff5b",
+          "date_added": "13370000000000000",
+          "date_last_used": "0",
+          "type": "folder",
+          "children": [],
+          "date_modified": "13370000000000000"
+        },
+        {
+          "name": "Empty Folder",
+          "id": "22",
+          "guid": "66c45421-27a7-5520-99d0-865810fa7c53",
+          "date_added": "13370000000000000",
+          "date_last_used": "0",
+          "type": "folder",
+          "children": [],
+          "date_modified": "13370000000000000"
+        }
+      ],
+      "date_modified": "13370000000000000"
+    },
+    "other": {
+      "name": "Other bookmarks",
+      "id": "2",
+      "guid": "00000000-0000-4000-a000-000000000003",
+      "date_added": "13370000000000000",
+      "date_last_used": "0",
+      "type": "folder",
+      "children": [],
+      "date_modified": "13370000000000000"
+    },
+    "synced": {
+      "name": "Mobile bookmarks",
+      "id": "3",
+      "guid": "00000000-0000-4000-a000-000000000004",
+      "date_added": "13370000000000000",
+      "date_last_used": "0",
+      "type": "folder",
+      "children": [],
+      "date_modified": "13370000000000000"
+    }
+  }
+}
