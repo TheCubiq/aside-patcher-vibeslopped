@@ -34,7 +34,7 @@ class Artifact:
 
 
 @dataclass(frozen=True)
-class Installation:
+class Installation:  # pylint: disable=too-many-instance-attributes
     """Describe compatible file states and mutually exclusive targets."""
 
     version: str
@@ -44,6 +44,8 @@ class Installation:
     component: dict | None = None
     patches: dict[str, PatchDefinition] = field(default_factory=dict)
     previous_states: tuple[tuple[tuple[str, ...], dict[str, str]], ...] = ()
+    state_payloads: dict = field(default_factory=dict)
+    patch_metadata: dict = field(default_factory=dict)
 
     @property
     def targets(self) -> tuple[str, ...]:

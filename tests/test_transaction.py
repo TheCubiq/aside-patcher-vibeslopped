@@ -2,6 +2,7 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring
 # pylint: disable=too-many-instance-attributes,consider-using-with
 import os
+import unittest
 from pathlib import Path
 from unittest.mock import patch
 
@@ -11,6 +12,16 @@ from tests.fixtures import TestInstallationFixture, assert_transaction_unchanged
 
 
 class TestTransaction(TestInstallationFixture):
+    @unittest.skipUnless(os.name == "nt", "Windows read-only file attribute")
+    def test_read_only_artifact_refuses_before_any_staging(self):
+        self.ui.chmod(0o444)
+        self.addCleanup(self.ui.chmod, 0o600)
+        with patch("aside_patcher.transaction.stage_replacement") as stage:
+            with self.assertRaisesRegex(Refusal, "read-only"):
+                replace_transaction(transaction_changes(self))
+            stage.assert_not_called()
+        assert_transaction_unchanged(self)
+
     def test_all_replacements_staged_before_permission_failure(self):
         changes = transaction_changes(self)
 

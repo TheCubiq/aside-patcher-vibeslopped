@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Iterable
 import os
 import re
 import subprocess
@@ -10,6 +11,20 @@ from pathlib import Path
 
 from .exceptions import Refusal
 from .models import Artifact, Installation
+
+
+def require_replaceable_files(paths: Iterable[Path]) -> None:
+    """Refuse Windows read-only artifacts before preparing replacement files.
+
+    Parameters
+    ----------
+    paths : iterable of Path
+        Installed artifacts whose contents will change.
+    """
+    for path in paths:
+        attributes = getattr(path.stat(), "st_file_attributes", 0)
+        if attributes & 1:  # FILE_ATTRIBUTE_READONLY; elevation does not bypass this attribute.
+            raise Refusal(f"Browser file is read-only: {path}. Clear its read-only attribute before applying.", code="read_only")
 
 
 def _user_home() -> Path | None:

@@ -10,28 +10,15 @@ from ...common.utils import sha256
 from ...patch_loader import local_asset
 from ...pe import append_section, file_offset, parse_layout, relative_jump
 
-ORIGINAL_SHA256 = "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510"
+_ADAPTER = json.loads((Path(__file__).resolve().parents[3] / "compatibility/adapters/1.0.928.2.json").read_text(encoding="utf-8"))
+ORIGINAL_SHA256 = _ADAPTER["original_sha256"]
 TOGGLE_SHA256 = "601914ed1154e9685c2c67116ec862eb7c8f7dd13d994e0ce920fff94d4231a8"
-MANIFEST_SHA256 = "ae4547e5c398a2822c347c7ce98daf38a7b1fef758d139f1d16b385e17089574"
+MANIFEST_SHA256 = _ADAPTER["payload_manifest_sha256"]
 TRAMPOLINE_SIZE = 512
 # name, entry RVA, verified overwrite bytes, copied register pushes, stack allocation
-HOOKS = (
-    ("OwnerConstructor", 0x387F3C0, "415741564155", ((2, 15), (4, 14), (6, 13)), 0),
-    ("OwnerDestructor", 0x389A520, "415741564155", ((2, 15), (4, 14), (6, 13)), 0),
-    ("RowIcon", 0x38965D0, "4156565753", ((2, 14), (3, 6), (4, 7), (5, 3)), 0),
-    ("RowDestructor", 0x3899110, "4156565753", ((2, 14), (3, 6), (4, 7), (5, 3)), 0),
-    ("FolderMenu", 0x388A1E0, "415741564155", ((2, 15), (4, 14), (6, 13)), 0),
-    ("ModelRemove", 0xB681990, "5657534883ec40", ((1, 6), (2, 7), (3, 3)), 64),
-    ("ViewBackground", 0x542E90, "56574883ec38", ((1, 6), (2, 7)), 56),
-    ("RowBackground", 0x38989D0, "4157415656", ((2, 15), (4, 14), (5, 6)), 0),
-    ("RowBorder", 0x3898720, "4157415656", ((2, 15), (4, 14), (5, 6)), 0),
-    ("RowMask", 0x3894A20, "4157415656", ((2, 15), (4, 14), (5, 6)), 0),
-    ("RowsPaint", 0x3893610, "415741564155", ((2, 15), (4, 14), (6, 13)), 0),
-    ("LayoutImmediately", 0x4E53EF0, "415741564155", ((2, 15), (4, 14), (6, 13)), 0),
-    ("FolderToggle", 0x3884F80, "415741564155", ((2, 15), (4, 14), (6, 13)), 0),
-    ("AnimationProgress", 0x3886500, "56574883ec38", ((1, 6), (2, 7)), 56),
-    ("RowAnimationProgress", 0xAB05A80, "4156565753", ((2, 14), (3, 6), (4, 7), (5, 3)), 0),
-    ("PreferredSize", 0x45EEEF0, "415741564154", ((2, 15), (4, 14), (6, 12)), 0),
+HOOKS = tuple(
+    (hook["name"], hook["rva"], hook["prologue"], tuple(tuple(push) for push in hook["pushes"]), hook["stack_allocation"])
+    for hook in _ADAPTER["bookmark_hooks"]
 )
 
 

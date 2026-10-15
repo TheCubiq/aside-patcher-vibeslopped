@@ -28,6 +28,8 @@ def run_installation(build: Installation, command: str, targets: list[str] | Non
     """
     if command != "status":
         require_app_stopped()
+        if "dll" in build.files and (build.files["dll"].path.parent / ".aside-patcher-transaction.json").exists():
+            raise Refusal("An interrupted installation requires desktop recovery before further changes.")
     hashes = {name: file_sha256(f.path) for name, f in build.files.items()}
     if command == "status":
         validate_component(build.component)

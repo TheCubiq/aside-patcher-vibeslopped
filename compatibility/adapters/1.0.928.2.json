@@ -1,0 +1,334 @@
+{
+  "schema_version": 1,
+  "version": "1.0.928.2",
+  "original_sha256": "9cdc4b08d095abb48fdfec2babf7be54ed35eb67ec20af9341d4cf5302e5d510",
+  "bookmark_hooks": [
+    {
+      "name": "OwnerConstructor",
+      "rva": 59241408,
+      "prologue": "415741564155",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          13
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "OwnerDestructor",
+      "rva": 59352352,
+      "prologue": "415741564155",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          13
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "RowIcon",
+      "rva": 59336144,
+      "prologue": "4156565753",
+      "pushes": [
+        [
+          2,
+          14
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          3
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "RowDestructor",
+      "rva": 59347216,
+      "prologue": "4156565753",
+      "pushes": [
+        [
+          2,
+          14
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          3
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "FolderMenu",
+      "rva": 59285984,
+      "prologue": "415741564155",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          13
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "ModelRemove",
+      "rva": 191371664,
+      "prologue": "5657534883ec40",
+      "pushes": [
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "stack_allocation": 64
+    },
+    {
+      "name": "ViewBackground",
+      "rva": 5516944,
+      "prologue": "56574883ec38",
+      "pushes": [
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          7
+        ]
+      ],
+      "stack_allocation": 56
+    },
+    {
+      "name": "RowBackground",
+      "rva": 59345360,
+      "prologue": "4157415656",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "RowBorder",
+      "rva": 59344672,
+      "prologue": "4157415656",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "RowMask",
+      "rva": 59329056,
+      "prologue": "4157415656",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "RowsPaint",
+      "rva": 59323920,
+      "prologue": "415741564155",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          13
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "LayoutImmediately",
+      "rva": 82132720,
+      "prologue": "415741564155",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          13
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "FolderToggle",
+      "rva": 59264896,
+      "prologue": "415741564155",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          13
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "AnimationProgress",
+      "rva": 59270400,
+      "prologue": "56574883ec38",
+      "pushes": [
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          7
+        ]
+      ],
+      "stack_allocation": 56
+    },
+    {
+      "name": "RowAnimationProgress",
+      "rva": 179329664,
+      "prologue": "4156565753",
+      "pushes": [
+        [
+          2,
+          14
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          3
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "PreferredSize",
+      "rva": 73330416,
+      "prologue": "415741564154",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          12
+        ]
+      ],
+      "stack_allocation": 0
+    }
+  ],
+  "payload_manifest_sha256": "ae4547e5c398a2822c347c7ce98daf38a7b1fef758d139f1d16b385e17089574",
+  "status": "supported",
+  "source_layout_status": "Version-specific C++ field access remains in the existing payload; never reuse it for an unvalidated build."
+}

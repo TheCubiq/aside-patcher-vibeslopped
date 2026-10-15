@@ -15,3 +15,8 @@ backups/
 analysis/
 
 .mollify/
+
+# Desktop build outputs and private signing/compatibility material.
+desktop/target/
+.patcher-work/
+*.private.pem

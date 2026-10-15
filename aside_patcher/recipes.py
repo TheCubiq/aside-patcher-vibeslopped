@@ -4,7 +4,16 @@ from pathlib import Path
 
 from .common.exceptions import Refusal
 from .common.models import Artifact, Installation
-from .common.utils import backup_directory, find_all, preserve_original, read_binary, sha256, validate_component
+from .common.utils import (
+    backup_directory,
+    find_all,
+    preserve_original,
+    read_binary,
+    require_replaceable_files,
+    sha256,
+    validate_component,
+)
+from .compatibility import apply_delta
 
 
 def render(original: bytes, artifact: Artifact, targets: tuple[str, ...]) -> bytes:
@@ -95,11 +104,14 @@ def prepare_changes(build: Installation, hashes: dict[str, str], desired: tuple[
         backup = root / f"{artifact.original_sha256}{artifact.path.suffix}"
         original = before if hashes[name] == artifact.original_sha256 else read_binary(backup)
         preserve_original(original, artifact, root)
-        after = render(original, artifact, desired)
+        after = (
+            apply_delta(original, build.state_payloads[desired][name]) if build.state_payloads else render(original, artifact, desired)
+        )
         if sha256(after) != build.states[desired][name]:
             raise Refusal(f"Result hash is not verified for {artifact.path.name}.")
         if before != after:
             changes[artifact.path] = (before, after)
+    require_replaceable_files(changes)
     return changes
 
 

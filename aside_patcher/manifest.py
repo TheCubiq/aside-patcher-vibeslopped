@@ -36,13 +36,15 @@ def installation_from_mapping(raw: dict[str, Any]) -> Installation:
     return Installation(raw["version"], files, states, conflicts, raw.get("component"), patches, previous)
 
 
-def load_build(manifest_path: Path) -> Installation:
+def load_build(manifest_path: Path, version: str | None = None) -> Installation:
     """Load the single supported build from a JSON manifest.
 
     Parameters
     ----------
     manifest_path : Path
         JSON manifest containing one supported build.
+    version : str or None
+        Exact build to select when the registry contains multiple builds.
 
     Returns
     -------
@@ -52,8 +54,10 @@ def load_build(manifest_path: Path) -> Installation:
     try:
         raw = json.loads(manifest_path.read_text(encoding="utf-8"))
         builds = raw.get("builds") if isinstance(raw, dict) else None
+        if version is not None and isinstance(builds, list):
+            builds = [build for build in builds if build.get("version") == version]
         if not isinstance(builds, list) or len(builds) != 1:
-            raise Refusal("Manifest must contain exactly one explicitly supported build.")
+            raise Refusal("Select exactly one explicitly supported build.")
         return installation_from_mapping(builds[0])
     except (OSError, ValueError) as exc:
         raise Refusal(f"Could not read patch manifest: {exc}") from exc
