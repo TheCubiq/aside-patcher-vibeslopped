@@ -539,3 +539,32 @@ def cached_build(cache: Path, version: str) -> Installation | None:
     if len(matches) > 1:
         raise Refusal("Multiple approved packages claim this browser build.")
     return matches[0] if matches else None
+
+
+def bundled_build(version: str) -> Installation | None:
+    """Read source-bundled, hash-pinned compatibility data without a network request.
+
+    Parameters
+    ----------
+    version : str
+        Exact detected browser build.
+
+    Returns
+    -------
+    Installation or None
+        Reviewed bundled adapter, or None for an unknown build.
+    """
+    if not re.fullmatch(r"\d+(?:\.\d+){3}", version):
+        return None
+    root = Path(__file__).resolve().parents[1] / "compatibility" / "bundled"
+    index = root / "index.json"
+    if not index.exists():
+        return None
+    entries = json.loads(index.read_bytes())
+    entry = entries.get("builds", {}).get(version)
+    if entry is None:
+        return None
+    data = (root / f"{version}.json").read_bytes()
+    if sha256(data) != entry["sha256"]:
+        raise Refusal("Bundled compatibility package digest mismatch")
+    return build_from_package(json.loads(data), version)

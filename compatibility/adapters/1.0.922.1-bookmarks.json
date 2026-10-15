@@ -1,0 +1,446 @@
+{
+  "schema_version": 1,
+  "version": "1.0.922.1",
+  "original_sha256": "68ea77122834bf9f37a9826fdb39e35957bcac07ff59eaa8f974fbc95104a89c",
+  "output_sha256": "6aae42a70aab095075526a01c82584cc32d576f670917aa5570bdea9e0f2cb17",
+  "bookmark_hooks": [
+    {
+      "name": "OwnerConstructor",
+      "rva": 59158784,
+      "prologue": "415741564155",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          13
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "OwnerDestructor",
+      "rva": 59269728,
+      "prologue": "415741564155",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          13
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "RowIcon",
+      "rva": 59253520,
+      "prologue": "4156565753",
+      "pushes": [
+        [
+          2,
+          14
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          3
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "RowDestructor",
+      "rva": 59264592,
+      "prologue": "4156565753",
+      "pushes": [
+        [
+          2,
+          14
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          3
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "FolderMenu",
+      "rva": 59203360,
+      "prologue": "415741564155",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          13
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "ModelRemove",
+      "rva": 191288080,
+      "prologue": "5657534883ec40",
+      "pushes": [
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          7
+        ],
+        [
+          3,
+          3
+        ]
+      ],
+      "stack_allocation": 64
+    },
+    {
+      "name": "ViewBackground",
+      "rva": 5510944,
+      "prologue": "56574883ec38",
+      "pushes": [
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          7
+        ]
+      ],
+      "stack_allocation": 56
+    },
+    {
+      "name": "RowBackground",
+      "rva": 59262736,
+      "prologue": "4157415656",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "RowBorder",
+      "rva": 59262048,
+      "prologue": "4157415656",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "RowMask",
+      "rva": 59246432,
+      "prologue": "4157415656",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "RowsPaint",
+      "rva": 59241296,
+      "prologue": "415741564155",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          13
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "LayoutImmediately",
+      "rva": 81999280,
+      "prologue": "415741564155",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          13
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "FolderToggle",
+      "rva": 59182272,
+      "prologue": "415741564155",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          13
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "AnimationProgress",
+      "rva": 59187776,
+      "prologue": "56574883ec38",
+      "pushes": [
+        [
+          1,
+          6
+        ],
+        [
+          2,
+          7
+        ]
+      ],
+      "stack_allocation": 56
+    },
+    {
+      "name": "RowAnimationProgress",
+      "rva": 179244960,
+      "prologue": "4156565753",
+      "pushes": [
+        [
+          2,
+          14
+        ],
+        [
+          3,
+          6
+        ],
+        [
+          4,
+          7
+        ],
+        [
+          5,
+          3
+        ]
+      ],
+      "stack_allocation": 0
+    },
+    {
+      "name": "PreferredSize",
+      "rva": 73227904,
+      "prologue": "415741564154",
+      "pushes": [
+        [
+          2,
+          15
+        ],
+        [
+          4,
+          14
+        ],
+        [
+          6,
+          12
+        ]
+      ],
+      "stack_allocation": 0
+    }
+  ],
+  "template_sources": {
+    "native_background.c": "66761f2d0a97a33c428efaae38d457654f0274a399c44cd32190dbf417f4dee1",
+    "native_background.h": "4c48136f0e3d02ad398139144d838f6ed05240e2e2ad95c8601a493220b1c2b7",
+    "native_bindings.c": "990845424556e6a7d75bf57bdbc656cde000fe1ced8b0830f9f0ec3be0e68a14",
+    "native_controls.c": "80819b52ec623b4c0355e3b76b7c8692c03d73288de376d0ae733d5532c4c130",
+    "native_controls.h": "2b952f5a1b57e3f018dcbd0b77ec285a02ce1dfe8f9561243451034836101dd8",
+    "native_hooks.c": "4d89f85a2175243d234691f36461762f99e01a518ebebd8dab270f404d3de444",
+    "native_model.c": "ae8de3e5755d2c254999b2c483a3acedb8f4d508c216b72f2f34c85876a5c79a",
+    "native_model.h": "8b43ae34cc7e602529ac0a919f3d08c35e7a13bcf7cee651fbab5be100655ee9",
+    "native_render.c": "838193a517114737e6c5a5db2b602534cdcd32a8fabee30e1aa683b18f5fa58a",
+    "native_render.h": "cac3196d0ae425c1bbf5dafc68d5b9208687f39a1e96f50e90198a00a406cf9e",
+    "native_runtime.c": "8af5e854779b269016aa4ac58d6265e0c79bf82a42823c4f2ee3e927987ea5b5",
+    "native_runtime.h": "ef53072e6cc7c1f0108ec772afa8e7bdd0fc5fd31436842d36467bbb42750637",
+    "native_state.c": "b469e0191f2cb56e2069812b6ff0f93305e355056b3394953abcc56de2ed913f",
+    "native_state.h": "211851f485d1403e5e8cb0ce5a6a46a45274f8920a0b7ac91869628063c71663",
+    "native_ui.c": "d644a95e9134a8232852b3247b316f80288ba25117d2808b8b66c12660698730",
+    "native_ui.h": "0994ccbf2d3909cee45cd2b58d212c8cc9de5d377b0ae4efb28ad51913c23ee6"
+  },
+  "status": "smoke-tested",
+  "validation_scope": "Bookmark-only apply, launch, palette, color change, exact restoration and relaunch. Other combinations require candidate validation.",
+  "native_rvas": {
+    "0x66cb50": "0x66b390",
+    "0x6d8d20": "0x6d7560",
+    "0x6dfe40": "0x6de680",
+    "0x6e15b0": "0x6dfdf0",
+    "0x6e1d90": "0x6e05d0",
+    "0x6e29b0": "0x6e11f0",
+    "0x6e2cd0": "0x6e1510",
+    "0x7d2dd0": "0x7d14a0",
+    "0x8f70f0": "0x8f1ff0",
+    "0x912e10": "0x90dd10",
+    "0x9b4820": "0x9b3040",
+    "0xace5b0": "0xaccdd0",
+    "0xef5d80": "0xefd410",
+    "0x18ce660": "0x18d1d40",
+    "0x1db04c0": "0x1db2110",
+    "0x20d57f0": "0x20d7a80",
+    "0x276bd50": "0x2777030",
+    "0x2e81660": "0x2e83dc0",
+    "0x369a770": "0x368eed0",
+    "0x369c210": "0x3690970",
+    "0x37813b0": "0x3774340",
+    "0x3884980": "0x38706c0",
+    "0x3886500": "0x3872240",
+    "0x388672c": "0x387246c",
+    "0x3886e63": "0x3872ba3",
+    "0x3888170": "0x3873eb0",
+    "0x388ef20": "0x387ac60",
+    "0x3ff4ee0": "0x3fdafb0",
+    "0x3ff5490": "0x3fdb560",
+    "0x4028850": "0x400e920",
+    "0x40704d0": "0x40565a0",
+    "0x4567210": "0x454e630",
+    "0x48dd6b0": "0x48c4ad0",
+    "0x4bba970": "0x4ba1d90",
+    "0x4c42d40": "0x4c294f0",
+    "0x4caff90": "0x4c973b0",
+    "0x4e522d0": "0x4e31990",
+    "0x5190ec0": "0x5178280",
+    "0x5192d50": "0x517a110",
+    "0x533e900": "0x5325b70",
+    "0x5433810": "0x541b030",
+    "0x5438c20": "0x5420440",
+    "0x562eec0": "0x5616130",
+    "0x5df7be0": "0x5ddeea0",
+    "0x9cc3210": "0x9caabb0",
+    "0x9cc3380": "0x9caad20",
+    "0xaa75d50": "0xaa60770",
+    "0xaad7ea0": "0xaac33c0",
+    "0xaafb850": "0xaae6d70",
+    "0xaafc1c0": "0xaae76e0",
+    "0xab05a80": "0xaaf0fa0",
+    "0xad8c400": "0xad77930",
+    "0xb6e0de0": "0xb6cc760",
+    "0xba74c10": "0xba607e0",
+    "0xba74c40": "0xba60810",
+    "0xbaaf360": "0xba9b010",
+    "0xbca8b20": "0xbc96650",
+    "0x414f0b0": "0x4135180",
+    "0x11bd2300": "0x11bc1280",
+    "0x40232c0": "0x4009390",
+    "0x1e21260": "0x1e22d70",
+    "0x10a35cb0": "0x10a24d30",
+    "0x363cd0": "0x362770",
+    "0x10a35ec8": "0x10a24f48",
+    "0x10e552e0": "0x10e44290",
+    "0xf99f9d8": "0xf98e9d8",
+    "0x10c6a378": "0x10c59378",
+    "0x10c6ab38": "0x10c59b38",
+    "0xfe16378": "0xfe05340",
+    "0x10a35d50": "0x10a24dd0",
+    "0x35049a0": "0x3503030",
+    "0xfb322b0": "0xfb21290",
+    "0xfb32370": "0xfb21350",
+    "0xfb5e328": "0xfb4d308",
+    "0xfb5e340": "0xfb4d320",
+    "0xfb5e360": "0xfb4d340",
+    "0xfb5e380": "0xfb4d360",
+    "0xfb5e3c0": "0xfb4d3a0",
+    "0xfb5e410": "0xfb4d3f0",
+    "0xfb5e428": "0xfb4d408",
+    "0xfb5e440": "0xfb4d420",
+    "0xfb5e470": "0xfb4d450",
+    "0xfb5e520": "0xfb4d500",
+    "0xfdf7f98": "0xfde6f60",
+    "0x1055f3b8": "0x1054e378",
+    "0x1055f920": "0x1054e8e0",
+    "0x10560a28": "0x1054f9e8",
+    "0x10563ab8": "0x10552a78",
+    "0x10c6aa10": "0x10c59a10",
+    "0x10e4e720": "0x10e3d710"
+  },
+  "payload_file": "1.0.922.1-bookmarks.payload.json",
+  "payload_sha256": "c3f7698a0eb03cc79c4b293b8a0da23e940c6dc7d6b59449722bcd2ef593917a"
+}

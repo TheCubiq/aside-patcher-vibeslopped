@@ -13,7 +13,7 @@ MANIFEST_PATH = Path(__file__).resolve().parents[1] / "builds.json"
 
 
 @dataclass(frozen=True)
-class PatchDefinition:
+class PatchDefinition:  # pylint: disable=too-many-instance-attributes
     """Declare a patch ID, supported builds, file recipes, and local renderers."""
 
     patch_id: str
@@ -22,6 +22,8 @@ class PatchDefinition:
     conflicts: tuple[str, ...]
     files: dict[str, dict]
     renderers: dict[str, Callable[[bytes], bytes]] = field(default_factory=dict)
+    compatibility: dict = field(default_factory=dict)
+    smoke: dict = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

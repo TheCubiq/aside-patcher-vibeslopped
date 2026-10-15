@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "originals": {
+    "b10d9e79bf160e6529b9845ca602aee00e431ed71dff63fd0bf087674d4919fc": {
+      "file": "1.0.928.1-bookmarks.json",
+      "sha256": "608ea99152af41dc70234bc3d121e4e0c39b3aa7e6fbeb687e1b87efc43b0801"
+    },
+    "68ea77122834bf9f37a9826fdb39e35957bcac07ff59eaa8f974fbc95104a89c": {
+      "file": "1.0.922.1-bookmarks.json",
+      "sha256": "e25dd8e68908ed8a7e5f39f36d7ed3dca87036cc8cdc9a549391c15d298b7d33"
+    }
+  }
+}

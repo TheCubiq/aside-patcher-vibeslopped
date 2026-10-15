@@ -2,3 +2,6 @@
 aside_patcher/patches/bookmark_folder_appearance/native_*.[ch] text eol=lf
 aside_patcher/patches/bookmark_folder_appearance/payload.json text eol=lf
 aside_patcher/patches/bookmark_folder_appearance/payload.bin -text
+# Adapter indexes pin exact JSON bytes across Windows checkouts.
+compatibility/adapters/*.json text eol=lf
+compatibility/adapters/*.payload.json linguist-generated=true

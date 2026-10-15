@@ -12,7 +12,7 @@ from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
 from aside_patcher.common.exceptions import Refusal
 from aside_patcher.common.utils import sha256
-from aside_patcher.compatibility import CATALOG_URL, apply_delta, cached_build, canonical, refresh
+from aside_patcher.compatibility import CATALOG_URL, apply_delta, bundled_build, cached_build, canonical, refresh
 
 
 def signed_document(document: dict, key: Ed25519PrivateKey) -> bytes:
@@ -64,6 +64,22 @@ def synthetic_package() -> dict:
 
 class TestCatalogRefresh(unittest.TestCase):
     """Verify the cache transaction independently of vendor files and owner keys."""
+
+    def test_source_bundled_adapters_are_hash_pinned(self):
+        """Offline bundled definitions use the same parser and reject altered packages."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            bundled = root / "compatibility/bundled"
+            bundled.mkdir(parents=True)
+            package = canonical(synthetic_package())
+            (bundled / "1.0.928.2.json").write_bytes(package)
+            (bundled / "index.json").write_bytes(canonical({"builds": {"1.0.928.2": {"sha256": sha256(package)}}}))
+            with patch("aside_patcher.compatibility.__file__", str(root / "aside_patcher/compatibility.py")):
+                self.assertEqual(bundled_build("1.0.928.2").version, "1.0.928.2")
+                self.assertIsNone(bundled_build("1.0.922.1"))
+                (bundled / "1.0.928.2.json").write_bytes(package + b" ")
+                with self.assertRaisesRegex(Refusal, "digest mismatch"):
+                    bundled_build("1.0.928.2")
 
     def test_verified_cache_survives_offline_corruption_and_rollback(self):
         """Only a complete verified update may replace the active catalog."""

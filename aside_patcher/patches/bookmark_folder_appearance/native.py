@@ -9,6 +9,7 @@ from ...common.models import Payload
 from ...common.utils import sha256
 from ...patch_loader import local_asset
 from ...pe import append_section, file_offset, parse_layout, relative_jump
+from .adapters import load_adapter
 
 _ADAPTER = json.loads((Path(__file__).resolve().parents[3] / "compatibility/adapters/1.0.928.2.json").read_text(encoding="utf-8"))
 ORIGINAL_SHA256 = _ADAPTER["original_sha256"]
@@ -46,7 +47,7 @@ def load_payload() -> tuple[dict, bytes]:
     return metadata, blob
 
 
-def trampolines(original: bytes, layout, base: int) -> tuple[bytearray, list[tuple[int, int, int]]]:
+def trampolines(original: bytes, layout, base: int, hooks: tuple = HOOKS) -> tuple[bytearray, list[tuple[int, int, int]]]:
     """Copy verified prologues with unwind records describing only copied operations.
 
     Parameters
@@ -57,6 +58,8 @@ def trampolines(original: bytes, layout, base: int) -> tuple[bytearray, list[tup
         Input image section mapping.
     base : int
         RVA reserved for trampoline code and unwind records.
+    hooks : tuple
+        Verified native hook bindings for this exact input build.
 
     Returns
     -------
@@ -65,7 +68,7 @@ def trampolines(original: bytes, layout, base: int) -> tuple[bytearray, list[tup
     """
     result = bytearray(TRAMPOLINE_SIZE)
     records = []
-    for index, (_, rva, expected, pushes, allocation) in enumerate(HOOKS):
+    for index, (_, rva, expected, pushes, allocation) in enumerate(hooks):
         before = bytes.fromhex(expected)
         offset = file_offset(layout, rva)
         if original[offset : offset + len(before)] != before:
@@ -196,6 +199,8 @@ def append_tables(original: bytes, layout, payload: Payload, metadata: dict, rec
     return load, table_offset
 
 
+# Keep PE section, unwind and hook coordinates together during rendering.
+# pylint: disable-next=too-many-locals
 def build_native_appearance(original: bytes) -> bytes:
     """Build the optional native feature only from explicitly verified input states.
 
@@ -209,13 +214,21 @@ def build_native_appearance(original: bytes) -> bytes:
     bytes
         Guarded image with executable payload, writable state, and native hooks.
     """
-    if sha256(original) not in (ORIGINAL_SHA256, TOGGLE_SHA256):
-        raise Refusal("Bookmark appearance requires the exact supported original or Chats-toggle image.")
-    metadata, blob = load_payload()
+    expected_output = None
+    hooks = HOOKS
+    if sha256(original) in (ORIGINAL_SHA256, TOGGLE_SHA256):
+        metadata, blob = load_payload()
+    else:
+        adapter, metadata, blob = load_adapter(original)
+        hooks = tuple(
+            (hook["name"], hook["rva"], hook["prologue"], tuple(map(tuple, hook["pushes"])), hook["stack_allocation"])
+            for hook in adapter["bookmark_hooks"]
+        )
+        expected_output = adapter["output_sha256"]
     layout = parse_layout(original)
     base = struct.unpack_from("<I", original, layout.optional_header + 56)[0]
     payload = Payload(base)
-    payload.data, records = trampolines(original, layout, base)
+    payload.data, records = trampolines(original, layout, base, hooks)
     buffers = {"code": bytearray(blob[: metadata["code_size"]]), "data": bytearray(blob[metadata["code_size"] :])}
     payload.data.extend(buffers["code"])
     load, guard_offset = append_tables(original, layout, payload, metadata, records)
@@ -224,7 +237,7 @@ def build_native_appearance(original: bytes) -> bytes:
     relocate(metadata, buffers, addresses)
     payload.data[TRAMPOLINE_SIZE : TRAMPOLINE_SIZE + metadata["code_size"]] = buffers["code"]
     image = bytearray(original)
-    for name, rva, expected, _, _ in HOOKS:
+    for name, rva, expected, _, _ in hooks:
         offset = file_offset(layout, rva)
         image[offset : offset + len(bytes.fromhex(expected))] = relative_jump(
             rva, addresses["code"] + metadata["symbols"]["Bfa" + name + "Hook"], len(bytes.fromhex(expected))
@@ -235,6 +248,9 @@ def build_native_appearance(original: bytes) -> bytes:
     struct.pack_into("<QQ", image, load + 128, imagebase + base + guard_offset, payload.labels["guard_count"])
     struct.pack_into("<I", image, layout.optional_header + 64, 0)
     result = append_section(image, layout, payload, name=b".bmcode")
-    return append_section(
+    result = append_section(
         bytearray(result), parse_layout(result), Payload(data_base, buffers["data"]), name=b".bmdata", characteristics=0xC0000040
     )
+    if expected_output and sha256(result) != expected_output:
+        raise Refusal("Bookmark adapter output differs from its verified trial.")
+    return result

@@ -13,7 +13,7 @@ import uuid
 from .common.exceptions import Refusal
 from .common.models import MANIFEST_PATH, Installation
 from .common.utils import backup_directory, file_sha256, sha256
-from .compatibility import cached_build, refresh
+from .compatibility import bundled_build, cached_build, refresh
 from .discovery import discover, resolve_installation
 from .patches import PATCHES
 from .recipes import prepare_changes, validate_component_change
@@ -119,6 +119,11 @@ def _patch_row(patch, build, current, definitions, native_only):
     metadata = build.patch_metadata.get(patch.patch_id, {})
     status = metadata.get("status", "supported" if editable else "unsupported")
     editable = editable and status == "supported"
+    reason = metadata.get("reason", "Requires a verified browser/settings adapter.")
+    diagnostics = ""
+    if "analysis_passed" in metadata and not editable:
+        diagnostics = reason
+        reason = "Not available on this browser version." if status == "unsupported" else "Not yet verified for this browser version."
     return {
         "id": patch.patch_id,
         "description": patch.description,
@@ -126,7 +131,8 @@ def _patch_row(patch, build, current, definitions, native_only):
         "installed": patch.patch_id in current,
         "editable": editable,
         "status": status,
-        "reason": "" if editable else metadata.get("reason", "Requires a verified browser/settings adapter."),
+        "reason": "" if editable else reason,
+        "diagnostics": diagnostics,
         "official_replacement": metadata.get("official_replacement", ""),
     }
 
@@ -273,8 +279,10 @@ def _approved_adapter(item: dict, cache: Path) -> Installation | None:
         adapter = cached_build(cache, item["version"])
     except (Refusal, OSError, ValueError, KeyError, TypeError) as error:
         item["compatibility_warning"] = f"Cached support rejected; using bundled definitions. {error}"
-        return None
+        adapter = None
 
+    if adapter is None:
+        adapter = bundled_build(item["version"])
     if adapter is None:
         return None
 

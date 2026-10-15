@@ -80,7 +80,14 @@ def load_definition(directory: Path, renderers: dict[str, Callable[[bytes], byte
         raw = json.loads((directory / "patch.json").read_text(encoding="utf-8"))
         files = {name: dict(recipe, sites=load_sites(directory, recipe.get("sites", []))) for name, recipe in raw["files"].items()}
         definition = PatchDefinition(
-            raw["id"], raw["description"], tuple(raw["versions"]), tuple(raw["conflicts"]), files, renderers or {}
+            raw["id"],
+            raw["description"],
+            tuple(raw["versions"]),
+            tuple(raw["conflicts"]),
+            files,
+            renderers or {},
+            raw.get("compatibility", {}),
+            raw.get("smoke", {}),
         )
         if directory.name.replace("_", "-") != definition.patch_id:
             raise Refusal("Patch ID must match its package directory name.")
