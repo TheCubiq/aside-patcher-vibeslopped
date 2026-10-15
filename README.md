@@ -1,9 +1,28 @@
 # Aside UI Patcher
 
-Small standard-library-only Python tooling for narrowly patching the supported
+Python tooling for narrowly patching the supported
 Aside native binary and settings bundle. It uses explicit patch recipes,
 SHA-256 allowlists, hash-keyed immutable backups, and staged file replacement
 with rollback if an installation fails partway.
+
+## Desktop app (developer build)
+
+Windows x64 with Rust, Python, and `uv` installed:
+
+```powershell
+uv sync --extra catalog
+cargo run --manifest-path desktop/Cargo.toml
+```
+
+Run the app without administrator privileges. It discovers installations,
+previews exact file changes, requests native Windows UAC only for protected
+writes, and preserves the existing CLI. Signed catalog verification uses the
+optional `catalog` dependency; legacy CLI patching remains standard-library-only.
+
+Desktop installation and compatibility publishing are still undergoing acceptance
+testing. Only the existing hash-reviewed 1.0.928.2 recipes are supported; archived
+older versions are analysis inputs. No compatibility release has been published.
+See [implementation status and pending acceptance](docs/DESKTOP_IMPLEMENTATION.md).
 
 ## Supported input
 

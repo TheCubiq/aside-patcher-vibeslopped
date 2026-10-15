@@ -1,0 +1,19 @@
+[package]
+name = "aside-patcher-desktop"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+gpui-kit = "=0.7.3"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.dev]
+debug = 0
+incremental = false
+
+# GPUI's debug renderer reads shaders from its build-machine Cargo cache.
+# Embed compiled shaders so copied developer builds also run on another PC.
+[profile.dev.package.gpui-pre-windows]
+debug-assertions = false
