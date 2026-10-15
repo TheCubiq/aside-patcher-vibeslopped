@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "builds": {
+    "1.0.922.1": {
+      "sha256": "c4141dd01f223bcfe7c466992d1cf741e4e766962c1137594b8639774bbb6442",
+      "runtime_report_sha256": "02803fad8077123a2b73497145461539ec03862a698e506a419a32942842d44d"
+    },
+    "1.0.914.1": {
+      "sha256": "2518a6e821c70d2b562589167d7854f596dc02aff4c4f11b8649a029b249e2b0",
+      "availability_only": true
+    },
+    "1.0.928.1": {
+      "sha256": "4cb31d675d937fedc5f6ebac095446ec7ec87af53f71cb8cd16c7ec50b3fc4dd",
+      "runtime_report_sha256": "aa798f835bdcb605a0e91a6233da9756a6df9438ff6f21d771bc397871f96d2c"
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": 2,
+  "candidate_sha256": "9832a80510908ee536df7a412ae1efa42cfd959b721f6dbbcf915842219bd84e",
+  "browser_version": "1.0.928.1",
+  "runtime_passed": true,
+  "checks": {
+    "all-combinations": true,
+    "launch": true,
+    "patch-behavior": true,
+    "restore": true
+  },
+  "transactions": [
+    {
+      "targets": [],
+      "passed": true
+    },
+    {
+      "targets": [
+        "bookmark-folder-appearance"
+      ],
+      "passed": true
+    }
+  ],
+  "combinations": [
+    {
+      "targets": [
+        "bookmark-folder-appearance"
+      ],
+      "passed": true,
+      "screenshots": [
+        {
+          "path": "00-patched.png",
+          "sha256": "ca0b8329ee66223ce344c9f3545f14b11f4833b2b1ae2f73e4528c957a8e9f0a"
+        },
+        {
+          "path": "00-restored.png",
+          "sha256": "f7ce4456811a3032c3584c13830b0d1be9767439dbd1eba4fd87f3d09d48a705"
+        }
+      ],
+      "effects": {
+        "bookmark-folder-appearance": {
+          "palette_count": 8,
+          "color_changed": true,
+          "passed": true
+        }
+      },
+      "elapsed_seconds": 66.83
+    }
+  ],
+  "status": "finished",
+  "restored": true,
+  "scope": "Private bookmark-only .928.1 adapter smoke; not catalog publication or validation of other combinations.",
+  "original_sha256": "b10d9e79bf160e6529b9845ca602aee00e431ed71dff63fd0bf087674d4919fc",
+  "patched_sha256": "0212e74e90fbd13bddb36bf8b1137d40acc2a6ab5c4b20b1bd4e91b8c7fa2698",
+  "native_analysis": {
+    "complete_function_dependencies": 78,
+    "field_offsets_retained": true,
+    "resource_tables_checked": true,
+    "vtable_pointer_anchors_checked": true
+  },
+  "limitations": [
+    "Icon selection and persistence were not runtime-tested in this focused smoke.",
+    "Other patch combinations were not tested with this native adapter.",
+    "No end-user support entry or public package was enabled."
+  ]
+}

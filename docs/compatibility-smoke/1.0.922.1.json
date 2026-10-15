@@ -1,0 +1,52 @@
+{
+  "schema_version": 2,
+  "candidate_sha256": "c4141dd01f223bcfe7c466992d1cf741e4e766962c1137594b8639774bbb6442",
+  "browser_version": "1.0.922.1",
+  "runtime_passed": true,
+  "checks": {
+    "all-combinations": true,
+    "launch": true,
+    "patch-behavior": true,
+    "restore": true
+  },
+  "transactions": [
+    {
+      "targets": [],
+      "passed": true
+    },
+    {
+      "targets": [
+        "ask-aside"
+      ],
+      "passed": true
+    }
+  ],
+  "combinations": [
+    {
+      "targets": [
+        "ask-aside"
+      ],
+      "passed": true,
+      "screenshots": [
+        {
+          "path": "00-patched.png",
+          "sha256": "25e4ef08e954360fa1114871541dd3aa639b3e2f818f00c99e96595762bba54f"
+        },
+        {
+          "path": "00-restored.png",
+          "sha256": "64f66cace6da04dbbd6b645e89aba7b507ed15099ec2265d7862b84559d368d0"
+        }
+      ],
+      "effects": {
+        "ask-aside": {
+          "visible_count": 0,
+          "passed": true
+        }
+      },
+      "elapsed_seconds": 134.59
+    }
+  ],
+  "status": "finished",
+  "reused_transactions": true,
+  "restored": true
+}

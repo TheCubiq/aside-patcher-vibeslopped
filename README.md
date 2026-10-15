@@ -20,9 +20,11 @@ writes, and preserves the existing CLI. Signed catalog verification uses the
 optional `catalog` dependency; legacy CLI patching remains standard-library-only.
 
 Desktop installation and compatibility publishing are still undergoing acceptance
-testing. Only the existing hash-reviewed 1.0.928.2 recipes are supported; archived
-older versions are analysis inputs. No compatibility release has been published.
-See [implementation status and pending acceptance](docs/DESKTOP_IMPLEMENTATION.md).
+testing. The desktop app also includes smoke-tested Hide Ask Aside support for 1.0.922.1
+and Hide Chats/Hide Ask Aside support for 1.0.928.1. Other native adapters remain
+build-specific and unavailable until verified. No compatibility release has been published.
+See [cross-version support](docs/CROSS_VERSION_SUPPORT.md) and
+[implementation status](docs/DESKTOP_IMPLEMENTATION.md).
 
 ## Supported input
 

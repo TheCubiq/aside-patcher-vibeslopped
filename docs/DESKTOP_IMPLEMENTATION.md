@@ -9,7 +9,8 @@ compatibility releases. Developer prerequisites are acceptable initially.
 - [x] Original installers and complete browser archives for 1.0.914.1,
   1.0.922.1, 1.0.928.1, and 1.0.928.2, with exact DLL versions,
   SHA-256 and valid publisher signatures; no installer executed.
-- [ ] Cross-version analysis and supported native adapters; no guessed support.
+- [ ] Full native adapter coverage. Cross-version toolbar analysis now supports
+  verified subsets on .922.1 and .928.1; bookmark/settings adapters remain build-specific.
 - [x] Multi-build discovery, compatibility metadata, structured JSON engine API
   implemented; new browser adapters still require independent validation.
 - [x] GPUI UI, native UAC helper, graceful close, transactional recovery/restart
@@ -197,28 +198,26 @@ native-only restoration changes the DLL while leaving unsupported settings alone
 
 ## Publishing setup still required
 
-1. Connect a disposable interactive Windows runner labelled `Windows`, `X64`,
-   `aside-ui-test`. Restrict it to trusted main-branch workflows and reset its
-   snapshot between browser builds. Snapshot reset automation is not implemented.
-2. Finish and validate the native UI harness on that runner. The current workflow
-   requires its reviewed path in `ASIDE_UI_TEST_SCRIPT`, and
-   `ASIDE_DISPOSABLE_VM=1`. No built-in complete native UI harness is delivered yet.
-3. Set repository variable `ASIDE_UI_TESTS_ENABLED=true` only when that runner and
-   harness are ready. Without it, analysis runs and clearly reports pending runtime
-   acceptance; it never produces a publishable tested artifact.
-4. Configure protected environment `compatibility-publishing` with the owner as
-   reviewer, and its `ASIDE_SIGNING_KEY` secret matching the checked-in public key.
-   Keep private key material outside Git. Environment reviewer support depends on
-   repository/account settings; manually dispatching the publish workflow is the
-   explicit approval fallback.
-5. Run the compatibility workflow manually. After native checks pass, approve the
-   publish workflow using that immutable candidate run ID. Publishing signs those
-   exact bytes and retains catalog entries for other browser versions.
+1. Connect a trusted interactive Windows runner labelled `Windows`, `X64`,
+   `aside-ui-test`. Use isolated browser fixtures and synthetic profiles. A
+   disposable VM remains preferable for unattended browser execution, but full
+   visual regression or VM reset infrastructure is not a smoke-acceptance gate.
+2. Enable repository variable `ASIDE_UI_TESTS_ENABLED=true` once that runner is
+   ready. The workflow includes its own short smoke runner; a custom external
+   `ASIDE_UI_TEST_SCRIPT` is no longer required. Unknown builds enter per-patch
+   analysis without a prior supported-build registry entry.
+3. Configure protected environment `compatibility-publishing` with the owner as
+   reviewer and `ASIDE_SIGNING_KEY` matching the application's pinned public key.
+   Keep private key material outside Git. Manual publishing dispatch remains
+   the explicit approval fallback where environment reviewers are unavailable.
+4. Inspect the candidate report and approve its immutable tested run ID. The
+   publisher signs those exact bytes without rebuilding. It verifies all file
+   transactions plus individual/interaction smoke checks and screenshot digests.
+   A failing patch can be removed into a separately smoke-tested passing subset.
 
-The six-hour detector hashes the full official browser package. Its analysis
-marker includes that digest and source commit, so unchanged artifacts do not
-repeat analysis. Manual dispatch always allows a new attempt. New/ambiguous native
-dependencies produce a report without guessed installation support.
+No workflow or release was published during local implementation. See
+[CROSS_VERSION_SUPPORT.md](CROSS_VERSION_SUPPORT.md) for current results and
+remaining native binding limitations.
 
 ## Quality status
 

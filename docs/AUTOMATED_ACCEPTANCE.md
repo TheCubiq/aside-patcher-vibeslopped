@@ -13,6 +13,9 @@ The broader regression harness below is optional follow-up work. It is not a
 prerequisite for accepting that smoke check. Smoke acceptance does not authorize
 publishing untested build adapters or claim complete visual regression coverage.
 
+The implemented short smoke runner and current per-version results are documented
+in [cross-version support](CROSS_VERSION_SUPPORT.md).
+
 ## Optional regression harness
 
 The native driver uses Chromium **UI DevTools**, a separate endpoint from page
@@ -79,8 +82,8 @@ when Windows denied foreground input. Full combination runs, popup retention,
 multi-window refresh, visual clipping and animation measurements remain deferred.
 The real-input runner requires an unlocked interactive desktop.
 
-Reports deliberately retain `runtime_passed: false`. They are not accepted as
-publication evidence by `compatibility_release.py`. The CI publication gate must
-remain closed until the full advertised combinations and required behavior
-matrix have automated, independently verified coverage. The earlier manual
-laptop report remains separate evidence.
+Reports from this broad regression runner deliberately retain `runtime_passed:
+false`; they cannot by themselves authorize publication. The separate version-2
+smoke report binds the exact candidate, all file transactions, required individual
+and interaction selections, restoration, and screenshot digests. That is the
+current publication acceptance scope. The broader matrix remains optional work.

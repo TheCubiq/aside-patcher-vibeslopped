@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "baseline": "1.0.928.2",
+  "runtime_policy": "individual patches and artifact interaction sets; all file transactions",
+  "versions": [
+    {
+      "version": "1.0.914.1",
+      "original_sha256": "9a2117222374507bfde876b9afe01326782547dad0ec242c7d96ee2b30cfeeac",
+      "patches": [
+        {
+          "id": "chats",
+          "analysis_passed": false,
+          "reason": "Site 0x36B6145: expected one context match, found 0"
+        },
+        {
+          "id": "ask-aside",
+          "analysis_passed": false,
+          "reason": "External branch target changed"
+        },
+        {
+          "id": "chats-toggle",
+          "analysis_passed": false,
+          "reason": "Requires independent native toggle and settings-component adapters."
+        },
+        {
+          "id": "bookmark-folder-appearance",
+          "analysis_passed": false,
+          "reason": "Outside declared minimum version 1.0.922.1"
+        }
+      ],
+      "runtime_passed": false,
+      "availability_only": true
+    },
+    {
+      "version": "1.0.922.1",
+      "original_sha256": "68ea77122834bf9f37a9826fdb39e35957bcac07ff59eaa8f974fbc95104a89c",
+      "patches": [
+        {
+          "id": "chats",
+          "analysis_passed": false,
+          "reason": "Site 0x36B6145: expected one context match, found 0"
+        },
+        {
+          "id": "ask-aside",
+          "analysis_passed": true,
+          "reason": "Resolved instruction sites; runtime smoke check pending."
+        },
+        {
+          "id": "chats-toggle",
+          "analysis_passed": false,
+          "reason": "Requires independent native toggle and settings-component adapters."
+        },
+        {
+          "id": "bookmark-folder-appearance",
+          "analysis_passed": false,
+          "reason": "Requires verified native bindings, object layouts and payload relocation; hook matches alone are insufficient."
+        }
+      ],
+      "runtime_passed": true,
+      "report": "compatibility-smoke/1.0.922.1.json"
+    },
+    {
+      "version": "1.0.928.1",
+      "original_sha256": "b10d9e79bf160e6529b9845ca602aee00e431ed71dff63fd0bf087674d4919fc",
+      "patches": [
+        {
+          "id": "chats",
+          "analysis_passed": true,
+          "reason": "Resolved instruction sites; runtime smoke check pending."
+        },
+        {
+          "id": "ask-aside",
+          "analysis_passed": true,
+          "reason": "Resolved instruction sites; runtime smoke check pending."
+        },
+        {
+          "id": "chats-toggle",
+          "analysis_passed": false,
+          "reason": "Requires independent native toggle and settings-component adapters."
+        },
+        {
+          "id": "bookmark-folder-appearance",
+          "analysis_passed": false,
+          "reason": "Requires verified native bindings, object layouts and payload relocation; hook matches alone are insufficient."
+        }
+      ],
+      "runtime_passed": true,
+      "report": "compatibility-smoke/1.0.928.1.json"
+    },
+    {
+      "version": "1.0.928.2",
+      "existing_support_retained": true,
+      "recheck": "interrupted; original fixture restored; no new runtime approval claimed"
+    }
+  ]
+}

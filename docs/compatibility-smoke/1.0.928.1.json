@@ -1,0 +1,118 @@
+{
+  "schema_version": 2,
+  "candidate_sha256": "4cb31d675d937fedc5f6ebac095446ec7ec87af53f71cb8cd16c7ec50b3fc4dd",
+  "browser_version": "1.0.928.1",
+  "runtime_passed": true,
+  "checks": {
+    "all-combinations": true,
+    "launch": true,
+    "patch-behavior": true,
+    "restore": true
+  },
+  "transactions": [
+    {
+      "targets": [],
+      "passed": true
+    },
+    {
+      "targets": [
+        "chats"
+      ],
+      "passed": true
+    },
+    {
+      "targets": [
+        "ask-aside"
+      ],
+      "passed": true
+    },
+    {
+      "targets": [
+        "ask-aside",
+        "chats"
+      ],
+      "passed": true
+    }
+  ],
+  "combinations": [
+    {
+      "targets": [
+        "chats"
+      ],
+      "passed": true,
+      "screenshots": [
+        {
+          "path": "00-patched.png",
+          "sha256": "07884eb49a90a0cc6d6ec3b349683b36e16bf76afc5eb97f184f7b36811d9b3b"
+        },
+        {
+          "path": "00-restored.png",
+          "sha256": "b387c63bb11071b546955ac1b263114190ab9400335289c078b4dd5ebd83a782"
+        }
+      ],
+      "effects": {
+        "chats": {
+          "visible_count": 0,
+          "passed": true
+        }
+      },
+      "elapsed_seconds": 119.98,
+      "reused": true
+    },
+    {
+      "targets": [
+        "ask-aside"
+      ],
+      "passed": true,
+      "screenshots": [
+        {
+          "path": "01-patched.png",
+          "sha256": "4532a624890a3d0bd0cf9fa36b4f1b64640bbe79716ec0e29ff04a604505daed"
+        },
+        {
+          "path": "01-restored.png",
+          "sha256": "32b388e10a6aea0add740857c61c6d14abe5da98c9d7b7b5efbf4ada4eb6a749"
+        }
+      ],
+      "effects": {
+        "ask-aside": {
+          "visible_count": 0,
+          "passed": true
+        }
+      },
+      "elapsed_seconds": 139.28
+    },
+    {
+      "targets": [
+        "ask-aside",
+        "chats"
+      ],
+      "passed": true,
+      "screenshots": [
+        {
+          "path": "02-patched.png",
+          "sha256": "64e6147dc486ffe2961adbc470c1ca6b9c0f3815264739f1800f6db9b520423c"
+        },
+        {
+          "path": "02-restored.png",
+          "sha256": "64f66cace6da04dbbd6b645e89aba7b507ed15099ec2265d7862b84559d368d0"
+        }
+      ],
+      "effects": {
+        "ask-aside": {
+          "visible_count": 0,
+          "passed": true
+        },
+        "chats": {
+          "visible_count": 0,
+          "passed": true
+        }
+      },
+      "elapsed_seconds": 136.47,
+      "reused": true
+    }
+  ],
+  "status": "finished",
+  "reused_transactions": true,
+  "restored": true
+}
