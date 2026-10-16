@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import time
 import uuid
@@ -528,9 +529,10 @@ def _run_mutation(request, preview):
     with tempfile.TemporaryDirectory(prefix="aside-patcher-") as temporary:
         request_path, result_path = Path(temporary) / "request.json", Path(temporary) / "result.json"
         request_path.write_text(json.dumps(request), encoding="utf-8")
-        code = elevate(
-            ["-m", "aside_patcher.protocol", "--helper", str(request_path), str(result_path)], Path(__file__).resolve().parent.parent
-        )
+        arguments = ["--helper", str(request_path), str(result_path)]
+        if not getattr(sys, "frozen", False):
+            arguments = ["-m", "aside_patcher.protocol", *arguments]
+        code = elevate(arguments, Path(__file__).resolve().parent.parent)
         if not result_path.exists():
             raise Refusal(f"Elevated helper did not return a result (exit {code}).")
         envelope = json.loads(result_path.read_text(encoding="utf-8"))
@@ -607,7 +609,6 @@ def main() -> int:
     int
         Zero on success, two on a validated refusal.
     """
-    import sys  # pylint: disable=import-outside-toplevel
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--helper", nargs=2, metavar=("REQUEST", "RESULT"))

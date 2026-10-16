@@ -34,7 +34,7 @@ class TestTrialPreparation(TestInstallationFixture):
             request = prepare_trial(self.root / "archive", self.ui, self.trial, self.build.version)
         self.assertEqual(load.call_args.args[1], self.build.version)
         self.assertEqual(validate.call_args.args[0]["version"], self.build.version)
-        self.assertTrue(Path(request["installation"]).is_relative_to(self.trial))
+        self.assertTrue(Path(request["installation"]).resolve().is_relative_to(self.trial.resolve()))
         self.assertEqual(Path(request["installation"]).read_bytes(), self.original["dll"])
         copied = self.trial / "profile" / "AsideAgentManager" / "settings-test" / "assets" / self.ui.name
         copied.write_bytes(b"trial changes")

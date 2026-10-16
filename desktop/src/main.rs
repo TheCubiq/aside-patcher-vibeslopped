@@ -17,6 +17,19 @@ use std::{
 
 const PUBLIC_KEY: &str = include_str!("../../compatibility/public-key.pem");
 
+#[cfg(feature = "packaged-engine")]
+mod packaged;
+
+#[cfg(feature = "packaged-engine")]
+fn repository_root() -> PathBuf {
+    std::env::current_exe()
+        .expect("cannot locate the patcher executable")
+        .parent()
+        .expect("executable must have a parent")
+        .to_path_buf()
+}
+
+#[cfg(not(feature = "packaged-engine"))]
 fn repository_root() -> PathBuf {
     if let Some(path) = std::env::var_os("ASIDE_PATCHER_ROOT") {
         return PathBuf::from(path);
@@ -54,16 +67,17 @@ struct Patcher {
 
 fn engine(repository: PathBuf, request: Value, sender: Sender<Value>) {
     let run = || -> Result<(), String> {
-        let mut command = Command::new("uv");
+        #[cfg(feature = "packaged-engine")]
+        let mut command = Command::new(packaged::engine_path()?);
+        #[cfg(not(feature = "packaged-engine"))]
+        let mut command = {
+            let mut command = Command::new("uv");
+            command.args([
+                "run", "--extra", "catalog", "python", "-m", "aside_patcher.protocol",
+            ]);
+            command
+        };
         command
-            .args([
-                "run",
-                "--extra",
-                "catalog",
-                "python",
-                "-m",
-                "aside_patcher.protocol",
-            ])
             .env("ASIDE_PATCHER_PUBLIC_KEY", PUBLIC_KEY)
             .current_dir(repository)
             .stdin(Stdio::piped())

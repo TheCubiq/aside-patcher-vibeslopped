@@ -1,6 +1,8 @@
 """Verify complete-state previews refuse unsafe or stale selections."""
 
 from dataclasses import replace
+import json
+from pathlib import Path
 from unittest.mock import patch
 
 from aside_patcher.common.exceptions import Refusal
@@ -14,6 +16,26 @@ from tests.fixtures import TestInstallationFixture
 
 class TestProtocol(TestInstallationFixture):
     """Use synthetic artifacts; never close or modify the installed browser."""
+
+    def test_frozen_helper_uses_executable_arguments(self):
+        """A standalone engine is relaunched directly, without Python's -m flag."""
+        for frozen in (False, True):
+            calls = []
+
+            def worker(arguments, _directory):
+                calls.append(arguments)
+                Path(arguments[-1]).write_text(json.dumps({"ok": True, "result": {"current": []}}))
+                return 0
+
+            with (
+                self.subTest(frozen=frozen),
+                patch.object(protocol.sys, "frozen", frozen, create=True),
+                patch.object(protocol, "is_admin", return_value=False),
+                patch.object(protocol, "elevate", side_effect=worker),
+            ):
+                result = protocol._run_mutation({}, {"requires_elevation": True})  # pylint: disable=protected-access
+                self.assertEqual(result, {"current": []})
+                self.assertEqual(calls[0][0], "--helper" if frozen else "-m")
 
     def test_preview_checks_outputs_without_installing(self):
         """Render both artifacts but leave original installed bytes intact."""
