@@ -1,6 +1,7 @@
 """Build a standalone Windows GUI with its exact Python engine embedded."""
 
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -9,6 +10,23 @@ import shutil
 import subprocess
 import struct
 import sys
+
+
+def verify_client_modules(build: Path) -> None:
+    """Reject developer tests and validation scripts in frozen client modules."""
+    _, modules = ast.literal_eval((build / "PYZ-00.toc").read_text(encoding="utf-8"))
+    forbidden = []
+    for name, source, _ in modules:
+        parts = name.split(".")
+        source_parts = Path(source).parts
+        if (
+            any(part in {"tests", "test", "unittest", "pytest", "_pytest"} for part in parts)
+            or any(part.startswith("test_") for part in parts)
+            or "scripts" in source_parts
+        ):
+            forbidden.append(name)
+    if forbidden:
+        raise ValueError(f"Developer modules must not ship: {', '.join(sorted(forbidden))}")
 
 
 def normalize_build_paths(executable: Path, roots: list[Path]) -> int:
@@ -42,7 +60,7 @@ def normalize_build_paths(executable: Path, roots: list[Path]) -> int:
 def main():
     """Freeze trusted source assets, then embed that engine in the GPUI executable."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--version", default="0.1.0-alpha.1")
+    parser.add_argument("--version", default="0.1.0-alpha.2")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     work = root / ".patcher-work" / "alpha" / args.version
@@ -66,13 +84,20 @@ def main():
         str(root),
         "--collect-data",
         "aside_patcher",
-        "--collect-submodules",
-        "aside_patcher",
+        "--exclude-module",
+        "tests",
+        "--exclude-module",
+        "unittest",
+        "--exclude-module",
+        "pytest",
+        "--exclude-module",
+        "_pytest",
         "--add-data",
         f"{root / 'compatibility'}:compatibility",
         str(root / "scripts/frozen_engine.py"),
     ]
     subprocess.run(command, cwd=root, check=True)
+    verify_client_modules(work / "build/aside-patcher-engine")
     engine = work / "engine/aside-patcher-engine.exe"
     env = dict(os.environ, ASIDE_PATCHER_ENGINE=str(engine))
     subprocess.run(
@@ -99,6 +124,7 @@ def main():
         "sha256": digest,
         "engine_sha256": hashlib.sha256(engine.read_bytes()).hexdigest(),
         "standalone": True,
+        "developer_tests_included": False,
         "externally_loaded_packages": False,
         "normalized_build_paths": normalized,
     }

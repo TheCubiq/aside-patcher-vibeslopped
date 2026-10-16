@@ -30,7 +30,7 @@ jobs:
         run: |
           if ($env:CANDIDATE_RUN -notmatch '^\d+$') { throw 'Invalid candidate run ID' }
           $run=gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:CANDIDATE_RUN"|ConvertFrom-Json
-          if ($run.conclusion -ne 'success' -or $run.head_branch -ne 'main' -or $run.event -notin @('schedule','workflow_dispatch') -or $run.path -ne '.github/workflows/compatibility.yml') { throw 'Candidate is not from a successful trusted main-branch workflow' }
+          if ($run.conclusion -ne 'success' -or $run.head_branch -ne 'main' -or $run.event -ne 'workflow_dispatch' -or $run.path -ne '.github/workflows/compatibility.yml') { throw 'Candidate is not from a successful manually triggered main-branch workflow' }
           $jobs=gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:CANDIDATE_RUN/jobs?per_page=100"|ConvertFrom-Json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $runtime=@($jobs.jobs|Where-Object name -eq 'runtime')

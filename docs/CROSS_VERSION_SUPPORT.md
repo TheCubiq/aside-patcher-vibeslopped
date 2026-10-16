@@ -132,7 +132,7 @@ regression suites.
 
 ## Distribution
 
-The scheduled workflow analyzes unknown official builds and can test a passing
+The manually triggered workflow analyzes unknown official builds and can test a passing
 subset. A trusted interactive Windows runner and owner signing credentials still
 need repository setup. One-click approval publishes the exact tested bytes;
 clients retain exact-hash guards and verified offline support. No release was

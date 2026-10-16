@@ -1,7 +1,5 @@
 name: Aside compatibility candidate
 on:
-  schedule:
-    - cron: '19 */6 * * *'
   workflow_dispatch:
 permissions:
   contents: read

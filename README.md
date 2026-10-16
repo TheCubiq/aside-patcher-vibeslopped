@@ -35,8 +35,14 @@ Build the standalone alpha on Windows with the Rust/MSVC prerequisites installed
 uv run --with pyinstaller==6.22.0 --extra catalog python scripts/package_alpha.py
 ```
 
-Output is under ignored `.patcher-work/alpha/0.1.0-alpha.1/`, with an EXE,
+Output is under ignored `.patcher-work/alpha/0.1.0-alpha.2/`, with an EXE,
 SHA-256 checksums, and build provenance. Vendor browser binaries are not packaged.
+
+Unit tests and developer validation stay in the source checkout (`tests/` and
+`scripts/check.ps1`). They never run on client startup or after applying patches.
+Packaging excludes test runners and rejects frozen developer validation modules.
+Client checks only installation compatibility, signatures, hashes, and transaction
+safety. Both GitHub workflows currently require a manual **Run workflow** trigger.
 
 Run the app without administrator privileges. It discovers installations,
 previews exact file changes, requests native Windows UAC only for protected
