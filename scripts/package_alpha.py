@@ -7,7 +7,36 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import struct
 import sys
+
+
+def normalize_build_paths(executable: Path, roots: list[Path]) -> int:
+    """Redact same-width compiler home paths only in PE read-only data."""
+    image = bytearray(executable.read_bytes())
+    pe = struct.unpack_from("<I", image, 60)[0]
+    if image[:2] != b"MZ" or image[pe : pe + 4] != b"PE\0\0":
+        raise ValueError("Packaging output is not a Windows PE executable")
+    count = struct.unpack_from("<H", image, pe + 6)[0]
+    table = pe + 24 + struct.unpack_from("<H", image, pe + 20)[0]
+    replacements = 0
+    for index in range(count):
+        section = table + index * 40
+        if image[section : section + 8].rstrip(b"\0") != b".rdata":
+            continue
+        size, offset = struct.unpack_from("<II", image, section + 16)
+        data = bytes(image[offset : offset + size])
+        for root in roots:
+            for value in (str(root).replace("/", "\\") + "\\", str(root).replace("\\", "/") + "/"):
+                before = value.encode("utf-8")
+                after = b"<build>".ljust(len(before), b"_")
+                if len(after) != len(before):
+                    raise ValueError("Build path is too short to normalize safely")
+                replacements += data.count(before)
+                data = data.replace(before, after)
+        image[offset : offset + size] = data
+    executable.write_bytes(image)
+    return replacements
 
 
 def main():
@@ -54,6 +83,12 @@ def main():
     )
     destination = work / f"Aside-Patcher-{args.version}-windows-x64.exe"
     shutil.copy2(root / "desktop/target/debug/aside-patcher-desktop.exe", destination)
+    private_roots = [Path.home()]
+    if len(root.parts) >= 3 and root.parts[1].lower() == "users":
+        private_roots.append(Path(*root.parts[:3]))
+    normalized = normalize_build_paths(destination, private_roots)
+    if engine.read_bytes() not in destination.read_bytes():
+        raise ValueError("Embedded engine changed during packaging")
     digest = hashlib.sha256(destination.read_bytes()).hexdigest()
     (work / "SHA256SUMS.txt").write_text(f"{digest}  {destination.name}\n", encoding="utf-8")
     metadata = {
@@ -65,6 +100,7 @@ def main():
         "engine_sha256": hashlib.sha256(engine.read_bytes()).hexdigest(),
         "standalone": True,
         "externally_loaded_packages": False,
+        "normalized_build_paths": normalized,
     }
     (work / "build-info.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     print(f"Standalone alpha: {destination}")

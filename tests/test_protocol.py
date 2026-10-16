@@ -19,11 +19,12 @@ class TestProtocol(TestInstallationFixture):
 
     def test_frozen_helper_uses_executable_arguments(self):
         """A standalone engine is relaunched directly, without Python's -m flag."""
+        calls = []
         for frozen in (False, True):
-            calls = []
+            calls.clear()
 
-            def worker(arguments, _directory, recorded=calls):
-                recorded.append(arguments)
+            def worker(arguments, _directory):
+                calls.append(arguments)
                 Path(arguments[-1]).write_text(json.dumps({"ok": True, "result": {"current": []}}), encoding="utf-8")
                 return 0
 
