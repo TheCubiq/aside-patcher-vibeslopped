@@ -268,7 +268,14 @@ def aside_is_running() -> bool:
         return False
     try:
         result = subprocess.run(
-            ["tasklist", "/FI", "IMAGENAME eq Aside.exe", "/FO", "CSV", "/NH"],
+            [
+                str(Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32/tasklist.exe"),
+                "/FI",
+                "IMAGENAME eq Aside.exe",
+                "/FO",
+                "CSV",
+                "/NH",
+            ],
             check=False,
             capture_output=True,
             text=True,

@@ -5,10 +5,11 @@ const ENGINE: &[u8] = include_bytes!(env!("ASIDE_PATCHER_ENGINE"));
 
 pub fn engine_path() -> Result<PathBuf, String> {
     let digest = format!("{:x}", Sha256::digest(ENGINE));
-    let root = PathBuf::from(std::env::var_os("LOCALAPPDATA").ok_or("LOCALAPPDATA is unavailable")?)
-        .join("AsidePatcher")
-        .join("runtime")
-        .join(&digest);
+    let root =
+        PathBuf::from(std::env::var_os("LOCALAPPDATA").ok_or("LOCALAPPDATA is unavailable")?)
+            .join("AsidePatcher")
+            .join("runtime")
+            .join(&digest);
     fs::create_dir_all(&root).map_err(|error| error.to_string())?;
     let path = root.join("engine.exe");
     if path.exists() {

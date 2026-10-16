@@ -22,9 +22,9 @@ class TestProtocol(TestInstallationFixture):
         for frozen in (False, True):
             calls = []
 
-            def worker(arguments, _directory):
-                calls.append(arguments)
-                Path(arguments[-1]).write_text(json.dumps({"ok": True, "result": {"current": []}}))
+            def worker(arguments, _directory, recorded=calls):
+                recorded.append(arguments)
+                Path(arguments[-1]).write_text(json.dumps({"ok": True, "result": {"current": []}}), encoding="utf-8")
                 return 0
 
             with (

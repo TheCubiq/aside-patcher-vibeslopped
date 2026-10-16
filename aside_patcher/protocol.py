@@ -609,7 +609,6 @@ def main() -> int:
     int
         Zero on success, two on a validated refusal.
     """
-
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--helper", nargs=2, metavar=("REQUEST", "RESULT"))
     args = parser.parse_args()

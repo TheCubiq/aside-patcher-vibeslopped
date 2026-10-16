@@ -5,6 +5,21 @@ Aside native binary and settings bundle. It uses explicit patch recipes,
 SHA-256 allowlists, hash-keyed immutable backups, and staged file replacement
 with rollback if an installation fails partway.
 
+## Windows alpha download
+
+Download the Windows x64 EXE from [GitHub Releases](https://github.com/TheCubiq/aside-patcher-vibeslopped/releases).
+Open it normally, select available patches, and click **Apply**. Approve Windows
+UAC when requested. **Restore originals** reverses installed patches.
+
+The standalone alpha includes its Python engine and approved compatibility data;
+no Python, Rust, `uv`, installation wizard, or manual extraction is needed.
+Current bundled support covers Aside `1.0.928.2` and the verified toolbar subsets
+on `1.0.928.1` / `1.0.922.1`. Unknown builds remain unavailable. Older bookmark
+trial adapters are not advertised as supported client selections.
+
+Alpha executables are unsigned. External `maps.zip` / `patches.zip` loading and
+automatic support updates are not part of this first standalone alpha.
+
 ## Desktop app (developer build)
 
 Windows x64 with Rust, Python, and `uv` installed:
@@ -13,6 +28,15 @@ Windows x64 with Rust, Python, and `uv` installed:
 uv sync --extra catalog
 cargo run --manifest-path desktop/Cargo.toml
 ```
+
+Build the standalone alpha on Windows with the Rust/MSVC prerequisites installed:
+
+```powershell
+uv run --with pyinstaller==6.22.0 --extra catalog python scripts/package_alpha.py
+```
+
+Output is under ignored `.patcher-work/alpha/0.1.0-alpha.1/`, with an EXE,
+SHA-256 checksums, and build provenance. Vendor browser binaries are not packaged.
 
 Run the app without administrator privileges. It discovers installations,
 previews exact file changes, requests native Windows UAC only for protected

@@ -1,4 +1,7 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![cfg_attr(
+    any(feature = "packaged-engine", not(debug_assertions)),
+    windows_subsystem = "windows"
+)]
 
 use gpui_kit::base::StyledExt;
 use gpui_kit::component::{
@@ -73,7 +76,12 @@ fn engine(repository: PathBuf, request: Value, sender: Sender<Value>) {
         let mut command = {
             let mut command = Command::new("uv");
             command.args([
-                "run", "--extra", "catalog", "python", "-m", "aside_patcher.protocol",
+                "run",
+                "--extra",
+                "catalog",
+                "python",
+                "-m",
+                "aside_patcher.protocol",
             ]);
             command
         };

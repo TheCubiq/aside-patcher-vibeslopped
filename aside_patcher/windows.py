@@ -192,7 +192,13 @@ def launch_arguments(executable: Path) -> list[str]:
       Select-Object -ExpandProperty CommandLine)|ConvertTo-Json -Compress
     """
     result = subprocess.run(
-        ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", script],
+        [
+            str(Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32/WindowsPowerShell/v1.0/powershell.exe"),
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            script,
+        ],
         env=dict(os.environ, ASIDE_SELECTED_EXE=str(executable)),
         check=True,
         capture_output=True,
