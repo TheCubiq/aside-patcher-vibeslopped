@@ -60,7 +60,7 @@ def normalize_build_paths(executable: Path, roots: list[Path]) -> int:
 def main():
     """Freeze trusted source assets, then embed that engine in the GPUI executable."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--version", default="0.1.0-alpha.2")
+    parser.add_argument("--version", default="0.1.0-alpha.3")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     work = root / ".patcher-work" / "alpha" / args.version
@@ -125,7 +125,7 @@ def main():
         "engine_sha256": hashlib.sha256(engine.read_bytes()).hexdigest(),
         "standalone": True,
         "developer_tests_included": False,
-        "externally_loaded_packages": False,
+        "externally_loaded_packages": True,
         "normalized_build_paths": normalized,
     }
     (work / "build-info.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")

@@ -198,6 +198,24 @@ native-only restoration changes the DLL while leaving unsupported settings alone
 
 ## Publishing setup still required
 
+The owner key was located and matched against the application's pinned public
+key. The `compatibility-publishing` environment and its `ASIDE_SIGNING_KEY` secret
+are configured. Publication still requires manual dispatch; no scheduled workflow
+is enabled. Environment reviewer protection can be added separately.
+
+Clients fetch `catalog.json` from the dedicated `compatibility-catalog` release,
+independently of whichever app release GitHub marks latest. Each signed catalog
+references immutable, digest-pinned package assets. Publication uploads tested
+packages first, then replaces only the signed catalog asset. Sequence numbers
+advance from the previous authenticated catalog, not from a workflow run number.
+An interrupted publication leaves the prior catalog usable. Packages already in
+the local cache are reused by digest. Verified cached documents remain usable
+offline after expiry; freshly downloaded expired documents are refused.
+
+The initial online catalog uses the exact previously smoke-tested `.922.1` and
+`.928.1` toolbar candidates and their existing screenshot-bound reports. It adds
+no new patch combinations. `.928.2` support remains bundled in the application.
+
 1. Connect a trusted interactive Windows runner labelled `Windows`, `X64`,
    `aside-ui-test`. Use isolated browser fixtures and synthetic profiles. A
    disposable VM remains preferable for unattended browser execution, but full

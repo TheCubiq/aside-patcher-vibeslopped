@@ -17,8 +17,13 @@ Current bundled support covers Aside `1.0.928.2` and the verified toolbar subset
 on `1.0.928.1` / `1.0.922.1`. Unknown builds remain unavailable. Older bookmark
 trial adapters are not advertised as supported client selections.
 
-Alpha executables are unsigned. External `maps.zip` / `patches.zip` loading and
-automatic support updates are not part of this first standalone alpha.
+Alpha executables are unsigned. From alpha.3, startup and **Refresh compatibility**
+download the owner-signed catalog and data-only patch packages from GitHub Releases.
+The public verification key is embedded in the app. No GitHub login is required.
+Verified support is cached for offline use; bundled definitions remain available.
+Unknown builds stay blocked until approved. Updates never close or patch Aside
+automatically. Signed JSON packages carry maps and patch deltas together; no ZIP
+extraction or downloaded Python scripts are used.
 
 ## Desktop app (developer build)
 
@@ -35,7 +40,7 @@ Build the standalone alpha on Windows with the Rust/MSVC prerequisites installed
 uv run --with pyinstaller==6.22.0 --extra catalog python scripts/package_alpha.py
 ```
 
-Output is under ignored `.patcher-work/alpha/0.1.0-alpha.2/`, with an EXE,
+Output is under ignored `.patcher-work/alpha/0.1.0-alpha.3/`, with an EXE,
 SHA-256 checksums, and build provenance. Vendor browser binaries are not packaged.
 
 Unit tests and developer validation stay in the source checkout (`tests/` and

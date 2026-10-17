@@ -113,6 +113,7 @@ class TestCatalogRefresh(unittest.TestCase):
             self.assertEqual(cached_build(cache, "1.0.928.2").states, build.states)
 
             catalog["sequence"] = 2
+            catalog["packages"][0]["sha256"] = sha256(package + b"new package")
             downloads[CATALOG_URL] = signed_document(catalog, key)
             downloads[package_url] = b"corrupt download"
             download.side_effect = downloads.__getitem__
@@ -134,3 +135,40 @@ class TestCatalogRefresh(unittest.TestCase):
             with self.assertRaisesRegex(Refusal, "rollback"):
                 refresh(cache)
             self.assertEqual((cache / "catalog.json").read_bytes(), original_catalog)
+
+    def test_expired_cached_packages_work_offline_and_corrupt_cache_is_repaired(self):
+        """Reuse authenticated cached support and replace incomplete cached files."""
+        key = Ed25519PrivateKey.generate()
+        public = key.public_key().public_bytes(Encoding.PEM, PublicFormat.SubjectPublicKeyInfo)
+        document = synthetic_package()
+        package = signed_document(document, key)
+        package_url = "https://github.com/TheCubiq/aside-patcher-vibeslopped/releases/download/test/package.json"
+        catalog = {
+            "schema_version": 1,
+            "minimum_engine_version": 1,
+            "sequence": 1,
+            "expires_at": (datetime.now(timezone.utc) + timedelta(days=1)).isoformat(),
+            "packages": [{"sha256": sha256(package), "url": package_url}],
+        }
+        downloads = {CATALOG_URL: signed_document(catalog, key), package_url: package}
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            patch("aside_patcher.compatibility._public_key", return_value=public),
+            patch("aside_patcher.compatibility._download", side_effect=downloads.__getitem__) as download,
+        ):
+            cache = Path(directory)
+            refresh(cache)
+            download.reset_mock()
+            refresh(cache)
+            download.assert_called_once_with(CATALOG_URL)
+            (cache / f"{sha256(package)}.json").write_bytes(b"interrupted write")
+            refresh(cache)
+            self.assertIsNotNone(cached_build(cache, "1.0.928.2"))
+
+            document["expires_at"] = "2000-01-01T00:00:00+00:00"
+            package = signed_document(document, key)
+            catalog["packages"][0]["sha256"] = sha256(package)
+            (cache / "catalog.json").write_bytes(signed_document(catalog, key))
+            (cache / f"{sha256(package)}.json").write_bytes(package)
+            download.side_effect = OSError("offline")
+            self.assertIsNotNone(cached_build(cache, "1.0.928.2"))

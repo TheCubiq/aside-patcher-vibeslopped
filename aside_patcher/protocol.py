@@ -282,15 +282,16 @@ def _approved_adapter(item: dict, cache: Path) -> Installation | None:
         item["compatibility_warning"] = f"Cached support rejected; using bundled definitions. {error}"
         adapter = None
 
-    if adapter is None:
-        adapter = bundled_build(item["version"])
-    if adapter is None:
-        return None
-
     native_hash = file_sha256(Path(item["dll"]))
-    accepted_states = tuple(adapter.states.items()) + adapter.previous_states
-    for _, hashes in accepted_states:
-        if hashes["dll"] == native_hash:
+    if adapter is not None:
+        accepted_states = tuple(adapter.states.items()) + adapter.previous_states
+        if any(hashes["dll"] == native_hash for _, hashes in accepted_states):
+            return adapter
+
+    adapter = bundled_build(item["version"])
+    if adapter is not None:
+        accepted_states = tuple(adapter.states.items()) + adapter.previous_states
+        if any(hashes["dll"] == native_hash for _, hashes in accepted_states):
             return adapter
 
     # A narrower catalog package must not hide a recognized bundled installation.

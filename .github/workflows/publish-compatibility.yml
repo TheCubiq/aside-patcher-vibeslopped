@@ -59,12 +59,15 @@ jobs:
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
             $previous=@($releases|Where-Object { -not $_.draft -and -not $_.prerelease -and ($_.assets.name -contains 'catalog.json') })|Select-Object -First 1
             $catalogArgs=@()
+            $sequence=1
             if ($previous) {
               gh release download $previous.tag_name --pattern catalog.json --dir previous
               if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
               $catalogArgs=@('--previous-catalog','previous/catalog.json')
+              $catalog=Get-Content previous/catalog.json -Raw|ConvertFrom-Json
+              $sequence=[long]$catalog.signed.sequence+1
             }
-            uv run --extra catalog python scripts/compatibility_release.py sign --candidate $package.DirectoryName --runtime $runtime.FullName --private $private --public compatibility/public-key.pem --sequence $env:GITHUB_RUN_NUMBER --tag "compatibility-$env:CANDIDATE_RUN" --output signed @catalogArgs
+            uv run --extra catalog python scripts/compatibility_release.py sign --candidate $package.DirectoryName --runtime $runtime.FullName --private $private --public compatibility/public-key.pem --sequence $sequence --tag "compatibility-$env:CANDIDATE_RUN" --output signed @catalogArgs
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           } finally { Remove-Item -LiteralPath $private -ErrorAction SilentlyContinue }
       - name: Publish approved support
@@ -73,5 +76,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           CANDIDATE_RUN: ${{ inputs.candidate_run_id }}
         run: |
-          gh release create "compatibility-$env:CANDIDATE_RUN" signed/*.json --title "Verified Aside compatibility $env:CANDIDATE_RUN" --notes "Owner-approved compatibility artifacts from tested candidate run $env:CANDIDATE_RUN." --latest
+          gh release create "compatibility-$env:CANDIDATE_RUN" signed/*.json --title "Verified Aside compatibility $env:CANDIDATE_RUN" --notes "Owner-approved compatibility artifacts from tested candidate run $env:CANDIDATE_RUN." --latest=false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh release view compatibility-catalog *> $null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create compatibility-catalog --title 'Approved compatibility catalog' --notes 'Signed compatibility index. Updated only after manual approval; packages remain on immutable releases.' --prerelease --latest=false
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          gh release upload compatibility-catalog signed/catalog.json --clobber
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

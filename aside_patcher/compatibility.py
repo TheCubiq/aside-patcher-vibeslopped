@@ -16,7 +16,7 @@ from .windows import installation_lock
 
 ENGINE_VERSION = 1
 PUBLIC_KEY = Path(__file__).resolve().parents[1] / "compatibility" / "public-key.pem"
-CATALOG_URL = "https://github.com/TheCubiq/aside-patcher-vibeslopped/releases/latest/download/catalog.json"
+CATALOG_URL = "https://github.com/TheCubiq/aside-patcher-vibeslopped/releases/download/compatibility-catalog/catalog.json"
 MAX_DOWNLOAD = 32 * 1024 * 1024
 
 
@@ -400,7 +400,10 @@ def _refresh_locked(cache):
     packages = []
     versions = set()
     for item in catalog["packages"]:
-        data = _download(item["url"])
+        cached = cache / f"{item['sha256']}.json"
+        data = cached.read_bytes() if cached.exists() else b""
+        if sha256(data) != item["sha256"]:
+            data = _download(item["url"])
         if sha256(data) != item["sha256"]:
             raise Refusal("Compatibility package digest mismatch.")
         package = verify_document(data, public_key)
@@ -409,11 +412,13 @@ def _refresh_locked(cache):
     cache.mkdir(parents=True, exist_ok=True)
     for digest, data in packages:
         target = cache / f"{digest}.json"
-        if not target.exists():
-            with target.open("xb") as stream:
+        if not target.exists() or sha256(target.read_bytes()) != digest:
+            temporary = cache / f"{digest}.pending"
+            with temporary.open("wb") as stream:
                 stream.write(data)
-        elif sha256(target.read_bytes()) != digest:
-            raise Refusal("Cached compatibility package is corrupt.")
+                stream.flush()
+                os.fsync(stream.fileno())
+            temporary.replace(target)
     temporary = cache / "catalog.pending"
     temporary.write_bytes(catalog_bytes)
     temporary.replace(cache / "catalog.json")
@@ -533,7 +538,7 @@ def cached_build(cache: Path, version: str) -> Installation | None:
         data = (cache / f"{item['sha256']}.json").read_bytes()
         if sha256(data) != item["sha256"]:
             raise Refusal("Cached package digest mismatch.")
-        package = verify_document(data, key)
+        package = verify_document(data, key, allow_expired=True)
         if any(build["version"] == version for build in package["builds"]):
             matches.append(build_from_package(package, version))
     if len(matches) > 1:

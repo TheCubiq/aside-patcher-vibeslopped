@@ -107,6 +107,17 @@ class TestProtocol(TestInstallationFixture):
         self.assertIs(resolved[2], self.build)
         self.assertIn("Invalid cached signature", resolved[0]["compatibility_warning"])
 
+    def test_narrower_online_adapter_preserves_matching_bundled_support(self):
+        """Fall back to bundled recipes when downloaded support misses this hash."""
+        item = {"version": "test", "dll": str(self.dll)}
+        narrower = replace(self.build, states={(): {"dll": "0" * 64}}, previous_states=())
+        with (
+            patch("aside_patcher.protocol.cached_build", return_value=narrower),
+            patch("aside_patcher.protocol.bundled_build", return_value=self.build),
+        ):
+            adapter = protocol._approved_adapter(item, self.root)  # pylint: disable=protected-access
+        self.assertIs(adapter, self.build)
+
     def test_multiple_custom_install_roots_are_discovered(self):
         """Detect versioned installations independent of account and drive."""
         (self.root / "Aside.exe").write_bytes(b"synthetic launcher")
